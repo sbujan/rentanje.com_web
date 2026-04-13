@@ -1,0 +1,231 @@
+{
+  "site": {
+    "name": "rentanje.com",
+    "tagline": "Iznajmite sve što vam treba",
+    "description": "Iznajmite opremu za evente, roštilj, kamp, audio i video — brzo i povoljno."
+  },
+  "nav": {
+    "products": "Oprema",
+    "bundles": "Paketi",
+    "blog": "Blog",
+    "contact": "Kontakt",
+    "about": "O nama",
+    "cart": "Košarica",
+    "inquiry": "Pošalji upit"
+  },
+  "footer": {
+    "company": "List 360 d.o.o.",
+    "rights": "Sva prava pridržana.",
+    "links": {
+      "privacy": "Privatnost",
+      "terms": "Uvjeti korištenja",
+      "liability": "Uvjeti odgovornosti",
+      "cookies": "Kolačići"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Iznajmi, uživaj, vrati.",
+      "subtitle": "Oprema za evente, roštilj, kamp i zabavu — dostava u Zagreb i okolicu.",
+      "cta_primary": "Pregledaj opremu",
+      "cta_secondary": "Pošalji upit"
+    },
+    "featured_title": "Popularna oprema",
+    "categories_title": "Kategorije",
+    "testimonials_title": "Što kažu naši klijenti"
+  },
+  "products": {
+    "all_title": "Sva oprema za iznajmljivanje",
+    "filter_category": "Kategorija",
+    "filter_all": "Sve",
+    "sort_label": "Sortiraj",
+    "sort_newest": "Najnovije",
+    "sort_price_asc": "Cijena rastuće",
+    "sort_price_desc": "Cijena padajuće",
+    "sort_popular": "Najpopularnije",
+    "from_price": "od {price} €/dan",
+    "add_to_cart": "Dodaj u košaricu",
+    "added": "Dodano!",
+    "min_rental": "Minimalni period iznajmljivanja je {days} dana.",
+    "deposit_label": "Kaucija",
+    "deposit_tooltip": "Kaucija se vraća po povratku opreme u ispravnom stanju.",
+    "availability": "Dostupnost",
+    "available": "Dostupno",
+    "unavailable": "Nedostupno",
+    "limited": "Ograničeno",
+    "pickup": "Preuzimanje u Zagrebu",
+    "delivery": "Dostava 10 € (Zagreb)",
+    "response": "Brz odgovor <24h",
+    "connected": "Potrebna oprema",
+    "suggested": "Preporučujemo i",
+    "related_posts": "Korisni savjeti"
+  },
+  "product_page": {
+    "breadcrumb_home": "Početna",
+    "breadcrumb_all": "Oprema",
+    "price_1day": "1 dan",
+    "price_3days": "3 dana",
+    "price_7days": "7 dana",
+    "save": "Uštedite {amount} €",
+    "specs": "Tehnički podaci",
+    "faq": "Česta pitanja"
+  },
+  "cart": {
+    "title": "Košarica i upit",
+    "empty": "Vaša košarica je prazna.",
+    "empty_cta": "Pregledaj opremu",
+    "item_days": "{days} dana",
+    "remove": "Ukloni",
+    "promo_placeholder": "Promo kod",
+    "promo_apply": "Primijeni",
+    "promo_invalid": "Nevažeći promo kod.",
+    "subtotal": "Iznajmljivanje",
+    "deposit_total": "Kaucija ukupno",
+    "delivery": "Dostava",
+    "discount": "Popust",
+    "total": "Ukupna procjena",
+    "total_note": "Konačna cijena potvrđuje se po dogovoru.",
+    "delivery_pickup": "Preuzimanje u Zagrebu (besplatno)",
+    "delivery_zagreb": "Dostava u Zagreb — 10 €",
+    "delivery_address": "Adresa dostave",
+    "customer_title": "Vaši podaci",
+    "field_name": "Ime i prezime",
+    "field_email": "Email",
+    "field_phone": "Telefon",
+    "field_company_toggle": "Trebam R1 račun (pravna osoba)",
+    "field_company_name": "Naziv tvrtke",
+    "field_company_oib": "OIB tvrtke",
+    "field_company_address": "Adresa tvrtke",
+    "field_message": "Napomena / poruka",
+    "field_liability": "Prihvaćam uvjete o odgovornosti za štetu",
+    "field_terms": "Prihvaćam uvjete korištenja",
+    "submit": "Pošalji upit",
+    "submitting": "Šaljemo...",
+    "required": "Obavezno polje"
+  },
+  "inquiry": {
+    "thank_you_title": "Upit je poslan!",
+    "thank_you_message": "Hvala na upitu! Javit ćemo se u roku od 24 sata na vašu email adresu.",
+    "back_home": "Natrag na početnu"
+  },
+  "contact": {
+    "title": "Kontakt",
+    "phone": "Telefon",
+    "email": "Email",
+    "address": "Adresa",
+    "hours": "Radno vrijeme",
+    "hours_value": "Pon–Pet: 08:00–17:00"
+  },
+  "about": {
+    "title": "O nama",
+    "company": "List 360 d.o.o."
+  },
+  "blog": {
+    "title": "Blog",
+    "read_more": "Pročitaj više",
+    "reading_time": "{minutes} min čitanja",
+    "back": "Natrag na blog"
+  },
+  "bundles": {
+    "title": "Paketi",
+    "save_badge": "Uštedite {amount}",
+    "includes": "Uključuje"
+  },
+  "errors": {
+    "not_found": "Stranica nije pronađena.",
+    "not_found_cta": "Natrag na početnu",
+    "generic": "Nešto je pošlo po krivu. Pokušajte ponovo."
+  },
+  "admin": {
+    "login": {
+      "title": "Admin prijava",
+      "email": "Email",
+      "password": "Lozinka",
+      "submit": "Prijavi se",
+      "error": "Neispravni podaci za prijavu."
+    },
+    "nav": {
+      "dashboard": "Nadzorna ploča",
+      "products": "Proizvodi",
+      "categories": "Kategorije",
+      "tags": "Oznake",
+      "bundles": "Paketi",
+      "promotions": "Promocije",
+      "inquiries": "Upiti",
+      "blog": "Blog",
+      "seo_pages": "SEO stranice",
+      "testimonials": "Recenzije",
+      "availability": "Dostupnost",
+      "settings": "Postavke",
+      "users": "Korisnici",
+      "logout": "Odjavi se"
+    },
+    "common": {
+      "save": "Spremi",
+      "saving": "Spremanje...",
+      "cancel": "Odustani",
+      "delete": "Obriši",
+      "edit": "Uredi",
+      "add": "Dodaj",
+      "new": "Novo",
+      "search": "Pretraži",
+      "active": "Aktivno",
+      "inactive": "Neaktivno",
+      "featured": "Istaknuto",
+      "confirm_delete": "Jeste li sigurni da želite obrisati?",
+      "delete_warning": "Ova radnja se ne može poništiti.",
+      "success_saved": "Uspješno spremljeno.",
+      "success_deleted": "Uspješno obrisano.",
+      "error_save": "Greška pri spremanju.",
+      "error_delete": "Greška pri brisanju."
+    },
+    "categories": {
+      "title": "Kategorije",
+      "new": "Nova kategorija",
+      "edit": "Uredi kategoriju",
+      "field_name": "Naziv",
+      "field_slug": "Slug (URL)",
+      "field_description": "Opis",
+      "field_color": "Boja",
+      "field_sort_order": "Redosljed",
+      "field_seo_title": "SEO naslov",
+      "field_seo_description": "SEO opis"
+    },
+    "tags": {
+      "title": "Oznake",
+      "new": "Nova oznaka",
+      "edit": "Uredi oznaku",
+      "field_name": "Naziv",
+      "field_slug": "Slug",
+      "field_color": "Boja"
+    },
+    "products": {
+      "title": "Proizvodi",
+      "new": "Novi proizvod",
+      "edit": "Uredi proizvod",
+      "field_name": "Naziv",
+      "field_slug": "Slug (URL)",
+      "field_category": "Kategorija",
+      "field_tags": "Oznake",
+      "field_short_desc": "Kratki opis",
+      "field_description": "Opis",
+      "field_min_rental": "Minimalni period",
+      "field_price_1day": "Cijena 1 dan (€)",
+      "field_price_3days": "Cijena 3 dana (€)",
+      "field_price_7days": "Cijena 7 dana (€)",
+      "field_deposit": "Kaucija (€)",
+      "field_deposit_note": "Napomena o kauciji",
+      "field_stock": "Količina",
+      "field_weight": "Težina (kg)",
+      "field_dimensions": "Dimenzije (cm)",
+      "field_seo_title": "SEO naslov",
+      "field_seo_desc": "SEO opis",
+      "field_featured": "Istaknuto",
+      "field_active": "Aktivno",
+      "field_sort_order": "Redosljed",
+      "validation_price_day": "Cijena za 1 dan je obavezna",
+      "validation_price_3days": "Cijena za 3 dana je obavezna",
+      "validation_price_7days": "Cijena za 7 dana je obavezna"
+    }
+  }
+}

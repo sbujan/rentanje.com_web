@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-primary:       #F05554;
+  --brand-primary-dark:  #C93F3E;
+  --brand-primary-light: #FDE8E8;
+  --brand-accent-1:      #FFB347;
+  --brand-accent-2:      #4ECDC4;
+  --brand-accent-3:      #A78BFA;
+  --brand-dark:          #1A1A2E;
+  --brand-light:         #FAFAF8;
+  --brand-text:          #2D2D2D;
+  --brand-muted:         #6B7280;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
+
+  --background: #FAFAF8;
+  --foreground: #2D2D2D;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-dm-sans), sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-syne), sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .font-price {
+    font-family: var(--font-dm-mono), monospace;
+  }
+}
+
+/* shadcn/ui base overrides */
+@layer base {
+  * {
+    border-color: #e5e7eb;
+  }
+}
