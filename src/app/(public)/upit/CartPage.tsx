@@ -300,7 +300,7 @@ export default function CartPage() {
               <Phone className="h-5 w-5 text-brand-primary" />
             </div>
             <div>
-              <p className="text-xs text-brand-muted">Wolite nazvati?</p>
+              <p className="text-xs text-brand-muted">Nazovite nas!</p>
               <a href="tel:+385952044414" className="font-bold text-brand-text hover:text-brand-primary transition-colors">
                 +385 95 204 4414
               </a>

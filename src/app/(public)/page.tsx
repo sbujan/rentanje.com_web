@@ -3,7 +3,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/public/ProductCard";
 import { CategoryAccordion } from "@/components/ui/interactive-image-accordion";
-import { Phone, Package, Star, ArrowRight, CheckCircle, Zap, Truck, BadgeCent } from "lucide-react";
+import HomeCTAContact from "@/components/public/HomeCTAContact";
+import { Star, ArrowRight, Zap, Truck, BadgeCent } from "lucide-react";
 
 export const revalidate = 3600;
 
@@ -12,9 +13,6 @@ export const metadata: Metadata = {
   description:
     "Iznajmite audio, video, event, roštilj, kamp i outdoor opremu u Zagrebu. Brza dostava, povoljne cijene. Pošaljite upit danas!",
 };
-
-const PHONE = "+385 95 204 4414";
-const PHONE_HREF = "tel:+385952044414";
 
 const localBusinessSchema = {
   "@context": "https://schema.org",
@@ -32,7 +30,7 @@ const whyUs = [
   {
     icon: <Zap className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />,
     title: "Brz odgovor",
-    desc: "Odgovaramo na sve upite unutar 24 sata, radnim danima i vikendom.",
+    desc: "Odgovaramo na sve upite unutar 1–2 sata, svaki dan.",
   },
   {
     icon: <Truck className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />,
@@ -73,38 +71,29 @@ export default async function HomePage() {
       />
 
       {/* HERO */}
-      <section className="bg-gradient-to-br from-brand-primary to-[#1A1A2E] text-white py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+      <section
+        className="relative flex items-center justify-center text-white px-4 overflow-hidden"
+        style={{ minHeight: "25vh" }}
+      >
+        {/* Background image */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/rentanje-com-hero.jpg"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/80 to-[#1A1A2E]/90" />
+
+        {/* Content */}
+        <div className="relative z-10 max-w-4xl mx-auto text-center py-10">
+          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 leading-tight">
             Iznajmi, uživaj, vrati.
           </h1>
-          <p className="text-lg sm:text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-white/80 max-w-2xl mx-auto">
             Oprema za evente, roštilj, kamp i zabavu — dostava u Zagreb i okolicu.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="/oprema"
-              className="inline-flex items-center justify-center gap-2 bg-white text-brand-primary font-bold px-8 py-3 rounded-lg hover:bg-brand-light transition-colors text-base"
-            >
-              <Package className="h-5 w-5" />
-              Pregledaj opremu
-            </Link>
-            <a
-              href={PHONE_HREF}
-              className="inline-flex items-center justify-center gap-2 border-2 border-white/50 text-white font-bold px-8 py-3 rounded-lg hover:bg-white/10 transition-colors text-base"
-            >
-              <Phone className="h-5 w-5" />
-              {PHONE}
-            </a>
-          </div>
-          <div className="mt-10 flex flex-wrap justify-center gap-4 text-sm text-white/70">
-            {["Preuzimanje u Zagrebu", "Dostava 10 € (Zagreb)", "Odgovor <24h", "Bez naknade za rezervaciju"].map((t) => (
-              <span key={t} className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-[#4ECDC4]" />
-                {t}
-              </span>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -186,28 +175,8 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* CTA BAND */}
-      <section className="bg-brand-primary text-white py-14 text-center px-4">
-        <h2 className="font-display text-2xl sm:text-3xl font-bold mb-3">
-          Trebate opremu? Javite se!
-        </h2>
-        <p className="text-white/80 mb-6">Pošaljite upit ili nas nazovite — odgovaramo brzo.</p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            href="/upit"
-            className="inline-flex items-center justify-center gap-2 bg-white text-brand-primary font-bold px-8 py-3 rounded-lg hover:bg-brand-light transition-colors"
-          >
-            Pošalji upit
-          </Link>
-          <a
-            href={PHONE_HREF}
-            className="inline-flex items-center justify-center gap-2 border-2 border-white/50 text-white font-bold px-8 py-3 rounded-lg hover:bg-white/10 transition-colors"
-          >
-            <Phone className="h-5 w-5" />
-            {PHONE}
-          </a>
-        </div>
-      </section>
+      {/* CTA + CONTACT */}
+      <HomeCTAContact />
     </>
   );
 }

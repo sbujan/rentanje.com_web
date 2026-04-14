@@ -17,7 +17,7 @@ const categories = [
     slug: "oprema-za-evente",
     title: "Evente i zabava",
     subtitle: "Šatori, stolovi, dekoracije, igre",
-    imageUrl: "/Sator-paviljon.webp",
+    imageUrl: "/Druzenje-na-otvorenom.jpg",
     color: "#FF6B6B",
   },
   {
@@ -25,7 +25,7 @@ const categories = [
     slug: "rostilj-kuhanje",
     title: "Roštilj i kuhanje",
     subtitle: "Roštilji, pećnica za pizzu, ražanj",
-    imageUrl: "/Rostilj-na-ugljen-NAPOLEON.jpg",
+    imageUrl: "/Kulinarski-dozivljaj.jpg",
     color: "#FF8E6C",
   },
   {
@@ -33,7 +33,7 @@ const categories = [
     slug: "kamp-outdoor",
     title: "Kamp i outdoor",
     subtitle: "Šatori, madraci, hladnjaci, pumpe",
-    imageUrl: "/Sator-paviljon-1.webp",
+    imageUrl: "/sator-za-kampiranje-mh100-fresh-black-za-tri-osobe-2.avif",
     color: "#6EE7B7",
   },
   {
@@ -41,7 +41,7 @@ const categories = [
     slug: "alati-ciscenje",
     title: "Alati i čišćenje",
     subtitle: "Strojevi za pranje, usisavači",
-    imageUrl: "/Hiluckey-solarni-Powerbank-25000mAh.jpg",
+    imageUrl: "/kercher%20puzzi.jpg",
     color: "#FFD166",
   },
   {
@@ -49,7 +49,7 @@ const categories = [
     slug: "ostalo",
     title: "Ostalo",
     subtitle: "Rekviziti, ukrasi i sve ostalo",
-    imageUrl: "/Beerpong.jpg",
+    imageUrl: "/Hiluckey-solarni-Powerbank-25000mAh.jpg",
     color: "#BCA7F0",
   },
 ];

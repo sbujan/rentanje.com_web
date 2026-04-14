@@ -75,13 +75,10 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
 
         {/* CTA — always visible on mobile, hover on desktop */}
-        <button
-          onClick={(e) => e.preventDefault()} // handled by parent Link
-          className="mt-2 w-full flex items-center justify-center gap-2 bg-brand-primary text-white text-sm font-semibold py-2.5 rounded-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity active:scale-95"
-        >
+        <div className="mt-2 w-full flex items-center justify-center gap-2 bg-brand-primary text-white text-sm font-semibold py-2.5 rounded-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
           <ShoppingCart className="h-4 w-4" />
           Dodaj u košaricu
-        </button>
+        </div>
       </div>
     </Link>
   );

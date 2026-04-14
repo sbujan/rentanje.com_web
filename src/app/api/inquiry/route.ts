@@ -184,9 +184,9 @@ export async function POST(req: NextRequest) {
   // Send emails
   const adminEmail = process.env.ADMIN_EMAIL ?? "info@rentanje.com";
   const fromEmail = process.env.FROM_EMAIL ?? "mail@list360.agency";
-  const resend = new Resend(process.env.RESEND_API_KEY);
 
   try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
     await Promise.all([
       resend.emails.send({
         from: `rentanje.com <${fromEmail}>`,
