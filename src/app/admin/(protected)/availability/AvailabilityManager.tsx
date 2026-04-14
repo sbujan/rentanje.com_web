@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
@@ -32,12 +32,7 @@ export default function AvailabilityManager({ products }: { products: Product[] 
   const [noteInput, setNoteInput] = useState("");
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (!selectedProduct) return;
-    loadRows(selectedProduct.id);
-  }, [selectedProduct]);
-
-  async function loadRows(productId: string) {
+  const loadRows = useCallback(async (productId: string) => {
     setLoading(true);
     const { data } = await supabase
       .from("availability")
@@ -47,7 +42,12 @@ export default function AvailabilityManager({ products }: { products: Product[] 
       .order("date");
     setRows(data ?? []);
     setLoading(false);
-  }
+  }, [supabase]);
+
+  useEffect(() => {
+    if (!selectedProduct) return;
+    loadRows(selectedProduct.id);
+  }, [selectedProduct, loadRows]);
 
   async function handleSave() {
     if (!selectedProduct || !selectedDate || !qtyInput) return;

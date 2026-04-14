@@ -141,7 +141,7 @@ export default function ProductForm({
     if (isEdit) {
       const { error } = await supabase
         .from("products")
-        .update(payload)
+        .update(payload as any)
         .eq("id", productId!);
       if (error) {
         setError(error.message);
@@ -151,7 +151,7 @@ export default function ProductForm({
     } else {
       const { data, error } = await supabase
         .from("products")
-        .insert(payload)
+        .insert(payload as any)
         .select("id")
         .single();
       if (error) {
