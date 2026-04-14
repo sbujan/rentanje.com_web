@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   if (data) {
     await supabase
       .from("products")
-      .update({ view_count: (data.view_count ?? 0) + 1 })
+      .update({ view_count: (data.view_count ?? 0) + 1 } as any)
       .eq("id", productId);
   }
 
