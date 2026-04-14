@@ -6,19 +6,40 @@ import CategoryPage from "./CategoryPage";
 import ProductPage from "./ProductPage";
 
 export const revalidate = 3600;
+export const dynamicParams = true;
+
+// Fallback category slugs so category pages always build even if DB is unreachable
+const FALLBACK_CATEGORY_SLUGS = [
+  "audio-video-oprema",
+  "oprema-za-evente",
+  "rostilj-kuhanje",
+  "kamp-outdoor",
+  "alati-ciscenje",
+  "ostalo",
+];
 
 export async function generateStaticParams() {
-  const supabase = createAdminClient();
+  try {
+    const supabase = createAdminClient();
 
-  const [{ data: categories }, { data: products }] = await Promise.all([
-    supabase.from("categories").select("slug"),
-    supabase.from("products").select("slug").eq("is_active", true),
-  ]);
+    const [{ data: categories }, { data: products }] = await Promise.all([
+      supabase.from("categories").select("slug"),
+      supabase.from("products").select("slug").eq("is_active", true),
+    ]);
 
-  return [
-    ...(categories ?? []).map((c) => ({ slug: c.slug })),
-    ...(products ?? []).map((p) => ({ slug: p.slug })),
-  ];
+    const categorySlugs = (categories ?? []).map((c) => ({ slug: c.slug }));
+    const productSlugs = (products ?? []).map((p) => ({ slug: p.slug }));
+
+    // Always include fallback slugs in case DB returns empty
+    const allCategorySlugs = categorySlugs.length > 0
+      ? categorySlugs
+      : FALLBACK_CATEGORY_SLUGS.map((slug) => ({ slug }));
+
+    return [...allCategorySlugs, ...productSlugs];
+  } catch {
+    // DB unreachable at build time — return fallback so pages still generate
+    return FALLBACK_CATEGORY_SLUGS.map((slug) => ({ slug }));
+  }
 }
 
 interface Props {

@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 
 const categories = [
   {
@@ -61,12 +63,17 @@ interface AccordionItemProps {
 }
 
 function AccordionItem({ item, isActive, onActivate }: AccordionItemProps) {
+  const router = useRouter();
+
   return (
     <div
       className={`relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 ease-in-out shrink-0 h-[380px] sm:h-[440px]`}
       style={{ width: isActive ? "340px" : "56px" }}
       onMouseEnter={onActivate}
-      onClick={onActivate}
+      onClick={() => {
+        if (isActive) router.push(`/najam/${item.slug}`);
+        else onActivate();
+      }}
     >
       {/* Background image */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -93,21 +100,15 @@ function AccordionItem({ item, isActive, onActivate }: AccordionItemProps) {
       {/* Active: bottom label */}
       {isActive && (
         <div className="absolute bottom-0 left-0 right-0 p-5">
-          <Link
-            href={`/najam/${item.slug}`}
-            className="block group/link"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <p className="text-white font-bold text-lg leading-tight mb-1 drop-shadow">
-              {item.title}
-            </p>
-            <p className="text-white/80 text-sm leading-snug mb-3">
-              {item.subtitle}
-            </p>
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-white/20 hover:bg-white/30 backdrop-blur-sm px-3 py-1.5 rounded-full transition-colors">
-              Pregledaj →
-            </span>
-          </Link>
+          <p className="text-white font-bold text-lg leading-tight mb-1 drop-shadow">
+            {item.title}
+          </p>
+          <p className="text-white/80 text-sm leading-snug mb-3">
+            {item.subtitle}
+          </p>
+          <span className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-white/20 hover:bg-white/30 backdrop-blur-sm px-3 py-1.5 rounded-full transition-colors">
+            Pregledaj →
+          </span>
         </div>
       )}
 
