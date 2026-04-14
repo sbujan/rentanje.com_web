@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,10 +41,15 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo / brand */}
         <div className="text-center mb-8">
-          <span className="font-display text-2xl font-bold text-brand-primary">
-            rentanje.com
-          </span>
-          <p className="text-brand-muted text-sm mt-1">Admin panel</p>
+          <Image
+            src="/rentanje-logo.svg"
+            alt="rentanje.com"
+            width={180}
+            height={50}
+            className="mx-auto"
+            priority
+          />
+          <p className="text-brand-muted text-sm mt-3">Admin panel</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-card p-8">

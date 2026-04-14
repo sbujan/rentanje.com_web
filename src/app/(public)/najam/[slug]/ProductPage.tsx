@@ -1,8 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ChevronDown } from "lucide-react";
 import AddToCartCard from "@/components/public/AddToCartCard";
 import type { Database } from "@/types/database";
+
+interface FaqItem { question: string; answer: string; }
 
 type Product = Database["public"]["Tables"]["products"]["Row"] & {
   categories?: { name: string; color: string | null; slug: string } | null;
@@ -36,6 +38,18 @@ function buildProductSchema(product: Product) {
   };
 }
 
+function buildFaqSchema(faqs: FaqItem[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  };
+}
+
 function buildBreadcrumbSchema(product: Product) {
   return {
     "@context": "https://schema.org",
@@ -60,6 +74,7 @@ export default function ProductPage({ product, availability, tags }: Props) {
   ].filter(Boolean) as { label: string; value: string }[];
 
   const seoKeywords = product.seo_keywords?.join(", ");
+  const faq: FaqItem[] = ((product as any).faq as FaqItem[] | null) ?? [];
 
   return (
     <>
@@ -72,6 +87,12 @@ export default function ProductPage({ product, availability, tags }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbSchema(product)) }}
       />
+      {faq.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFaqSchema(faq)) }}
+        />
+      )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Breadcrumb */}
@@ -192,6 +213,26 @@ export default function ProductPage({ product, availability, tags }: Props) {
                       <span className="text-brand-muted">{spec.label}</span>
                       <span className="font-medium text-brand-text">{spec.value}</span>
                     </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* FAQ accordion */}
+            {faq.length > 0 && (
+              <div className="space-y-2">
+                <h2 className="font-display font-bold text-lg text-brand-text">Često postavljena pitanja</h2>
+                <div className="divide-y divide-gray-100 border border-gray-100 rounded-lg overflow-hidden">
+                  {faq.map((item, i) => (
+                    <details key={i} className="group bg-white">
+                      <summary className="flex items-center justify-between px-4 py-3 cursor-pointer list-none font-medium text-brand-text text-sm hover:bg-gray-50 transition-colors">
+                        {item.question}
+                        <ChevronDown className="h-4 w-4 text-brand-muted flex-shrink-0 ml-2 transition-transform group-open:rotate-180" />
+                      </summary>
+                      <div className="px-4 pb-4 text-sm text-brand-muted leading-relaxed">
+                        {item.answer}
+                      </div>
+                    </details>
                   ))}
                 </div>
               </div>

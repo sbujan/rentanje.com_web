@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import PageHero from "@/components/public/PageHero";
 
 export const metadata: Metadata = {
   title: "Politika privatnosti — rentanje.com",
@@ -9,14 +8,14 @@ export const metadata: Metadata = {
 
 export default function PrivatnostPage() {
   return (
+    <>
+      <PageHero
+        title="Politika privatnosti"
+        subtitle="Kako prikupljamo i čuvamo vaše osobne podatke."
+        breadcrumbs={[{ href: "/", label: "Početna" }, { label: "Privatnost" }]}
+        color="#BCA7F0"
+      />
     <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-      <nav className="flex items-center gap-1 text-sm text-brand-muted mb-8">
-        <Link href="/" className="hover:text-brand-primary">Početna</Link>
-        <ChevronRight className="h-3 w-3" />
-        <span className="text-brand-text font-medium">Privatnost</span>
-      </nav>
-
-      <h1 className="font-display text-3xl font-bold text-brand-text mb-2">Politika privatnosti</h1>
       <p className="text-sm text-brand-muted mb-8">Zadnja izmjena: 1. siječnja 2025.</p>
 
       <div className="prose prose-sm max-w-none text-brand-text space-y-6">
@@ -69,5 +68,6 @@ export default function PrivatnostPage() {
         </section>
       </div>
     </main>
+    </>
   );
 }

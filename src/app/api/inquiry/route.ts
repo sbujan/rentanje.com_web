@@ -30,6 +30,10 @@ const schema = z.object({
   items: z.array(cartItemSchema).min(1),
 });
 
+function esc(s: string) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
 function formatPrice(n: number) {
   return n.toLocaleString("hr-HR", { style: "currency", currency: "EUR", maximumFractionDigits: 2 });
 }
@@ -62,11 +66,11 @@ function buildAdminHtml(params: {
   <div style="padding:32px">
     <h2 style="margin:0 0 16px;font-size:16px;color:#111827">Podaci o korisniku</h2>
     <table style="width:100%;border-collapse:collapse;font-size:14px">
-      <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280;width:140px">Ime</td><td style="padding:8px 0;color:#111827;font-weight:500">${name}</td></tr>
-      <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280">E-mail</td><td style="padding:8px 0;color:#111827;font-weight:500"><a href="mailto:${email}">${email}</a></td></tr>
-      <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280">Telefon</td><td style="padding:8px 0;color:#111827;font-weight:500"><a href="tel:${phone}">${phone}</a></td></tr>
-      ${delivery_address ? `<tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280">Adresa dostave</td><td style="padding:8px 0;color:#111827;font-weight:500">${delivery_address}</td></tr>` : ""}
-      ${note ? `<tr><td style="padding:8px 0;color:#6b7280">Napomena</td><td style="padding:8px 0;color:#111827;font-weight:500">${note}</td></tr>` : ""}
+      <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280;width:140px">Ime</td><td style="padding:8px 0;color:#111827;font-weight:500">${esc(name)}</td></tr>
+      <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280">E-mail</td><td style="padding:8px 0;color:#111827;font-weight:500"><a href="mailto:${esc(email)}">${esc(email)}</a></td></tr>
+      <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280">Telefon</td><td style="padding:8px 0;color:#111827;font-weight:500"><a href="tel:${esc(phone)}">${esc(phone)}</a></td></tr>
+      ${delivery_address ? `<tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280">Adresa dostave</td><td style="padding:8px 0;color:#111827;font-weight:500">${esc(delivery_address)}</td></tr>` : ""}
+      ${note ? `<tr><td style="padding:8px 0;color:#6b7280">Napomena</td><td style="padding:8px 0;color:#111827;font-weight:500">${esc(note)}</td></tr>` : ""}
     </table>
     <h2 style="margin:32px 0 16px;font-size:16px;color:#111827">Stavke upita</h2>
     <table style="width:100%;border-collapse:collapse;font-size:14px">

@@ -81,6 +81,13 @@ export default function HomeCTAContact() {
                     placeholder="Što vas zanima? Koje datume trebate?"
                   />
                 </div>
+                <label className="flex gap-2 items-start cursor-pointer">
+                  <input type="checkbox" required className="mt-0.5 h-4 w-4 flex-shrink-0 accent-white" />
+                  <span className="text-xs text-white/70">
+                    Slažem se da se moji osobni podaci koriste u obradi poruke putem interneta.{" "}
+                    <a href="/privatnost" className="underline text-white/90 hover:text-white">Pravila privatnosti</a>
+                  </span>
+                </label>
                 {status === "error" && (
                   <p className="text-xs text-red-200">Greška pri slanju. Pokušajte ponovo ili nas nazovite.</p>
                 )}
@@ -125,7 +132,7 @@ export default function HomeCTAContact() {
               </div>
               <div>
                 <p className="text-xs text-white/60">Adresa</p>
-                <p className="font-medium text-white">Zagreb, Hrvatska</p>
+                <p className="font-medium text-white">Naserov trg 4, Zagreb</p>
               </div>
             </div>
 
@@ -142,7 +149,7 @@ export default function HomeCTAContact() {
             <div className="mt-2 pt-4 border-t border-white/20 text-xs text-white/50 leading-relaxed">
               <strong className="text-white/70">List 360 d.o.o.</strong><br />
               OIB: 30800965664<br />
-              Zagreb, Hrvatska
+              Naserov trg 4, Zagreb
             </div>
           </div>
         </div>

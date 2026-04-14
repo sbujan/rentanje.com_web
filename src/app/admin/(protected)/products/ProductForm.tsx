@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { slugify } from "@/lib/utils";
 import ImageUpload from "@/components/admin/ImageUpload";
+import FaqEditor, { type FaqItem } from "@/components/admin/FaqEditor";
 import type { Database } from "@/types/database";
 
 type Product = Database["public"]["Tables"]["products"]["Row"];
@@ -59,6 +60,7 @@ export default function ProductForm({
     seo_description: product?.seo_description ?? "",
     seo_keywords: product?.seo_keywords?.join(", ") ?? "",
     is_featured: product?.is_featured ?? false,
+    faq: ((product as any)?.faq as FaqItem[] | null) ?? [],
     is_active: product?.is_active ?? true,
     sort_order: product?.sort_order?.toString() ?? "0",
     hero_image_url: product?.hero_image_url ?? "",
@@ -128,6 +130,7 @@ export default function ProductForm({
       seo_keywords: form.seo_keywords
         ? form.seo_keywords.split(",").map((k) => k.trim()).filter(Boolean)
         : null,
+      faq: form.faq.length > 0 ? form.faq : [],
       is_featured: form.is_featured,
       is_active: form.is_active,
       sort_order: parseInt(form.sort_order) || 0,
@@ -543,6 +546,18 @@ export default function ProductForm({
             placeholder="iznajmljivanje zvučnika, najam bluetooth zvučnika, JBL za rent"
           />
         </div>
+      </div>
+
+      {/* FAQ */}
+      <div className="bg-white rounded-lg shadow-card p-6 space-y-4">
+        <div>
+          <h2 className="font-display text-base font-semibold text-brand-text">FAQ</h2>
+          <p className="text-xs text-brand-muted mt-1">Često postavljena pitanja — prikazuju se na stranici proizvoda i pomažu Google, ChatGPT i Perplexity da razumiju sadržaj.</p>
+        </div>
+        <FaqEditor
+          value={form.faq}
+          onChange={(faq) => setForm((f) => ({ ...f, faq }))}
+        />
       </div>
 
       {/* Settings */}

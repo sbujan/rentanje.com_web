@@ -4,7 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { ChevronRight, Clock, User } from "lucide-react";
+import { ChevronRight, Clock, User, ChevronDown } from "lucide-react";
+
+interface FaqItem { question: string; answer: string; }
 import { format } from "date-fns";
 import { hr } from "date-fns/locale";
 
@@ -65,6 +67,18 @@ export default async function BlogPostPage({ params }: Props) {
 
   if (!post) notFound();
 
+  const faq: FaqItem[] = ((post as any).faq as FaqItem[] | null) ?? [];
+
+  const faqSchema = faq.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  } : null;
+
   // JSON-LD Article schema
   const articleSchema = {
     "@context": "https://schema.org",
@@ -89,6 +103,12 @@ export default async function BlogPostPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
         {/* Breadcrumb */}
@@ -143,6 +163,26 @@ export default async function BlogPostPage({ params }: Props) {
           />
         ) : (
           <p className="text-brand-muted">Sadržaj uskoro.</p>
+        )}
+
+        {/* FAQ accordion */}
+        {faq.length > 0 && (
+          <div className="mt-10 space-y-3">
+            <h2 className="font-display font-bold text-xl text-brand-text">Često postavljena pitanja</h2>
+            <div className="divide-y divide-gray-100 border border-gray-100 rounded-xl overflow-hidden">
+              {faq.map((item, i) => (
+                <details key={i} className="group bg-white">
+                  <summary className="flex items-center justify-between px-5 py-4 cursor-pointer list-none font-medium text-brand-text hover:bg-gray-50 transition-colors">
+                    {item.question}
+                    <ChevronDown className="h-4 w-4 text-brand-muted flex-shrink-0 ml-2 transition-transform group-open:rotate-180" />
+                  </summary>
+                  <div className="px-5 pb-4 text-sm text-brand-muted leading-relaxed">
+                    {item.answer}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* CTA */}

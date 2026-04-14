@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import PageHero from "@/components/public/PageHero";
 
 export const metadata: Metadata = {
   title: "Uvjeti odgovornosti — rentanje.com",
@@ -9,14 +8,14 @@ export const metadata: Metadata = {
 
 export default function UvjetiOdgovornostiPage() {
   return (
+    <>
+      <PageHero
+        title="Uvjeti odgovornosti"
+        subtitle="Odgovornosti korisnika i tvrtke pri iznajmljivanju opreme."
+        breadcrumbs={[{ href: "/", label: "Početna" }, { label: "Uvjeti odgovornosti" }]}
+        color="#FFD166"
+      />
     <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-      <nav className="flex items-center gap-1 text-sm text-brand-muted mb-8">
-        <Link href="/" className="hover:text-brand-primary">Početna</Link>
-        <ChevronRight className="h-3 w-3" />
-        <span className="text-brand-text font-medium">Uvjeti odgovornosti</span>
-      </nav>
-
-      <h1 className="font-display text-3xl font-bold text-brand-text mb-2">Uvjeti odgovornosti</h1>
       <p className="text-sm text-brand-muted mb-8">Zadnja izmjena: 1. siječnja 2025.</p>
 
       <div className="prose prose-sm max-w-none text-brand-text space-y-6">
@@ -51,5 +50,6 @@ export default function UvjetiOdgovornostiPage() {
         </section>
       </div>
     </main>
+    </>
   );
 }

@@ -85,6 +85,13 @@ export default function KontaktPage() {
                 />
               </div>
 
+              <label className="flex gap-2 items-start cursor-pointer">
+                <input type="checkbox" required className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                <span className="text-xs text-brand-muted">
+                  Slažem se da se moji osobni podaci koriste u obradi poruke putem interneta.{" "}
+                  <a href="/privatnost" className="underline text-brand-primary hover:opacity-80">Pravila privatnosti</a>
+                </span>
+              </label>
               {status === "error" && (
                 <p className="text-sm text-red-500">Greška pri slanju. Pokušajte ponovo ili nas nazovite.</p>
               )}
@@ -133,7 +140,7 @@ export default function KontaktPage() {
               </div>
               <div>
                 <p className="text-xs text-brand-muted">Lokacija</p>
-                <p className="font-medium text-brand-text">Zagreb, Hrvatska</p>
+                <p className="font-medium text-brand-text">Naserov trg 4, Zagreb</p>
               </div>
             </div>
 
@@ -152,10 +159,24 @@ export default function KontaktPage() {
             <p className="text-xs text-brand-muted">
               <strong className="text-brand-text">List 360 d.o.o.</strong><br />
               OIB: 30800965664<br />
-              Zagreb, Hrvatska
+              Naserov trg 4, Zagreb
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Google Maps */}
+      <div className="mt-10 rounded-xl overflow-hidden border border-gray-100 aspect-[16/6]">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2781.0!2d15.9819!3d45.8150!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4765d6e9e3f5b5b5%3A0x1!2sNaserov+trg+4%2C+Zagreb!5e0!3m2!1shr!2shr!4v1700000000000!5m2!1shr!2shr"
+          width="100%"
+          height="100%"
+          className="w-full h-full border-0"
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title="Lokacija — Naserov trg 4, Zagreb"
+        />
       </div>
       </main>
     </>

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import PageHero from "@/components/public/PageHero";
 
 export const metadata: Metadata = {
   title: "Uvjeti korištenja — rentanje.com",
@@ -11,14 +10,14 @@ const UPDATED = "1. siječnja 2025.";
 
 export default function UvjetiKoristenjaPage() {
   return (
+    <>
+      <PageHero
+        title="Uvjeti korištenja"
+        subtitle="Pravila i uvjeti korištenja usluga rentanje.com."
+        breadcrumbs={[{ href: "/", label: "Početna" }, { label: "Uvjeti korištenja" }]}
+        color="#FF8E6C"
+      />
     <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-      <nav className="flex items-center gap-1 text-sm text-brand-muted mb-8">
-        <Link href="/" className="hover:text-brand-primary">Početna</Link>
-        <ChevronRight className="h-3 w-3" />
-        <span className="text-brand-text font-medium">Uvjeti korištenja</span>
-      </nav>
-
-      <h1 className="font-display text-3xl font-bold text-brand-text mb-2">Uvjeti korištenja</h1>
       <p className="text-sm text-brand-muted mb-8">Zadnja izmjena: {UPDATED}</p>
 
       <div className="prose prose-sm max-w-none text-brand-text space-y-6">
@@ -69,5 +68,6 @@ export default function UvjetiKoristenjaPage() {
         </section>
       </div>
     </main>
+    </>
   );
 }

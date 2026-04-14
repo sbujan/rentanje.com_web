@@ -20,7 +20,7 @@ const localBusinessSchema = {
   name: "rentanje.com — List 360 d.o.o.",
   telephone: "+385952044414",
   url: "https://rentanje.com",
-  address: { "@type": "PostalAddress", addressCountry: "HR", addressLocality: "Zagreb" },
+  address: { "@type": "PostalAddress", addressCountry: "HR", addressLocality: "Zagreb", streetAddress: "Naserov trg 4" },
   openingHours: "Mo-Fr 08:00-17:00",
   priceRange: "€€",
   description: "Iznajmljivanje opreme za evente, roštilj, kamp i audio/video u Hrvatskoj.",

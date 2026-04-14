@@ -39,10 +39,10 @@ const config: Config = {
         mono:    ["var(--font-open-sans)", "sans-serif"],
       },
       borderRadius: {
-        sm: "8px",
-        md: "12px",
-        lg: "20px",
-        xl: "32px",
+        sm: "4px",
+        md: "6px",
+        lg: "10px",
+        xl: "16px",
       },
       boxShadow: {
         card: "0 2px 12px rgba(0,0,0,0.07)",

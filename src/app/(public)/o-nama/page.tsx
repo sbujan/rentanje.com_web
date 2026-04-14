@@ -7,6 +7,14 @@ export const metadata: Metadata = {
   title: "O nama — rentanje.com",
   description:
     "Saznajte više o rentanje.com — Zagreb. Iznajmljujemo audio/video, event, roštilj, kamp i outdoor opremu. List 360 d.o.o.",
+  openGraph: {
+    title: "O nama — rentanje.com",
+    description: "Saznajte više o rentanje.com — iznajmljivanje opreme iz Zagreba. List 360 d.o.o.",
+    url: "https://rentanje.com/o-nama",
+    siteName: "rentanje.com",
+    type: "website",
+  },
+  twitter: { card: "summary", title: "O nama — rentanje.com" },
 };
 
 const PHONE = "+385 95 204 4414";
@@ -71,7 +79,7 @@ export default function ONamaPage() {
           </a>
           <div className="flex items-center gap-3 text-brand-muted">
             <MapPin className="h-4 w-4 text-brand-primary flex-shrink-0" />
-            <span>Zagreb, Hrvatska</span>
+            <span>Naserov trg 4, Zagreb</span>
           </div>
         </div>
         <p className="text-xs text-brand-muted pt-2 border-t border-gray-100">

@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { slugify } from "@/lib/utils";
 import { Loader2, Save, Eye, Trash2 } from "lucide-react";
 import ImageUpload from "@/components/admin/ImageUpload";
+import FaqEditor, { type FaqItem } from "@/components/admin/FaqEditor";
 
 interface Post {
   id?: string;
@@ -19,6 +20,7 @@ interface Post {
   reading_time: number | null;
   seo_title: string;
   seo_description: string;
+  faq: FaqItem[];
 }
 
 interface Props {
@@ -36,6 +38,7 @@ const EMPTY: Post = {
   reading_time: null,
   seo_title: "",
   seo_description: "",
+  faq: [],
 };
 
 export default function BlogForm({ initial }: Props) {
@@ -71,6 +74,7 @@ export default function BlogForm({ initial }: Props) {
       reading_time: form.reading_time,
       seo_title: form.seo_title || null,
       seo_description: form.seo_description || null,
+      faq: form.faq,
       is_published: publish !== undefined ? publish : form.is_published,
     };
 
@@ -220,6 +224,17 @@ export default function BlogForm({ initial }: Props) {
               className="w-full px-3 py-2 rounded-md border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary resize-none"
             />
           </div>
+        </div>
+
+        <div className="pt-4 border-t border-gray-100 space-y-3">
+          <div>
+            <p className="text-xs font-semibold text-brand-muted uppercase tracking-wider">FAQ</p>
+            <p className="text-xs text-brand-muted mt-1">Prikazuju se na stranici članka. Pomaže Google, ChatGPT i Perplexity da razumiju sadržaj.</p>
+          </div>
+          <FaqEditor
+            value={form.faq}
+            onChange={(faq) => set("faq", faq)}
+          />
         </div>
       </div>
     </div>
