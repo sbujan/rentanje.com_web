@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
-import { ChevronRight, Package, Phone } from "lucide-react";
+import { Package, Phone } from "lucide-react";
+import PageHero from "@/components/public/PageHero";
 
 export const revalidate = 3600;
 
@@ -26,22 +27,12 @@ export default async function PaketiPage() {
 
   return (
     <main>
-      {/* Header */}
-      <section className="bg-gradient-to-br from-brand-primary to-[#1A1A2E] text-white py-12 px-4">
-        <div className="max-w-4xl mx-auto">
-          <nav className="flex items-center gap-1 text-sm text-white/60 mb-4">
-            <Link href="/" className="hover:text-white">Početna</Link>
-            <ChevronRight className="h-3 w-3" />
-            <span className="text-white">Paketi</span>
-          </nav>
-          <h1 className="font-display text-3xl sm:text-4xl font-bold mb-3">
-            Paketi za iznajmljivanje
-          </h1>
-          <p className="text-white/80 text-lg max-w-2xl">
-            Gotove kombinacije opreme za vaš event, roštilj ili kamp izlet — sve u jednom, uz popust.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        title="Paketi za iznajmljivanje"
+        subtitle="Gotove kombinacije opreme za vaš event, roštilj ili kamp izlet — sve u jednom, uz popust."
+        breadcrumbs={[{ href: "/", label: "Početna" }, { label: "Paketi" }]}
+        color="#FF6B6B"
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         {bundles && bundles.length > 0 ? (

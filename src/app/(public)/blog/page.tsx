@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
-import { ChevronRight, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
+import PageHero from "@/components/public/PageHero";
 import { format } from "date-fns";
 import { hr } from "date-fns/locale";
 
@@ -24,16 +25,14 @@ export default async function BlogPage() {
     .order("published_at", { ascending: false });
 
   return (
-    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-1 text-sm text-brand-muted mb-6">
-        <Link href="/" className="hover:text-brand-primary">Početna</Link>
-        <ChevronRight className="h-3 w-3" />
-        <span className="text-brand-text font-medium">Blog</span>
-      </nav>
-
-      <h1 className="font-display text-3xl sm:text-4xl font-bold text-brand-text mb-2">Blog</h1>
-      <p className="text-brand-muted mb-10">Savjeti, vodiči i ideje za vaše sljedeće iznajmljivanje.</p>
+    <main>
+      <PageHero
+        title="Blog"
+        subtitle="Savjeti, vodiči i ideje za vaše sljedeće iznajmljivanje."
+        breadcrumbs={[{ href: "/", label: "Početna" }, { label: "Blog" }]}
+        color="#BCA7F0"
+      />
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
 
       {!posts || posts.length === 0 ? (
         <div className="py-20 text-center text-brand-muted">
@@ -83,6 +82,7 @@ export default async function BlogPage() {
           ))}
         </div>
       )}
+      </div>
     </main>
   );
 }

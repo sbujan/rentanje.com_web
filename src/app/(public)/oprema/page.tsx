@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import ProductsClient from "./ProductsClient";
+import PageHero from "@/components/public/PageHero";
 
 export const revalidate = 3600;
 
@@ -23,20 +24,19 @@ export default async function OpremaPage() {
   ]);
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-      <div className="mb-8">
-        <h1 className="font-display text-3xl sm:text-4xl font-bold text-brand-text">
-          Sva oprema za iznajmljivanje
-        </h1>
-        <p className="text-brand-muted mt-2">
-          Iznajmite opremu za svaku prigodu — evente, roštilj, kamp i još mnogo toga.
-        </p>
-      </div>
-
-      <ProductsClient
-        products={(products ?? []) as any}
-        categories={categories ?? []}
+    <main>
+      <PageHero
+        title="Sva oprema za iznajmljivanje"
+        subtitle="Iznajmite opremu za svaku prigodu — evente, roštilj, kamp i još mnogo toga."
+        breadcrumbs={[{ href: "/", label: "Početna" }, { label: "Oprema" }]}
+        color="#01D2D6"
       />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+        <ProductsClient
+          products={(products ?? []) as any}
+          categories={categories ?? []}
+        />
+      </div>
     </main>
   );
 }

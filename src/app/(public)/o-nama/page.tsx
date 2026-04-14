@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Phone, Mail, MapPin, CheckCircle } from "lucide-react";
+import PageHero from "@/components/public/PageHero";
 
 export const metadata: Metadata = {
   title: "O nama — rentanje.com",
@@ -20,18 +21,14 @@ const values = [
 
 export default function ONamaPage() {
   return (
-    <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-      <div className="mb-10">
-        <h1 className="font-display text-4xl font-bold text-brand-text mb-4">
-          O nama
-        </h1>
-        <p className="text-brand-muted text-lg leading-relaxed max-w-2xl">
-          rentanje.com je platforma za iznajmljivanje opreme u Zagrebu i okolici.
-          Pokrenuli smo je jer smo sami osjećali frustraciju — trebalo nam je
-          nešto za jedan vikend, a nije imalo smisla kupovati. Jednostavna
-          ideja, jednostavan servis.
-        </p>
-      </div>
+    <main>
+      <PageHero
+        title="O nama"
+        subtitle="rentanje.com je platforma za iznajmljivanje opreme u Zagrebu i okolici — jednostavna ideja, jednostavan servis."
+        breadcrumbs={[{ href: "/", label: "Početna" }, { label: "O nama" }]}
+        color="#6EE7B7"
+      />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
 
       <div className="prose prose-sm max-w-none text-brand-text mb-12 space-y-4">
         <p>
@@ -95,6 +92,7 @@ export default function ONamaPage() {
         >
           Pošalji poruku
         </Link>
+      </div>
       </div>
     </main>
   );

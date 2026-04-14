@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Phone, Mail, MapPin, Clock, ChevronRight, Loader2, CheckCircle } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Loader2, CheckCircle } from "lucide-react";
+import PageHero from "@/components/public/PageHero";
 
 const PHONE = "+385 95 204 4414";
 const PHONE_HREF = "tel:+385952044414";
@@ -29,17 +29,14 @@ export default function KontaktPage() {
   }
 
   return (
-    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-1 text-sm text-brand-muted mb-8">
-        <Link href="/" className="hover:text-brand-primary">Početna</Link>
-        <ChevronRight className="h-3 w-3" />
-        <span className="text-brand-text font-medium">Kontakt</span>
-      </nav>
-
-      <h1 className="font-display text-4xl font-bold text-brand-text mb-2">Kontakt</h1>
-      <p className="text-brand-muted mb-10">Odgovaramo u roku 1–2 sata, svaki dan.</p>
-
+    <>
+      <PageHero
+        title="Kontakt"
+        subtitle="Odgovaramo u roku 1–2 sata, svaki dan."
+        breadcrumbs={[{ href: "/", label: "Početna" }, { label: "Kontakt" }]}
+        color="#FF8E6C"
+      />
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-10">
         {/* Contact form */}
         <div className="bg-white border border-gray-100 rounded-xl p-7">
@@ -160,6 +157,7 @@ export default function KontaktPage() {
           </div>
         </div>
       </div>
-    </main>
+      </main>
+    </>
   );
 }
