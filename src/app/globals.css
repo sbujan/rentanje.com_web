@@ -49,3 +49,14 @@ h1, h2, h3, h4, h5, h6 {
     border-color: #e5e7eb;
   }
 }
+
+/* Product card — category color glow on hover */
+.product-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.product-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow:
+    0 20px 40px -10px var(--glow, #6B7280),
+    0 6px 12px rgba(0, 0, 0, 0.08);
+}

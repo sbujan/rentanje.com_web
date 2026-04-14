@@ -30,7 +30,7 @@ const whyUs = [
   {
     icon: <Zap className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />,
     title: "Brz odgovor",
-    desc: "Odgovaramo na sve upite unutar 1–2 sata, svaki dan.",
+    desc: "Odgovarama unutar 1 radnog dana!",
   },
   {
     icon: <Truck className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />,
@@ -102,7 +102,7 @@ export default async function HomePage() {
 
       {/* FEATURED PRODUCTS */}
       {featured && featured.length > 0 && (
-        <section className="bg-gray-50 py-16">
+        <section className="bg-[#F0F4FF] py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between mb-8">
               <h2 className="font-display text-2xl sm:text-3xl font-bold text-brand-text">

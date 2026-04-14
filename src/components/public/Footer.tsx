@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Phone, Mail } from "lucide-react";
 
 const PHONE = "+385 95 204 4414";
@@ -11,9 +12,15 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
           {/* Brand */}
           <div>
-            <span className="font-display text-xl font-bold text-brand-primary">
-              rentanje.com
-            </span>
+            <Link href="/">
+              <Image
+                src="/rentanje-logo.svg"
+                alt="rentanje.com"
+                width={120}
+                height={67}
+                className="h-8 w-auto brightness-0 invert"
+              />
+            </Link>
             <p className="text-white/60 text-sm mt-2">
               List 360 d.o.o.
               <br />

@@ -20,9 +20,13 @@ export default function ProductCard({ product }: { product: Product }) {
   const categoryColor = product.categories?.color ?? "#6B7280";
 
   return (
+    <div
+      className="product-card rounded-lg"
+      style={{ "--glow": categoryColor } as React.CSSProperties}
+    >
     <Link
       href={`/najam/${product.slug}`}
-      className="group bg-white rounded-lg shadow-card overflow-hidden hover:shadow-md transition-shadow flex flex-col"
+      className="group bg-white rounded-lg shadow-card overflow-hidden flex flex-col h-full"
     >
       {/* Image */}
       <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
@@ -81,5 +85,6 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
       </div>
     </Link>
+    </div>
   );
 }
