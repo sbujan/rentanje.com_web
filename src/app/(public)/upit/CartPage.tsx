@@ -20,7 +20,7 @@ const schema = z.object({
   phone: z.string().min(8, "Unesite ispravan broj telefona"),
   delivery_address: z.string().optional(),
   note: z.string().optional(),
-  agree: z.literal(true, { error: "Morate prihvatiti uvjete" }),
+  agree: z.literal(true, { errorMap: () => ({ message: "Morate prihvatiti uvjete" }) }),
 });
 
 type FormData = z.infer<typeof schema>;
