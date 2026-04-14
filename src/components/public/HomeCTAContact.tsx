@@ -153,6 +153,20 @@ export default function HomeCTAContact() {
             </div>
           </div>
         </div>
+
+        {/* Google Maps */}
+        <div className="mt-8 rounded-xl overflow-hidden" style={{ height: 280 }}>
+          <iframe
+            src="https://maps.google.com/maps?q=Naserov+trg+4,+Zagreb&t=m&z=16&ie=UTF8&iwloc=&output=embed"
+            width="100%"
+            height="100%"
+            className="w-full h-full border-0 opacity-90"
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Lokacija — Naserov trg 4, Zagreb"
+          />
+        </div>
       </div>
     </section>
   );

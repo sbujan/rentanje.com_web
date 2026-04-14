@@ -166,9 +166,9 @@ export default function KontaktPage() {
       </div>
 
       {/* Google Maps */}
-      <div className="mt-10 rounded-xl overflow-hidden border border-gray-100 aspect-[16/6]">
+      <div className="mt-10 rounded-xl overflow-hidden border border-gray-100" style={{ height: 360 }}>
         <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2781.0!2d15.9819!3d45.8150!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4765d6e9e3f5b5b5%3A0x1!2sNaserov+trg+4%2C+Zagreb!5e0!3m2!1shr!2shr!4v1700000000000!5m2!1shr!2shr"
+          src="https://maps.google.com/maps?q=Naserov+trg+4,+Zagreb&t=m&z=16&ie=UTF8&iwloc=&output=embed"
           width="100%"
           height="100%"
           className="w-full h-full border-0"

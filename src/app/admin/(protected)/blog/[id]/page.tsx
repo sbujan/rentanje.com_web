@@ -31,6 +31,7 @@ export default async function EditBlogPostPage({ params }: Props) {
         reading_time: post.reading_time,
         seo_title: post.seo_title ?? "",
         seo_description: post.seo_description ?? "",
+        faq: (post as any).faq ?? [],
       }}
     />
   );
