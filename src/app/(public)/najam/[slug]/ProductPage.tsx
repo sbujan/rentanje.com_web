@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import AddToCartCard from "@/components/public/AddToCartCard";
+import ViewTracker from "@/components/public/ViewTracker";
 import type { Database } from "@/types/database";
 
 interface FaqItem { question: string; answer: string; }
@@ -94,6 +95,7 @@ export default function ProductPage({ product, availability, tags }: Props) {
         />
       )}
 
+      <ViewTracker productId={product.id} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1 text-sm text-brand-muted mb-6 flex-wrap">
