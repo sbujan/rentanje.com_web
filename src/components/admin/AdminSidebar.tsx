@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -126,11 +127,15 @@ export default function AdminSidebar({ userEmail, userName, userRole }: Props) {
     <aside className="w-60 shrink-0 bg-brand-darkBg text-white flex flex-col min-h-screen sticky top-0">
       {/* Logo */}
       <div className="px-5 py-5 border-b border-white/10">
-        <Link href="/admin" className="flex items-center gap-2">
-          <span className="font-display text-lg font-bold text-brand-primary">
-            rentanje.com
-          </span>
-          <span className="text-xs text-white/40">admin</span>
+        <Link href="/admin" className="flex items-center gap-3">
+          <Image
+            src="/rentanje-logo.svg"
+            alt="rentanje.com"
+            width={100}
+            height={56}
+            className="h-7 w-auto brightness-0 invert"
+          />
+          <span className="text-xs text-white/40 font-medium">admin</span>
         </Link>
       </div>
 

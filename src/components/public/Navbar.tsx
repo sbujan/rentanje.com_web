@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { ShoppingCart, Phone, Menu, X } from "lucide-react";
 import { useCartStore } from "@/lib/cart";
@@ -23,8 +24,15 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
         {/* Logo */}
-        <Link href="/" className="font-display text-xl font-bold text-brand-primary">
-          rentanje.com
+        <Link href="/" className="flex items-center shrink-0">
+          <Image
+            src="/rentanje-logo.svg"
+            alt="rentanje.com"
+            width={120}
+            height={67}
+            priority
+            className="h-9 w-auto"
+          />
         </Link>
 
         {/* Desktop nav */}

@@ -1,24 +1,12 @@
 import type { Metadata } from "next";
-import { Syne, DM_Sans, DM_Mono } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
 
-const syne = Syne({
-  subsets: ["latin"],
-  variable: "--font-syne",
+const openSans = Open_Sans({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-open-sans",
   display: "swap",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-  display: "swap",
-});
-
-const dmMono = DM_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-dm-mono",
-  display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -31,6 +19,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://rentanje.com"
   ),
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+  },
 };
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -54,9 +46,7 @@ export default function RootLayout({
           </>
         )}
       </head>
-      <body
-        className={`${syne.variable} ${dmSans.variable} ${dmMono.variable} antialiased`}
-      >
+      <body className={`${openSans.variable} antialiased`}>
         {children}
       </body>
     </html>

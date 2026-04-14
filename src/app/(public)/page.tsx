@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/public/ProductCard";
-import { Phone, Package, Star, ArrowRight, CheckCircle } from "lucide-react";
+import { CategoryAccordion } from "@/components/ui/interactive-image-accordion";
+import { Phone, Package, Star, ArrowRight, CheckCircle, Zap, Truck, BadgeCent } from "lucide-react";
 
 export const revalidate = 3600;
 
@@ -15,15 +16,6 @@ export const metadata: Metadata = {
 const PHONE = "+385 95 204 4414";
 const PHONE_HREF = "tel:+385952044414";
 
-const categoryCards = [
-  { slug: "audio-video-oprema", name: "Audio i video", emoji: "🎵", color: "#6366F1" },
-  { slug: "oprema-za-evente", name: "Evente i zabava", emoji: "🎉", color: "#F05554" },
-  { slug: "rostilj-kuhanje", name: "Roštilj i kuhanje", emoji: "🔥", color: "#F97316" },
-  { slug: "kamp-outdoor", name: "Kamp i outdoor", emoji: "⛺", color: "#22C55E" },
-  { slug: "alati-ciscenje", name: "Alati i čišćenje", emoji: "🔧", color: "#EAB308" },
-  { slug: "ostalo", name: "Ostalo", emoji: "📦", color: "#8B5CF6" },
-];
-
 const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
@@ -35,6 +27,24 @@ const localBusinessSchema = {
   priceRange: "€€",
   description: "Iznajmljivanje opreme za evente, roštilj, kamp i audio/video u Hrvatskoj.",
 };
+
+const whyUs = [
+  {
+    icon: <Zap className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />,
+    title: "Brz odgovor",
+    desc: "Odgovaramo na sve upite unutar 24 sata, radnim danima i vikendom.",
+  },
+  {
+    icon: <Truck className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />,
+    title: "Dostava u Zagreb",
+    desc: "Dostavljamo opremu na vašu adresu u Zagrebu za samo 10 €.",
+  },
+  {
+    icon: <BadgeCent className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />,
+    title: "Povoljne cijene",
+    desc: "Iznajmite skupu opremu po pristupačnoj cijeni, bez skrivenih troškova.",
+  },
+];
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -63,7 +73,7 @@ export default async function HomePage() {
       />
 
       {/* HERO */}
-      <section className="bg-gradient-to-br from-brand-primary to-brand-dark text-white py-20 px-4">
+      <section className="bg-gradient-to-br from-brand-primary to-[#1A1A2E] text-white py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
             Iznajmi, uživaj, vrati.
@@ -90,7 +100,7 @@ export default async function HomePage() {
           <div className="mt-10 flex flex-wrap justify-center gap-4 text-sm text-white/70">
             {["Preuzimanje u Zagrebu", "Dostava 10 € (Zagreb)", "Odgovor <24h", "Bez naknade za rezervaciju"].map((t) => (
               <span key={t} className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-brand-accent2" />
+                <CheckCircle className="h-4 w-4 text-[#4ECDC4]" />
                 {t}
               </span>
             ))}
@@ -98,33 +108,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* CATEGORIES */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <h2 className="font-display text-2xl sm:text-3xl font-bold text-brand-text mb-8 text-center">
-          Što možete iznajmiti?
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {categoryCards.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/najam/${cat.slug}`}
-              className="flex flex-col items-center gap-2 p-4 bg-white rounded-lg shadow-card hover:shadow-md transition-all hover:-translate-y-0.5 text-center group"
-            >
-              <div
-                className="h-12 w-12 rounded-xl flex items-center justify-center text-2xl"
-                style={{ backgroundColor: cat.color + "20" }}
-              >
-                {cat.emoji}
-              </div>
-              <span className="text-sm font-semibold text-brand-text group-hover:text-brand-primary transition-colors">
-                {cat.name}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {/* WHAT CAN YOU RENT — Image Accordion */}
+      <CategoryAccordion />
 
-      {/* FEATURED */}
+      {/* FEATURED PRODUCTS */}
       {featured && featured.length > 0 && (
         <section className="bg-gray-50 py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -154,15 +141,15 @@ export default async function HomePage() {
           Zašto rentanje.com?
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {[
-            { icon: "⚡", title: "Brz odgovor", desc: "Odgovaramo na sve upite unutar 24 sata, radnim danima i vikendom." },
-            { icon: "🚚", title: "Dostava u Zagreb", desc: "Dostavljamo opremu na vašu adresu u Zagrebu za samo 10 €." },
-            { icon: "💰", title: "Povoljne cijene", desc: "Iznajmite skupu opremu po pristupačnoj cijeni, bez skrivenih troškova." },
-          ].map((item) => (
-            <div key={item.title} className="bg-white rounded-lg shadow-card p-6 text-center">
-              <div className="text-4xl mb-4">{item.icon}</div>
-              <h3 className="font-display font-bold text-brand-text mb-2">{item.title}</h3>
-              <p className="text-brand-muted text-sm">{item.desc}</p>
+          {whyUs.map((item) => (
+            <div key={item.title} className="bg-white rounded-lg shadow-card p-8 text-center flex flex-col items-center gap-4">
+              <div className="h-16 w-16 rounded-2xl bg-brand-light flex items-center justify-center">
+                {item.icon}
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-brand-text mb-2 text-lg">{item.title}</h3>
+                <p className="text-brand-muted text-sm leading-relaxed">{item.desc}</p>
+              </div>
             </div>
           ))}
         </div>
