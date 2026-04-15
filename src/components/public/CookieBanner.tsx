@@ -56,7 +56,7 @@ export default function CookieBanner() {
               Ova web stranica koristi kolačiće
             </h2>
             <p className="text-sm text-brand-muted leading-snug">
-              Koristimo kolačiće za analizu prometa. Klikom na „Prihvati sve" pristajete na pohranu kolačića na vašem uređaju.{" "}
+              Koristimo kolačiće za analizu prometa. Klikom na „Prihvati sve&ldquo; pristajete na pohranu kolačića na vašem uređaju.{" "}
               <Link href="/privatnost" className="text-brand-primary underline hover:opacity-80">
                 Pravila privatnosti
               </Link>
