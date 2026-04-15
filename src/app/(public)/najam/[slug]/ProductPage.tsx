@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import AddToCartCard from "@/components/public/AddToCartCard";
+import ProductCard from "@/components/public/ProductCard";
 import ViewTracker from "@/components/public/ViewTracker";
 import type { Database } from "@/types/database";
 
@@ -16,6 +17,7 @@ interface Props {
   product: Product;
   availability: { date: string; qty_booked: number }[];
   tags: Tag[];
+  relatedProducts?: Product[];
 }
 
 function buildProductSchema(product: Product) {
@@ -66,7 +68,7 @@ function buildBreadcrumbSchema(product: Product) {
   };
 }
 
-export default function ProductPage({ product, availability, tags }: Props) {
+export default function ProductPage({ product, availability, tags, relatedProducts = [] }: Props) {
   const specs = [
     product.weight_kg ? { label: "Težina", value: `${product.weight_kg} kg` } : null,
     product.dimensions_cm ? { label: "Dimenzije", value: product.dimensions_cm } : null,
@@ -269,6 +271,18 @@ export default function ProductPage({ product, availability, tags }: Props) {
             />
           </div>
         </div>
+
+        {/* Related products */}
+        {relatedProducts.length > 0 && (
+          <section className="mt-16 pt-10 border-t border-gray-100">
+            <h2 className="font-display text-2xl font-bold text-brand-text mb-6">Povezani proizvodi</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {relatedProducts.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </>
   );

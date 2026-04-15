@@ -148,11 +148,33 @@ export default async function NajamSlugPage({ params }: Props) {
     .select("tags(id, name, color, slug)")
     .eq("product_id", product.id);
 
+  // Related products
+  const { data: relatedRows } = await supabase
+    .from("product_relations")
+    .select("related_id, sort_order")
+    .eq("product_id", product.id)
+    .eq("type", "connected")
+    .order("sort_order");
+
+  let relatedProducts: any[] = [];
+  if (relatedRows && relatedRows.length > 0) {
+    const ids = relatedRows.map((r) => r.related_id);
+    const { data } = await supabase
+      .from("products")
+      .select("*, categories(name, color, slug)")
+      .in("id", ids)
+      .eq("is_active", true);
+    relatedProducts = ids
+      .map((id) => data?.find((p: any) => p.id === id))
+      .filter(Boolean);
+  }
+
   return (
     <ProductPage
       product={product as any}
       availability={availability ?? []}
       tags={tags?.map((t: any) => t.tags).filter(Boolean) ?? []}
+      relatedProducts={relatedProducts}
     />
   );
 }

@@ -14,14 +14,22 @@ import { formatPrice } from "@/lib/utils";
 import { trackPurchase } from "@/lib/gtag";
 import { Trash2, ShoppingBag, ChevronRight, Loader2, Phone } from "lucide-react";
 
-const schema = z.object({
-  name: z.string().min(2, "Unesite ime i prezime"),
-  email: z.string().email("Unesite ispravnu e-mail adresu"),
-  phone: z.string().min(8, "Unesite ispravan broj telefona"),
-  delivery_address: z.string().optional(),
-  note: z.string().optional(),
-  agree: z.literal(true, { errorMap: () => ({ message: "Morate prihvatiti uvjete" }) }),
-});
+const DELIVERY_FEE = 10;
+
+const schema = z
+  .object({
+    name: z.string().min(2, "Unesite ime i prezime"),
+    email: z.string().email("Unesite ispravnu e-mail adresu"),
+    phone: z.string().min(8, "Unesite ispravan broj telefona"),
+    wants_delivery: z.boolean().optional(),
+    delivery_address: z.string().optional(),
+    note: z.string().optional(),
+    agree: z.literal(true, { errorMap: () => ({ message: "Morate prihvatiti uvjete" }) }),
+  })
+  .refine(
+    (d) => !d.wants_delivery || (d.delivery_address && d.delivery_address.trim().length >= 5),
+    { message: "Unesite adresu dostave", path: ["delivery_address"] }
+  );
 
 type FormData = z.infer<typeof schema>;
 
@@ -77,11 +85,16 @@ export default function CartPage() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
+  const wantsDelivery = watch("wants_delivery") ?? false;
+
   const subtotal = items.reduce((sum, i) => sum + i.totalPrice, 0);
   const totalDeposit = items.reduce((sum, i) => sum + i.depositAmount, 0);
+  const deliveryFee = wantsDelivery ? DELIVERY_FEE : 0;
+  const grandTotal = subtotal + totalDeposit + deliveryFee;
 
   async function onSubmit(data: FormData) {
     setSubmitting(true);
@@ -91,7 +104,12 @@ export default function CartPage() {
       const res = await fetch("/api/inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, items }),
+        body: JSON.stringify({
+          ...data,
+          items,
+          delivery_type: data.wants_delivery ? "delivery" : "pickup",
+          delivery_fee: data.wants_delivery ? DELIVERY_FEE : 0,
+        }),
       });
 
       if (!res.ok) {
@@ -100,7 +118,7 @@ export default function CartPage() {
       }
 
       const { inquiryId } = await res.json();
-      trackPurchase(inquiryId, subtotal + totalDeposit, items.map((i) => ({ id: i.productId, name: i.productName, price: i.totalPrice })));
+      trackPurchase(inquiryId, grandTotal, items.map((i) => ({ id: i.productId, name: i.productName, price: i.totalPrice })));
       clearCart();
       router.push("/hvala");
     } catch (err: any) {
@@ -187,16 +205,35 @@ export default function CartPage() {
               {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-brand-text mb-1">
-                Adresa dostave
-                <span className="text-brand-muted font-normal ml-1">(opcionalno)</span>
+            <div className="bg-brand-light/50 rounded-lg p-4 space-y-3">
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input
+                  {...register("wants_delivery")}
+                  type="checkbox"
+                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-brand-primary accent-brand-primary"
+                />
+                <span className="text-sm text-brand-text">
+                  <span className="font-semibold">Želim dostavu</span>
+                  <span className="text-brand-muted font-normal"> (+{DELIVERY_FEE} €)</span>
+                  <p className="text-xs text-brand-muted mt-0.5">Dostavljamo na području grada Zagreba i okolice.</p>
+                </span>
               </label>
-              <input
-                {...register("delivery_address")}
-                className="w-full h-10 px-3 rounded-md border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                placeholder="Ilica 1, Zagreb"
-              />
+
+              {wantsDelivery && (
+                <div>
+                  <label className="block text-sm font-medium text-brand-text mb-1">
+                    Adresa dostave *
+                  </label>
+                  <input
+                    {...register("delivery_address")}
+                    className="w-full h-10 px-3 rounded-md border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white"
+                    placeholder="Ilica 1, Zagreb"
+                  />
+                  {errors.delivery_address && (
+                    <p className="text-xs text-red-500 mt-1">{errors.delivery_address.message}</p>
+                  )}
+                </div>
+              )}
             </div>
 
             <div>
@@ -255,6 +292,13 @@ export default function CartPage() {
           <p className="text-xs text-center text-brand-muted">
             Nakon slanja kontaktirat ćemo vas u roku od 1–2 sata.
           </p>
+
+          <Link
+            href="/oprema"
+            className="block w-full text-center border-2 border-brand-primary text-brand-primary font-semibold py-2.5 rounded-lg hover:bg-brand-light transition-colors"
+          >
+            ← Želim iznajmiti još proizvoda
+          </Link>
         </form>
 
         {/* ORDER SUMMARY */}
@@ -285,10 +329,16 @@ export default function CartPage() {
                   <span className="font-medium text-amber-700">{formatPrice(totalDeposit)}</span>
                 </div>
               )}
+              {deliveryFee > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-brand-muted">Dostava</span>
+                  <span className="font-medium text-brand-text">{formatPrice(deliveryFee)}</span>
+                </div>
+              )}
               <div className="flex justify-between pt-2 border-t border-gray-100">
                 <span className="font-bold text-brand-text">Ukupno</span>
                 <span className="font-bold text-brand-text text-lg">
-                  {formatPrice(subtotal + totalDeposit)}
+                  {formatPrice(grandTotal)}
                 </span>
               </div>
             </div>

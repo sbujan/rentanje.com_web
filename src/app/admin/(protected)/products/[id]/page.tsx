@@ -14,6 +14,8 @@ export default async function EditProductPage({
     { data: categories },
     { data: tags },
     { data: productTags },
+    { data: allProducts },
+    { data: relatedRows },
   ] = await Promise.all([
     supabase.from("products").select("*").eq("id", params.id).single(),
     supabase.from("categories").select("*").order("sort_order"),
@@ -22,11 +24,19 @@ export default async function EditProductPage({
       .from("product_tags")
       .select("tag_id")
       .eq("product_id", params.id),
+    supabase.from("products").select("id, name").eq("is_active", true).order("name"),
+    supabase
+      .from("product_relations")
+      .select("related_id, sort_order")
+      .eq("product_id", params.id)
+      .eq("type", "connected")
+      .order("sort_order"),
   ]);
 
   if (!product) notFound();
 
   const selectedTagIds = productTags?.map((pt) => pt.tag_id) ?? [];
+  const selectedRelatedIds = (relatedRows ?? []).map((r: any) => r.related_id);
 
   return (
     <div>
@@ -38,6 +48,8 @@ export default async function EditProductPage({
         categories={categories ?? []}
         tags={tags ?? []}
         selectedTagIds={selectedTagIds}
+        allProducts={allProducts ?? []}
+        selectedRelatedIds={selectedRelatedIds}
       />
     </div>
   );

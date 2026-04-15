@@ -24,6 +24,9 @@ const schema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   phone: z.string().min(8),
+  wants_delivery: z.boolean().optional(),
+  delivery_type: z.enum(["pickup", "delivery"]).optional(),
+  delivery_fee: z.number().min(0).optional(),
   delivery_address: z.string().optional(),
   note: z.string().optional(),
   agree: z.literal(true),
@@ -45,9 +48,10 @@ function formatDate(iso: string) {
 function buildAdminHtml(params: {
   name: string; email: string; phone: string;
   delivery_address?: string; note?: string;
-  items: CartItem[]; subtotal: number; totalDeposit: number; inquiryId: string; inquiryNumber: string;
+  items: CartItem[]; subtotal: number; totalDeposit: number; deliveryFee: number;
+  inquiryId: string; inquiryNumber: string;
 }) {
-  const { name, email, phone, delivery_address, note, items, subtotal, totalDeposit, inquiryId, inquiryNumber } = params;
+  const { name, email, phone, delivery_address, note, items, subtotal, totalDeposit, deliveryFee, inquiryId, inquiryNumber } = params;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rentanje.com";
 
   const rows = items.map(item => `
@@ -83,6 +87,7 @@ function buildAdminHtml(params: {
       <tfoot>
         <tr style="border-top:2px solid #e5e7eb"><td colspan="2" style="padding:10px 12px;font-weight:600;color:#111827">Ukupno iznajmljivanje</td><td style="padding:10px 12px;text-align:right;font-weight:700;color:#111827">${formatPrice(subtotal)}</td></tr>
         ${totalDeposit > 0 ? `<tr><td colspan="2" style="padding:4px 12px;color:#d97706">Depozit (povratni)</td><td style="padding:4px 12px;text-align:right;color:#d97706;font-weight:600">${formatPrice(totalDeposit)}</td></tr>` : ""}
+        ${deliveryFee > 0 ? `<tr><td colspan="2" style="padding:4px 12px;color:#2563eb;font-weight:600">Dostava</td><td style="padding:4px 12px;text-align:right;color:#2563eb;font-weight:600">${formatPrice(deliveryFee)}</td></tr>` : ""}
       </tfoot>
     </table>
     <div style="margin-top:32px;text-align:center">
@@ -151,10 +156,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Validation error", details: parsed.error.flatten() }, { status: 422 });
   }
 
-  const { name, email, phone, delivery_address, note, items } = parsed.data;
+  const { name, email, phone, delivery_address, note, items, delivery_type, delivery_fee } = parsed.data;
 
   const subtotal = items.reduce((sum, i) => sum + i.totalPrice, 0);
   const totalDeposit = items.reduce((sum, i) => sum + i.depositAmount, 0);
+  const deliveryFee = delivery_fee ?? 0;
+  const deliveryType = delivery_type ?? "pickup";
 
   // Generate inquiry number
   const inquiryNumber = `RNT-${Date.now().toString(36).toUpperCase()}`;
@@ -168,11 +175,13 @@ export async function POST(req: NextRequest) {
       customer_name: name,
       customer_email: email,
       customer_phone: phone,
+      delivery_type: deliveryType,
+      delivery_fee: deliveryFee,
       delivery_address: delivery_address || null,
       message: note || null,
       items: items as any,
       subtotal_estimate: subtotal,
-      total_estimate: subtotal + totalDeposit,
+      total_estimate: subtotal + totalDeposit + deliveryFee,
       status: "new",
     })
     .select("id")
@@ -196,7 +205,7 @@ export async function POST(req: NextRequest) {
         from: `rentanje.com <${fromEmail}>`,
         to: adminEmail,
         subject: `Novi upit ${inquiryNumber} — ${name}`,
-        html: buildAdminHtml({ name, email, phone, delivery_address, note, items: items as CartItem[], subtotal, totalDeposit, inquiryId, inquiryNumber }),
+        html: buildAdminHtml({ name, email, phone, delivery_address, note, items: items as CartItem[], subtotal, totalDeposit, deliveryFee, inquiryId, inquiryNumber }),
         replyTo: email,
       }),
       resend.emails.send({

@@ -28,13 +28,19 @@ interface Props {
   categories: Category[];
   tags: Tag[];
   selectedTagIds?: string[];
+  allProducts: { id: string; name: string }[];
+  selectedRelatedIds?: string[];
 }
+
+const MAX_RELATED = 4;
 
 export default function ProductForm({
   product,
   categories,
   tags,
   selectedTagIds = [],
+  allProducts,
+  selectedRelatedIds = [],
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
@@ -66,6 +72,8 @@ export default function ProductForm({
     hero_image_url: product?.hero_image_url ?? "",
   });
   const [tagIds, setTagIds] = useState<string[]>(selectedTagIds);
+  const [relatedIds, setRelatedIds] = useState<string[]>(selectedRelatedIds);
+  const [relatedPick, setRelatedPick] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -172,9 +180,43 @@ export default function ProductForm({
       }
     }
 
+    // Sync related products
+    if (productId) {
+      await supabase
+        .from("product_relations")
+        .delete()
+        .eq("product_id", productId)
+        .eq("type", "connected");
+      if (relatedIds.length > 0) {
+        await supabase.from("product_relations").insert(
+          relatedIds.map((related_id, idx) => ({
+            product_id: productId!,
+            related_id,
+            type: "connected",
+            sort_order: idx,
+          })) as any
+        );
+      }
+    }
+
     router.push("/admin/products");
     router.refresh();
   }
+
+  function addRelated() {
+    if (!relatedPick || relatedIds.length >= MAX_RELATED) return;
+    if (relatedIds.includes(relatedPick)) return;
+    setRelatedIds([...relatedIds, relatedPick]);
+    setRelatedPick("");
+  }
+
+  function removeRelated(id: string) {
+    setRelatedIds(relatedIds.filter((r) => r !== id));
+  }
+
+  const availableRelated = allProducts.filter(
+    (p) => p.id !== product?.id && !relatedIds.includes(p.id)
+  );
 
   const minDays = parseInt(form.min_rental_days);
 
@@ -558,6 +600,70 @@ export default function ProductForm({
           value={form.faq}
           onChange={(faq) => setForm((f) => ({ ...f, faq }))}
         />
+      </div>
+
+      {/* Related products */}
+      <div className="bg-white rounded-lg shadow-card p-6 space-y-4">
+        <div>
+          <h2 className="font-display text-base font-semibold text-brand-text">Povezani proizvodi</h2>
+          <p className="text-xs text-brand-muted mt-1">
+            Prikazuju se na stranici proizvoda za upsell. Max {MAX_RELATED} proizvoda.
+          </p>
+        </div>
+
+        {/* Selected chips */}
+        {relatedIds.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {relatedIds.map((id) => {
+              const p = allProducts.find((x) => x.id === id);
+              if (!p) return null;
+              return (
+                <span
+                  key={id}
+                  className="inline-flex items-center gap-2 bg-brand-light text-brand-text text-sm px-3 py-1.5 rounded-full border border-brand-primary/20"
+                >
+                  {p.name}
+                  <button
+                    type="button"
+                    onClick={() => removeRelated(id)}
+                    className="text-brand-primary hover:text-brand-dark font-bold leading-none"
+                    aria-label="Ukloni"
+                  >
+                    ×
+                  </button>
+                </span>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Picker */}
+        <div className="flex gap-2">
+          <select
+            value={relatedPick}
+            onChange={(e) => setRelatedPick(e.target.value)}
+            disabled={relatedIds.length >= MAX_RELATED}
+            className="flex-1 h-10 px-3 rounded-md border border-gray-200 text-sm bg-white disabled:bg-gray-50 disabled:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+          >
+            <option value="">Odaberi proizvod...</option>
+            {availableRelated.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+          <Button
+            type="button"
+            onClick={addRelated}
+            disabled={!relatedPick || relatedIds.length >= MAX_RELATED}
+          >
+            Dodaj
+          </Button>
+        </div>
+
+        {relatedIds.length >= MAX_RELATED && (
+          <p className="text-xs text-amber-600">Dosegnuli ste maksimum od {MAX_RELATED} povezanih proizvoda.</p>
+        )}
       </div>
 
       {/* Settings */}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 import ProductCard from "@/components/public/ProductCard";
 import PageHero from "@/components/public/PageHero";
 import type { Database } from "@/types/database";
@@ -60,6 +61,17 @@ export default function CategoryPage({ category, products }: Props) {
             </Link>
           </div>
         )}
+
+        {/* Back to homepage CTA */}
+        <div className="mt-12 flex justify-center">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 border-2 border-brand-primary text-brand-primary font-semibold px-6 py-2.5 rounded-lg hover:bg-brand-light transition-colors"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Povratak na početnu
+          </Link>
+        </div>
       </div>
     </main>
   );
