@@ -70,6 +70,7 @@ export default function ProductForm({
     is_active: product?.is_active ?? true,
     sort_order: product?.sort_order?.toString() ?? "0",
     hero_image_url: product?.hero_image_url ?? "",
+    images: (product?.images as string[] | null) ?? [],
   });
   const [tagIds, setTagIds] = useState<string[]>(selectedTagIds);
   const [relatedIds, setRelatedIds] = useState<string[]>(selectedRelatedIds);
@@ -132,6 +133,7 @@ export default function ProductForm({
       stock_qty: parseInt(form.stock_qty) || 1,
       weight_kg: form.weight_kg ? parseFloat(form.weight_kg) : null,
       hero_image_url: form.hero_image_url || null,
+      images: form.images.length > 0 ? form.images : null,
       dimensions_cm: form.dimensions_cm || null,
       seo_title: form.seo_title || null,
       seo_description: form.seo_description || null,
@@ -343,15 +345,63 @@ export default function ProductForm({
       </div>
 
       {/* Images */}
-      <div className="bg-white rounded-lg shadow-card p-6 space-y-4">
+      <div className="bg-white rounded-lg shadow-card p-6 space-y-6">
         <h2 className="font-display text-base font-semibold text-brand-text">
           Slike
         </h2>
+
         <ImageUpload
           label="Hero slika *"
           value={form.hero_image_url}
           onChange={(url) => setForm((f) => ({ ...f, hero_image_url: url }))}
         />
+
+        {/* Gallery — additional images */}
+        <div className="space-y-3 pt-2 border-t border-gray-100">
+          <div>
+            <label className="text-sm font-medium text-brand-text">Dodatne slike (galerija)</label>
+            <p className="text-xs text-brand-muted mt-0.5">Dodajte do 8 dodatnih slika. Prikazuju se na stranici proizvoda.</p>
+          </div>
+
+          {/* Thumbnails grid */}
+          {form.images.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {form.images.map((url, i) => (
+                <div key={`${url}-${i}`} className="relative group aspect-square rounded-md overflow-hidden bg-gray-100 border border-gray-200">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt={`Slika ${i + 1}`} className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm((f) => ({ ...f, images: f.images.filter((_, idx) => idx !== i) }))
+                    }
+                    className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-red-500 text-white text-sm font-bold flex items-center justify-center hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label="Ukloni sliku"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Add new slot */}
+          {form.images.length < 8 && (
+            <ImageUpload
+              label={form.images.length === 0 ? "Dodaj prvu sliku u galeriju" : "Dodaj sliku"}
+              value=""
+              onChange={(url) => {
+                if (url) {
+                  setForm((f) => ({ ...f, images: [...f.images, url] }));
+                }
+              }}
+            />
+          )}
+
+          {form.images.length >= 8 && (
+            <p className="text-xs text-amber-600">Dosegnuli ste maksimum od 8 slika u galeriji.</p>
+          )}
+        </div>
       </div>
 
       {/* Pricing */}
