@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
+import CookieBanner from "@/components/public/CookieBanner";
 
 const openSans = Open_Sans({
   subsets: ["latin", "latin-ext"],
@@ -40,7 +41,7 @@ export default function RootLayout({
             <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
             <script
               dangerouslySetInnerHTML={{
-                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}',{anonymize_ip:true});`,
+                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});gtag('js',new Date());gtag('config','${GA_ID}',{anonymize_ip:true});`,
               }}
             />
           </>
@@ -48,6 +49,7 @@ export default function RootLayout({
       </head>
       <body className={`${openSans.variable} antialiased`}>
         {children}
+        <CookieBanner />
       </body>
     </html>
   );
