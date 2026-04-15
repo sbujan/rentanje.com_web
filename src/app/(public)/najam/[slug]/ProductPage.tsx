@@ -71,9 +71,9 @@ function buildBreadcrumbSchema(product: Product) {
 export default function ProductPage({ product, availability, tags, relatedProducts = [] }: Props) {
   const specs = [
     product.weight_kg ? { label: "Težina", value: `${product.weight_kg} kg` } : null,
-    product.dimensions_cm ? { label: "Dimenzije", value: product.dimensions_cm } : null,
+    product.dimensions_cm ? { label: "Dimenzije", value: `${product.dimensions_cm} cm` } : null,
     { label: "Min. iznajmljivanje", value: `${product.min_rental_days} ${product.min_rental_days === 1 ? "dan" : "dana"}` },
-    { label: "Zaliha", value: `${product.stock_qty} kom` },
+    { label: "Dostupno komada", value: `${product.stock_qty} kom` },
   ].filter(Boolean) as { label: string; value: string }[];
 
   const seoKeywords = product.seo_keywords?.join(", ");
