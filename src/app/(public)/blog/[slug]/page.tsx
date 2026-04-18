@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import DOMPurify from "isomorphic-dompurify";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ChevronRight, Clock, User, ChevronDown } from "lucide-react";
@@ -159,7 +160,13 @@ export default async function BlogPostPage({ params }: Props) {
         {post.content ? (
           <div
             className="prose prose-base max-w-none text-brand-text leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(post.content, {
+                USE_PROFILES: { html: true },
+                FORBID_TAGS: ["script", "style", "iframe", "object", "embed", "form"],
+                FORBID_ATTR: ["onerror", "onload", "onclick", "onmouseover", "onfocus", "onblur", "style"],
+              }),
+            }}
           />
         ) : (
           <p className="text-brand-muted">Sadržaj uskoro.</p>

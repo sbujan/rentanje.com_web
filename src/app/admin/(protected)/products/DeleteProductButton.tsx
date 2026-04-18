@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { deleteProduct } from "./actions";
 
 export default function DeleteProductButton({
   id,
@@ -15,14 +15,17 @@ export default function DeleteProductButton({
 }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
   async function handleDelete() {
     if (!confirm(`Obriši proizvod "${name}"? Ova radnja se ne može poništiti.`)) return;
     setLoading(true);
-    await supabase.from("products").delete().eq("id", id);
-    router.refresh();
+    const result = await deleteProduct({ productId: id });
     setLoading(false);
+    if (!result.ok) {
+      alert(`Greška pri brisanju: ${result.error}`);
+      return;
+    }
+    router.refresh();
   }
 
   return (

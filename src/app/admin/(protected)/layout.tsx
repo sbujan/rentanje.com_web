@@ -16,19 +16,24 @@ export default async function AdminLayout({
     redirect("/admin/login");
   }
 
-  // Fetch admin user role
   const { data: adminUser } = await supabase
     .from("admin_users")
-    .select("full_name, role")
+    .select("full_name, role, is_active")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
+
+  // Authenticated but not a registered (or still active) admin → sign out and bounce.
+  if (!adminUser || adminUser.is_active === false) {
+    await supabase.auth.signOut();
+    redirect("/admin/login");
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <AdminSidebar
         userEmail={user.email ?? ""}
-        userName={adminUser?.full_name ?? "Admin"}
-        userRole={adminUser?.role ?? "editor"}
+        userName={adminUser.full_name ?? "Admin"}
+        userRole={adminUser.role ?? "editor"}
       />
       <main className="flex-1 min-w-0 overflow-auto">
         <div className="p-6 max-w-7xl mx-auto">{children}</div>

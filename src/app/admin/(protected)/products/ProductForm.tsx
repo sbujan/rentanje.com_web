@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +17,7 @@ import { slugify } from "@/lib/utils";
 import ImageUpload from "@/components/admin/ImageUpload";
 import FaqEditor, { type FaqItem } from "@/components/admin/FaqEditor";
 import type { Database } from "@/types/database";
+import { saveProduct } from "./actions";
 
 type Product = Database["public"]["Tables"]["products"]["Row"];
 type Category = Database["public"]["Tables"]["categories"]["Row"];
@@ -43,7 +43,6 @@ export default function ProductForm({
   selectedRelatedIds = [],
 }: Props) {
   const router = useRouter();
-  const supabase = createClient();
   const isEdit = !!product;
 
   const [form, setForm] = useState({
@@ -66,7 +65,7 @@ export default function ProductForm({
     seo_description: product?.seo_description ?? "",
     seo_keywords: product?.seo_keywords?.join(", ") ?? "",
     is_featured: product?.is_featured ?? false,
-    faq: ((product as any)?.faq as FaqItem[] | null) ?? [],
+    faq: (product?.faq as FaqItem[] | null) ?? [],
     is_active: product?.is_active ?? true,
     sort_order: product?.sort_order?.toString() ?? "0",
     hero_image_url: product?.hero_image_url ?? "",
@@ -140,65 +139,23 @@ export default function ProductForm({
       seo_keywords: form.seo_keywords
         ? form.seo_keywords.split(",").map((k) => k.trim()).filter(Boolean)
         : null,
-      faq: form.faq.length > 0 ? form.faq : [],
+      faq: form.faq,
       is_featured: form.is_featured,
       is_active: form.is_active,
       sort_order: parseInt(form.sort_order) || 0,
     };
 
-    let productId = product?.id;
+    const result = await saveProduct({
+      productId: product?.id,
+      payload,
+      tagIds,
+      relatedIds,
+    });
 
-    if (isEdit) {
-      const { error } = await supabase
-        .from("products")
-        .update(payload as any)
-        .eq("id", productId!);
-      if (error) {
-        setError(error.message);
-        setLoading(false);
-        return;
-      }
-    } else {
-      const { data, error } = await supabase
-        .from("products")
-        .insert(payload as any)
-        .select("id")
-        .single();
-      if (error) {
-        setError(error.message);
-        setLoading(false);
-        return;
-      }
-      productId = data.id;
-    }
-
-    // Sync tags
-    if (productId) {
-      await supabase.from("product_tags").delete().eq("product_id", productId);
-      if (tagIds.length > 0) {
-        await supabase.from("product_tags").insert(
-          tagIds.map((tag_id) => ({ product_id: productId!, tag_id }))
-        );
-      }
-    }
-
-    // Sync related products
-    if (productId) {
-      await supabase
-        .from("product_relations")
-        .delete()
-        .eq("product_id", productId)
-        .eq("type", "connected");
-      if (relatedIds.length > 0) {
-        await supabase.from("product_relations").insert(
-          relatedIds.map((related_id, idx) => ({
-            product_id: productId!,
-            related_id,
-            type: "connected",
-            sort_order: idx,
-          })) as any
-        );
-      }
+    if (!result.ok) {
+      setError(result.error);
+      setLoading(false);
+      return;
     }
 
     router.push("/admin/products");

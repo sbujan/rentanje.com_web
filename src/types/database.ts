@@ -118,6 +118,7 @@ export interface Database {
           view_count: number;
           inquiry_count: number;
           sort_order: number;
+          faq: Array<{ question: string; answer: string }> | null;
           created_at: string;
           updated_at: string;
         };
@@ -148,6 +149,7 @@ export interface Database {
           seo_keywords?: string[] | null;
           schema_json?: Json | null;
           sort_order?: number;
+          faq?: Array<{ question: string; answer: string }> | null;
         };
         Update: {
           category_id?: string | null;
@@ -175,6 +177,7 @@ export interface Database {
           seo_keywords?: string[] | null;
           schema_json?: Json | null;
           sort_order?: number;
+          faq?: Array<{ question: string; answer: string }> | null;
         };
         Relationships: [];
       };
@@ -423,6 +426,7 @@ export interface Database {
           seo_keywords: string[] | null;
           reading_time: number | null;
           view_count: number;
+          faq: Array<{ question: string; answer: string }> | null;
           created_at: string;
           updated_at: string;
         };
@@ -442,6 +446,7 @@ export interface Database {
           seo_description?: string | null;
           seo_keywords?: string[] | null;
           reading_time?: number | null;
+          faq?: Array<{ question: string; answer: string }> | null;
         };
         Update: {
           title?: string;
@@ -458,6 +463,7 @@ export interface Database {
           seo_description?: string | null;
           seo_keywords?: string[] | null;
           reading_time?: number | null;
+          faq?: Array<{ question: string; answer: string }> | null;
         };
         Relationships: [];
       };
