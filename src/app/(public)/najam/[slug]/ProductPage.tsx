@@ -1,9 +1,9 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import AddToCartCard from "@/components/public/AddToCartCard";
 import ProductCard from "@/components/public/ProductCard";
 import ViewTracker from "@/components/public/ViewTracker";
+import ImageLightbox from "@/components/public/ImageLightbox";
 import type { Database } from "@/types/database";
 
 interface FaqItem { question: string; answer: string; }
@@ -116,15 +116,12 @@ export default function ProductPage({ product, availability, tags, relatedProduc
           <span className="text-brand-text font-medium">{product.name}</span>
         </nav>
 
-        {/* Hero image — mobile only */}
+        {/* Hero image — mobile only (with lightbox) */}
         {product.hero_image_url && (
-          <div className="relative aspect-video rounded-lg overflow-hidden mb-6 lg:hidden">
-            <Image
-              src={product.hero_image_url}
+          <div className="lg:hidden">
+            <ImageLightbox
+              images={[product.hero_image_url, ...(product.images ?? [])]}
               alt={`${product.name} za iznajmljivanje — rentanje.com`}
-              fill
-              className="object-cover"
-              priority
             />
           </div>
         )}
@@ -168,28 +165,13 @@ export default function ProductPage({ product, availability, tags, relatedProduc
               )}
             </div>
 
-            {/* Hero image — desktop */}
+            {/* Hero image + gallery — desktop (with lightbox) */}
             {product.hero_image_url && (
-              <div className="relative aspect-video rounded-lg overflow-hidden hidden lg:block">
-                <Image
-                  src={product.hero_image_url}
+              <div className="hidden lg:block">
+                <ImageLightbox
+                  images={[product.hero_image_url, ...(product.images ?? [])]}
                   alt={`${product.name} za iznajmljivanje — rentanje.com`}
-                  fill
-                  className="object-cover"
-                  priority
-                  sizes="(min-width: 1024px) 60vw, 100vw"
                 />
-              </div>
-            )}
-
-            {/* Additional images */}
-            {product.images && product.images.length > 0 && (
-              <div className="grid grid-cols-4 gap-2">
-                {product.images.slice(0, 4).map((img, i) => (
-                  <div key={i} className="relative aspect-square rounded-md overflow-hidden bg-gray-100">
-                    <Image src={img} alt={`${product.name} slika ${i + 2}`} fill className="object-cover" />
-                  </div>
-                ))}
               </div>
             )}
 
