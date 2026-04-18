@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 
 interface Breadcrumb {
@@ -29,12 +30,14 @@ export default function PageHero({
     <section className="relative text-white py-12 px-4 overflow-hidden">
       {/* Background image (optional) */}
       {imageUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={imageUrl}
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover object-center"
+          fill
+          priority
+          sizes="100vw"
+          className="absolute inset-0 object-cover object-center"
         />
       )}
 

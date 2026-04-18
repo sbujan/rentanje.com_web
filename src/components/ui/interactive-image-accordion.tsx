@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 
@@ -76,11 +77,12 @@ function AccordionItem({ item, isActive, onActivate }: AccordionItemProps) {
       }}
     >
       {/* Background image */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={item.imageUrl}
         alt={item.title}
-        className="absolute inset-0 w-full h-full object-cover"
+        fill
+        sizes="(max-width: 640px) 340px, 340px"
+        className="absolute inset-0 object-cover"
       />
 
       {/* Color tint overlay */}

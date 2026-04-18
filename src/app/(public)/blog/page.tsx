@@ -13,6 +13,21 @@ export const metadata: Metadata = {
   title: "Blog — rentanje.com",
   description:
     "Savjeti, ideje i vodiči za iznajmljivanje opreme, outdoor evente i roštilj u Zagrebu.",
+  alternates: { canonical: "https://rentanje.com/blog" },
+  openGraph: {
+    title: "Blog — rentanje.com",
+    description:
+      "Savjeti, ideje i vodiči za iznajmljivanje opreme, outdoor evente i roštilj u Zagrebu.",
+    url: "https://rentanje.com/blog",
+    siteName: "rentanje.com",
+    type: "website",
+    locale: "hr_HR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog — rentanje.com",
+    description: "Savjeti, ideje i vodiči za iznajmljivanje opreme u Zagrebu.",
+  },
 };
 
 export default async function BlogPage() {

@@ -13,6 +13,40 @@ interface Props {
   label?: string;
 }
 
+const ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif"]);
+const EXT_BY_MIME: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/avif": "avif",
+  "image/gif": "gif",
+};
+const MAX_BYTES = 5 * 1024 * 1024;
+
+/**
+ * Inspect the first bytes of the file to confirm it's actually an image of a
+ * known format. file.type is purely advisory — the browser trusts whatever
+ * the OS labels the file. Magic bytes don't lie.
+ */
+async function detectImageFormat(file: File): Promise<string | null> {
+  const buf = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  // JPEG: FF D8 FF
+  if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) return "image/jpeg";
+  // PNG: 89 50 4E 47 0D 0A 1A 0A
+  if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) return "image/png";
+  // GIF: 47 49 46 38
+  if (buf[0] === 0x47 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x38) return "image/gif";
+  // WebP: RIFF....WEBP
+  if (buf[0] === 0x52 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x46 &&
+      buf[8] === 0x57 && buf[9] === 0x45 && buf[10] === 0x42 && buf[11] === 0x50) return "image/webp";
+  // AVIF: bytes 4-11 contain "ftypavif" or "ftypheic" for related formats
+  if (buf[4] === 0x66 && buf[5] === 0x74 && buf[6] === 0x79 && buf[7] === 0x70) {
+    const brand = String.fromCharCode(buf[8]!, buf[9]!, buf[10]!, buf[11]!);
+    if (brand === "avif" || brand === "avis") return "image/avif";
+  }
+  return null;
+}
+
 export default function ImageUpload({
   value,
   onChange,
@@ -26,12 +60,19 @@ export default function ImageUpload({
   const supabase = createClient();
 
   async function handleFile(file: File) {
-    if (!file.type.startsWith("image/")) {
-      setError("Molimo odaberite sliku.");
+    if (!ALLOWED_MIME.has(file.type)) {
+      setError("Dozvoljeni formati: JPG, PNG, WebP, AVIF, GIF.");
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > MAX_BYTES) {
       setError("Slika mora biti manja od 5 MB.");
+      return;
+    }
+
+    // Reject spoofed extensions / MIME mismatches.
+    const detected = await detectImageFormat(file);
+    if (!detected) {
+      setError("Sadržaj datoteke nije valjana slika.");
       return;
     }
 
@@ -39,19 +80,20 @@ export default function ImageUpload({
     setUploading(true);
 
     try {
-      const ext = file.name.split(".").pop() ?? "jpg";
+      const ext = EXT_BY_MIME[detected] ?? "jpg";
       const filename = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
         .from(bucket)
-        .upload(filename, file, { upsert: true, contentType: file.type });
+        .upload(filename, file, { upsert: true, contentType: detected });
 
       if (uploadError) throw uploadError;
 
       const { data } = supabase.storage.from(bucket).getPublicUrl(filename);
       onChange(data.publicUrl);
-    } catch (err: any) {
-      setError(err.message ?? "Greška pri uploadu.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Greška pri uploadu.";
+      setError(msg);
     } finally {
       setUploading(false);
     }

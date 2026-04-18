@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/public/ProductCard";
 import { CategoryAccordion } from "@/components/ui/interactive-image-accordion";
@@ -12,6 +13,23 @@ export const metadata: Metadata = {
   title: "Iznajmljivanje opreme — rentanje.com",
   description:
     "Iznajmite audio, video, event, roštilj, kamp i outdoor opremu u Zagrebu. Brza dostava, povoljne cijene. Pošaljite upit danas!",
+  alternates: { canonical: "https://rentanje.com/" },
+  openGraph: {
+    title: "Iznajmljivanje opreme — rentanje.com",
+    description:
+      "Iznajmite audio, video, event, roštilj, kamp i outdoor opremu u Zagrebu. Brza dostava, povoljne cijene.",
+    url: "https://rentanje.com/",
+    siteName: "rentanje.com",
+    type: "website",
+    locale: "hr_HR",
+    images: [{ url: "/rentanje-com-hero.jpg", width: 1200, height: 630, alt: "rentanje.com" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Iznajmljivanje opreme — rentanje.com",
+    description: "Iznajmite audio, video, event, roštilj, kamp i outdoor opremu u Zagrebu.",
+    images: ["/rentanje-com-hero.jpg"],
+  },
 };
 
 const localBusinessSchema = {
@@ -76,12 +94,14 @@ export default async function HomePage() {
         style={{ minHeight: "25vh" }}
       >
         {/* Background image */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src="/rentanje-com-hero.jpg"
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover object-center"
+          fill
+          priority
+          sizes="100vw"
+          className="absolute inset-0 object-cover object-center"
         />
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/80 to-[#1A1A2E]/90" />

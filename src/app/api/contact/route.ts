@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { z } from "zod";
+import { checkRateLimit, getRequestIp } from "@/lib/rate-limit";
 
 const schema = z.object({
   name: z.string().min(2).max(100),
@@ -8,26 +9,18 @@ const schema = z.object({
   message: z.string().min(5).max(2000),
 });
 
-// Simple in-memory rate limiter: max 5 requests per IP per minute
-const rateLimitMap = new Map<string, number[]>();
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const window = 60_000;
-  const max = 5;
-  const hits = (rateLimitMap.get(ip) ?? []).filter((t) => now - t < window);
-  if (hits.length >= max) return true;
-  hits.push(now);
-  rateLimitMap.set(ip, hits);
-  return false;
-}
-
 function esc(s: string) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  if (isRateLimited(ip)) {
+  const ip = getRequestIp(req);
+  const { limited } = await checkRateLimit(ip, {
+    endpoint: "contact",
+    windowSeconds: 60,
+    max: 5,
+  });
+  if (limited) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
@@ -50,7 +43,7 @@ export async function POST(req: NextRequest) {
       to: adminEmail,
       subject: `Kontakt poruka od ${safeName}`,
       html: `<p><strong>Ime:</strong> ${safeName}</p><p><strong>E-mail:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a></p><p><strong>Poruka:</strong></p><p>${safeMessage}</p>`,
-      replyTo: email,
+      replyTo: email.replace(/[\r\n]/g, ""),
     });
   } catch (err) {
     console.error("Contact email error:", err);

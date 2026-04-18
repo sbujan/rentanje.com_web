@@ -9,6 +9,21 @@ export const metadata: Metadata = {
   title: "Sva oprema za iznajmljivanje",
   description:
     "Pregledajte svu opremu dostupnu za iznajmljivanje — audio, video, event, roštilj, kamp i outdoor. Pošaljite upit danas! | rentanje.com",
+  alternates: { canonical: "https://rentanje.com/oprema" },
+  openGraph: {
+    title: "Sva oprema za iznajmljivanje",
+    description:
+      "Pregledajte svu opremu dostupnu za iznajmljivanje — audio, video, event, roštilj, kamp i outdoor.",
+    url: "https://rentanje.com/oprema",
+    siteName: "rentanje.com",
+    type: "website",
+    locale: "hr_HR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sva oprema za iznajmljivanje",
+    description: "Audio, video, event, roštilj, kamp i outdoor oprema za iznajmljivanje.",
+  },
 };
 
 export default async function OpremaPage() {

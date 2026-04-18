@@ -61,15 +61,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const description =
       cat.seo_description ??
       `Iznajmite ${cat.name.toLowerCase()} u Zagrebu. Povoljne cijene, brz odgovor. | rentanje.com`;
+    const canonical = `https://rentanje.com/najam/${cat.slug}`;
     return {
       title,
       description,
+      alternates: { canonical },
       openGraph: {
         title,
         description,
-        url: `https://rentanje.com/najam/${cat.slug}`,
+        url: canonical,
         siteName: "rentanje.com",
         type: "website",
+        locale: "hr_HR",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
       },
     };
   }
@@ -88,18 +96,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       product.seo_description ??
       product.short_desc ??
       `Iznajmite ${product.name} u Zagrebu. Pošaljite upit danas! | rentanje.com`;
+    const canonical = `https://rentanje.com/najam/${product.slug}`;
+    const ogImages = product.hero_image_url
+      ? [{ url: product.hero_image_url, width: 1200, height: 630, alt: product.name }]
+      : [];
     return {
       title,
       description,
+      alternates: { canonical },
       openGraph: {
         title,
         description,
-        url: `https://rentanje.com/najam/${product.slug}`,
+        url: canonical,
         siteName: "rentanje.com",
         type: "website",
-        images: product.hero_image_url
-          ? [{ url: product.hero_image_url, width: 1200, height: 630, alt: product.name }]
-          : [],
+        locale: "hr_HR",
+        images: ogImages,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: product.hero_image_url ? [product.hero_image_url] : undefined,
       },
     };
   }
@@ -138,23 +156,27 @@ export default async function NajamSlugPage({ params }: Props) {
 
   if (!product) notFound();
 
-  const { data: availability } = await supabase
-    .from("availability")
-    .select("date, qty_booked")
-    .eq("product_id", product.id);
-
-  const { data: tags } = await supabase
-    .from("product_tags")
-    .select("tags(id, name, color, slug)")
-    .eq("product_id", product.id);
-
-  // Related products
-  const { data: relatedRows } = await supabase
-    .from("product_relations")
-    .select("related_id, sort_order")
-    .eq("product_id", product.id)
-    .eq("type", "connected")
-    .order("sort_order");
+  // Fan out the three independent reads in parallel instead of awaiting each.
+  const [
+    { data: availability },
+    { data: tags },
+    { data: relatedRows },
+  ] = await Promise.all([
+    supabase
+      .from("availability")
+      .select("date, qty_booked")
+      .eq("product_id", product.id),
+    supabase
+      .from("product_tags")
+      .select("tags(id, name, color, slug)")
+      .eq("product_id", product.id),
+    supabase
+      .from("product_relations")
+      .select("related_id, sort_order")
+      .eq("product_id", product.id)
+      .eq("type", "connected")
+      .order("sort_order"),
+  ]);
 
   let relatedProducts: any[] = [];
   if (relatedRows && relatedRows.length > 0) {

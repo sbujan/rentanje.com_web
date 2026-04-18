@@ -11,12 +11,14 @@ export const metadata: Metadata = {
   title: "Paketi za iznajmljivanje — rentanje.com",
   description:
     "Iznajmite gotove pakete opreme za evente, roštilj, kamp i zabavu. Sve u jednom, uz popust. | rentanje.com",
+  alternates: { canonical: "https://rentanje.com/paketi" },
   openGraph: {
     title: "Paketi za iznajmljivanje — rentanje.com",
     description: "Gotove kombinacije opreme za vaš event, roštilj ili kamp izlet — sve u jednom, uz popust.",
     url: "https://rentanje.com/paketi",
     siteName: "rentanje.com",
     type: "website",
+    locale: "hr_HR",
   },
   twitter: { card: "summary_large_image", title: "Paketi za iznajmljivanje — rentanje.com" },
 };

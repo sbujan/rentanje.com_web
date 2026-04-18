@@ -39,19 +39,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = post.seo_title ?? post.title;
   const description = post.seo_description ?? post.excerpt ?? "";
+  const canonical = `https://rentanje.com/blog/${post.slug}`;
 
   return {
     title,
     description,
+    alternates: { canonical },
     openGraph: {
       title,
       description,
-      url: `https://rentanje.com/blog/${post.slug}`,
+      url: canonical,
       siteName: "rentanje.com",
       type: "article",
+      locale: "hr_HR",
       images: post.hero_image_url
         ? [{ url: post.hero_image_url, width: 1200, height: 630, alt: post.title }]
         : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: post.hero_image_url ? [post.hero_image_url] : undefined,
     },
   };
 }
@@ -68,7 +77,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   if (!post) notFound();
 
-  const faq: FaqItem[] = ((post as any).faq as FaqItem[] | null) ?? [];
+  const faq: FaqItem[] = (post.faq as FaqItem[] | null) ?? [];
 
   const faqSchema = faq.length > 0 ? {
     "@context": "https://schema.org",

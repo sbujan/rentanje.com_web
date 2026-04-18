@@ -1,0 +1,54 @@
+import type { NextRequest } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+/**
+ * Extract the caller's IP from request headers. Falls back to "unknown"
+ * so rate limiting still applies (all unknown IPs share one bucket).
+ */
+export function getRequestIp(req: NextRequest): string {
+  const xff = req.headers.get("x-forwarded-for");
+  if (xff) return xff.split(",")[0]!.trim();
+  const realIp = req.headers.get("x-real-ip");
+  if (realIp) return realIp.trim();
+  return "unknown";
+}
+
+export interface RateLimitOptions {
+  /** Stable key for the endpoint (e.g. "contact", "inquiry"). */
+  endpoint: string;
+  /** Window length in seconds. */
+  windowSeconds: number;
+  /** Max hits permitted inside the window. */
+  max: number;
+}
+
+/**
+ * Atomically: count prior hits from this IP in the window, record a new
+ * hit, and return whether the request is now over the limit. Durable
+ * across serverless restarts and Vercel instances because the state
+ * lives in Supabase.
+ */
+export async function checkRateLimit(
+  ip: string,
+  { endpoint, windowSeconds, max }: RateLimitOptions
+): Promise<{ limited: boolean; priorHits: number }> {
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase.rpc("record_rate_limit_hit", {
+      p_ip: ip,
+      p_endpoint: endpoint,
+      p_window_s: windowSeconds,
+    });
+    if (error) {
+      // Fail open: if the DB is unreachable, let the request through rather
+      // than lock users out of the contact form.
+      console.error("rate-limit rpc error:", error);
+      return { limited: false, priorHits: 0 };
+    }
+    const priorHits = typeof data === "number" ? data : 0;
+    return { limited: priorHits >= max, priorHits };
+  } catch (err) {
+    console.error("rate-limit exception:", err);
+    return { limited: false, priorHits: 0 };
+  }
+}

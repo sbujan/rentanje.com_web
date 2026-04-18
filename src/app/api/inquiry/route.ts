@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CartItem } from "@/lib/cart";
+import { checkRateLimit, getRequestIp } from "@/lib/rate-limit";
 
 const cartItemSchema = z.object({
   productId: z.string(),
@@ -144,6 +145,16 @@ function buildConfirmationHtml(params: {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getRequestIp(req);
+  const { limited } = await checkRateLimit(ip, {
+    endpoint: "inquiry",
+    windowSeconds: 600,
+    max: 8,
+  });
+  if (limited) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   let body: unknown;
   try {
     body = await req.json();
@@ -206,7 +217,7 @@ export async function POST(req: NextRequest) {
         to: adminEmail,
         subject: `Novi upit ${inquiryNumber} — ${name}`,
         html: buildAdminHtml({ name, email, phone, delivery_address, note, items: items as CartItem[], subtotal, totalDeposit, deliveryFee, inquiryId, inquiryNumber }),
-        replyTo: email,
+        replyTo: email.replace(/[\r\n]/g, ""),
       }),
       resend.emails.send({
         from: `rentanje.com <${fromEmail}>`,

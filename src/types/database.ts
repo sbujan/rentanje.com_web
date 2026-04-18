@@ -515,7 +515,20 @@ export interface Database {
       };
     };
     Views: { [_ in never]: never };
-    Functions: { [_ in never]: never };
+    Functions: {
+      record_rate_limit_hit: {
+        Args: { p_ip: string; p_endpoint: string; p_window_s: number };
+        Returns: number;
+      };
+      prune_rate_limit_hits: {
+        Args: Record<string, never>;
+        Returns: void;
+      };
+      current_admin_role: {
+        Args: Record<string, never>;
+        Returns: string | null;
+      };
+    };
     Enums: { [_ in never]: never };
   };
 }

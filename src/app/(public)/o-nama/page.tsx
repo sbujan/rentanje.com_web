@@ -7,12 +7,14 @@ export const metadata: Metadata = {
   title: "O nama — rentanje.com",
   description:
     "Saznajte više o rentanje.com — Zagreb. Iznajmljujemo audio/video, event, roštilj, kamp i outdoor opremu. List 360 d.o.o.",
+  alternates: { canonical: "https://rentanje.com/o-nama" },
   openGraph: {
     title: "O nama — rentanje.com",
     description: "Saznajte više o rentanje.com — iznajmljivanje opreme iz Zagreba. List 360 d.o.o.",
     url: "https://rentanje.com/o-nama",
     siteName: "rentanje.com",
     type: "website",
+    locale: "hr_HR",
   },
   twitter: { card: "summary", title: "O nama — rentanje.com" },
 };
