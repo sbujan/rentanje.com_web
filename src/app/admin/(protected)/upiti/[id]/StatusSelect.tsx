@@ -11,6 +11,12 @@ const STATUSES = [
   { value: "cancelled", label: "Otkazan" },
 ] as const;
 
+type InquiryStatus = (typeof STATUSES)[number]["value"];
+
+function isInquiryStatus(v: string): v is InquiryStatus {
+  return STATUSES.some((s) => s.value === v);
+}
+
 interface Props {
   inquiryId: string;
   currentStatus: string;
@@ -22,9 +28,10 @@ export default function StatusSelect({ inquiryId, currentStatus }: Props) {
   const supabase = createClient();
 
   async function handleChange(value: string) {
+    if (!isInquiryStatus(value)) return;
     setSaving(true);
     setStatus(value);
-    await supabase.from("inquiries").update({ status: value as any }).eq("id", inquiryId);
+    await supabase.from("inquiries").update({ status: value }).eq("id", inquiryId);
     setSaving(false);
   }
 

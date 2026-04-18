@@ -3,13 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-const STORAGE_KEY = "cookie-consent";
+// window.gtag is declared globally in src/lib/gtag.ts — we just call it here.
 
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-  }
-}
+const STORAGE_KEY = "cookie-consent";
 
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false);

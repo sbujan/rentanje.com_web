@@ -1,14 +1,17 @@
 // Google Analytics 4 event helpers
 // Only fires when NEXT_PUBLIC_GA_MEASUREMENT_ID is set
 
+type GtagEventParams = Record<string, unknown>;
+type GtagArg = string | number | boolean | Date | GtagEventParams | undefined;
+
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
-    dataLayer?: any[];
+    gtag?: (...args: GtagArg[]) => void;
+    dataLayer?: unknown[];
   }
 }
 
-export function gtagEvent(eventName: string, params?: Record<string, any>) {
+export function gtagEvent(eventName: string, params?: GtagEventParams) {
   if (typeof window !== "undefined" && window.gtag) {
     window.gtag("event", eventName, params);
   }

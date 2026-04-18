@@ -113,16 +113,23 @@ export default function CartPage() {
       });
 
       if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        throw new Error(j.error ?? "Greška pri slanju upita.");
+        let message = "Greška pri slanju upita.";
+        try {
+          const j = await res.json();
+          if (j && typeof j.error === "string") message = j.error;
+        } catch (parseErr) {
+          console.warn("inquiry error response was not JSON:", parseErr);
+        }
+        throw new Error(message);
       }
 
       const { inquiryId } = await res.json();
       trackPurchase(inquiryId, grandTotal, items.map((i) => ({ id: i.productId, name: i.productName, price: i.totalPrice })));
       clearCart();
       router.push("/hvala");
-    } catch (err: any) {
-      setServerError(err.message ?? "Greška pri slanju upita. Pokušajte ponovo.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Greška pri slanju upita. Pokušajte ponovo.";
+      setServerError(message);
     } finally {
       setSubmitting(false);
     }
