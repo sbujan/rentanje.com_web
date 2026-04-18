@@ -94,20 +94,20 @@ export default function ImageLightbox({ images, alt }: Props) {
       {/* Lightbox overlay */}
       {open && (
         <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+          className="fixed inset-0 z-50 bg-white/95 flex items-center justify-center"
           onClick={() => setOpen(false)}
         >
           {/* Close button */}
           <button
             onClick={() => setOpen(false)}
-            className="absolute top-4 right-4 z-10 h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+            className="absolute top-4 right-4 z-10 h-10 w-10 rounded-full bg-black/10 backdrop-blur-sm flex items-center justify-center text-brand-text hover:bg-black/20 transition-colors"
             aria-label="Zatvori"
           >
             <X className="h-5 w-5" />
           </button>
 
           {/* Counter */}
-          <div className="absolute top-4 left-4 text-white/70 text-sm font-medium">
+          <div className="absolute top-4 left-4 text-brand-muted text-sm font-medium">
             {index + 1} / {images.length}
           </div>
 
@@ -115,7 +115,7 @@ export default function ImageLightbox({ images, alt }: Props) {
           {images.length > 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); prev(); }}
-              className="absolute left-2 sm:left-4 z-10 h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+              className="absolute left-2 sm:left-4 z-10 h-10 w-10 rounded-full bg-black/10 backdrop-blur-sm flex items-center justify-center text-brand-text hover:bg-black/20 transition-colors"
               aria-label="Prethodna"
             >
               <ChevronLeft className="h-6 w-6" />
@@ -126,7 +126,7 @@ export default function ImageLightbox({ images, alt }: Props) {
           {images.length > 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); next(); }}
-              className="absolute right-2 sm:right-4 z-10 h-10 w-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+              className="absolute right-2 sm:right-4 z-10 h-10 w-10 rounded-full bg-black/10 backdrop-blur-sm flex items-center justify-center text-brand-text hover:bg-black/20 transition-colors"
               aria-label="Sljedeća"
             >
               <ChevronRight className="h-6 w-6" />
