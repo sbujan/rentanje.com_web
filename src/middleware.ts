@@ -32,22 +32,29 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Protect all /admin routes except /admin/login
-  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
-    if (!user) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/admin/login";
-      return NextResponse.redirect(url);
-    }
+  if (pathname.startsWith("/admin") && pathname !== "/admin/login" && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/admin/login";
+    return copyCookies(supabaseResponse, NextResponse.redirect(url));
   }
 
   // Redirect logged-in users away from /admin/login
   if (pathname === "/admin/login" && user) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin";
-    return NextResponse.redirect(url);
+    return copyCookies(supabaseResponse, NextResponse.redirect(url));
   }
 
   return supabaseResponse;
+}
+
+// Required by @supabase/ssr: any NextResponse you return must carry the
+// auth cookies that getUser() may have refreshed, otherwise the session is lost.
+function copyCookies(from: NextResponse, to: NextResponse) {
+  from.cookies.getAll().forEach((cookie) => {
+    to.cookies.set(cookie.name, cookie.value, cookie);
+  });
+  return to;
 }
 
 export const config = {
