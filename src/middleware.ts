@@ -35,6 +35,7 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith("/admin") && pathname !== "/admin/login" && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
+    url.searchParams.set("r", "mw_no_user");
     return copyCookies(supabaseResponse, NextResponse.redirect(url));
   }
 

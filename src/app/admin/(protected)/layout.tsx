@@ -13,10 +13,10 @@ export default async function AdminLayout({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/admin/login");
+    redirect("/admin/login?r=layout_no_user");
   }
 
-  const { data: adminUser } = await supabase
+  const { data: adminUser, error: adminUserErr } = await supabase
     .from("admin_users")
     .select("full_name, role, is_active")
     .eq("id", user.id)
@@ -25,7 +25,12 @@ export default async function AdminLayout({
   // Authenticated but not a registered (or still active) admin → sign out and bounce.
   if (!adminUser || adminUser.is_active === false) {
     await supabase.auth.signOut();
-    redirect("/admin/login");
+    const reason = adminUserErr
+      ? "layout_query_err"
+      : !adminUser
+        ? "layout_no_admin_row"
+        : "layout_inactive";
+    redirect(`/admin/login?r=${reason}`);
   }
 
   return (
