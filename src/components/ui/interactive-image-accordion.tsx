@@ -142,8 +142,9 @@ export function CategoryAccordion() {
             Što možete iznajmiti?
           </h2>
           <p className="text-brand-muted text-lg leading-relaxed mb-6">
-            Sve što treba za savršen event, roštilj, party ili kamp izlet —
-            iznajmite, iskoristite, vratite. Bez kupnje, bez problema.
+            Ne kupuj stvari koje skupljaju prašinu, iznajmi ih! Izaberi
+            kategoriju i pronađi što trebaš u jednom kliku. Iznajmi, iskoristi,
+            vrati!
           </p>
           <Link
             href="/oprema"
@@ -174,7 +175,7 @@ export function CategoryAccordion() {
               <Link
                 key={cat.id}
                 href={`/oprema?cat=${cat.slug}`}
-                className="group relative block aspect-[4/3] rounded-2xl overflow-hidden shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                className="group relative block aspect-[3/1] rounded-2xl overflow-hidden shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
               >
                 <Image
                   src={cat.imageUrl}
@@ -189,11 +190,11 @@ export function CategoryAccordion() {
                     background: `linear-gradient(to top, ${cat.color}E6 0%, ${cat.color}40 55%, transparent 100%)`,
                   }}
                 />
-                <div className="absolute inset-x-0 bottom-0 p-4">
-                  <p className="text-white font-bold text-lg leading-tight drop-shadow">
+                <div className="absolute inset-x-0 bottom-0 p-3">
+                  <p className="text-white font-bold text-base leading-tight drop-shadow">
                     {cat.title}
                   </p>
-                  <p className="text-white/85 text-sm leading-snug mt-0.5 line-clamp-2">
+                  <p className="text-white/85 text-xs leading-snug mt-0.5 line-clamp-1">
                     {cat.subtitle}
                   </p>
                 </div>
