@@ -20,7 +20,9 @@ interface Props {
 
 function getStatus(date: Date, availability: AvailabilityRecord[], stockQty: number) {
   const key = format(date, "yyyy-MM-dd");
-  const booked = availability.find((a) => a.date === key)?.qty_booked ?? 0;
+  const booked = availability
+    .filter((a) => a.date === key)
+    .reduce((sum, a) => sum + a.qty_booked, 0);
   const available = stockQty - booked;
   if (available <= 0) return "unavailable";
   if (available / stockQty < 0.3) return "low";

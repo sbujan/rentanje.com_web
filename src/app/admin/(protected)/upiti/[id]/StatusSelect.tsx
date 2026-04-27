@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useState, useTransition } from "react";
+import { setInquiryStatus } from "../actions";
 
 const STATUSES = [
   { value: "new", label: "Novi" },
@@ -24,27 +24,43 @@ interface Props {
 
 export default function StatusSelect({ inquiryId, currentStatus }: Props) {
   const [status, setStatus] = useState(currentStatus);
-  const [saving, setSaving] = useState(false);
-  const supabase = createClient();
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
 
-  async function handleChange(value: string) {
+  function handleChange(value: string) {
     if (!isInquiryStatus(value)) return;
-    setSaving(true);
+    const previous = status;
     setStatus(value);
-    await supabase.from("inquiries").update({ status: value }).eq("id", inquiryId);
-    setSaving(false);
+    setError(null);
+    startTransition(async () => {
+      const result = await setInquiryStatus({ inquiryId, status: value });
+      if (!result.ok) {
+        setStatus(previous);
+        setError(result.error);
+      }
+    });
   }
 
   return (
-    <select
-      value={status}
-      onChange={(e) => handleChange(e.target.value)}
-      disabled={saving}
-      className="w-full h-9 px-3 rounded-md border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:opacity-60"
-    >
-      {STATUSES.map((s) => (
-        <option key={s.value} value={s.value}>{s.label}</option>
-      ))}
-    </select>
+    <div className="space-y-2">
+      <select
+        value={status}
+        onChange={(e) => handleChange(e.target.value)}
+        disabled={pending}
+        className="w-full h-9 px-3 rounded-md border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:opacity-60"
+      >
+        {STATUSES.map((s) => (
+          <option key={s.value} value={s.value}>{s.label}</option>
+        ))}
+      </select>
+      {error && (
+        <p className="text-xs text-red-600 bg-red-50 rounded-md px-2 py-1.5">{error}</p>
+      )}
+      {status === "confirmed" && !error && (
+        <p className="text-xs text-gray-500">
+          Datumi su automatski blokirani u kalendaru dostupnosti.
+        </p>
+      )}
+    </div>
   );
 }

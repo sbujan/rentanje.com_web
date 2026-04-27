@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
 import { hr } from "date-fns/locale";
-import { Loader2, Trash2, Plus } from "lucide-react";
+import { Loader2, Trash2, Plus, Lock } from "lucide-react";
 import "react-day-picker/dist/style.css";
 
 interface Product {
@@ -20,6 +21,7 @@ interface AvailRow {
   date: string;
   qty_booked: number;
   note: string | null;
+  source_inquiry_id: string | null;
 }
 
 export default function AvailabilityManager({ products }: { products: Product[] }) {
@@ -36,7 +38,7 @@ export default function AvailabilityManager({ products }: { products: Product[] 
     setLoading(true);
     const { data } = await supabase
       .from("availability")
-      .select("id, date, qty_booked, note")
+      .select("id, date, qty_booked, note, source_inquiry_id")
       .eq("product_id", productId)
       .gte("date", format(new Date(), "yyyy-MM-dd"))
       .order("date");
@@ -54,8 +56,11 @@ export default function AvailabilityManager({ products }: { products: Product[] 
     setSaving(true);
     const dateStr = format(selectedDate, "yyyy-MM-dd");
 
-    // Upsert
-    const existing = rows.find((r) => r.date === dateStr);
+    // Manual upsert: only consider manual rows (inquiry-derived rows
+    // coexist on the same date and must be left alone).
+    const existing = rows.find(
+      (r) => r.date === dateStr && r.source_inquiry_id === null
+    );
     if (existing) {
       await supabase
         .from("availability")
@@ -82,13 +87,20 @@ export default function AvailabilityManager({ products }: { products: Product[] 
     setRows((r) => r.filter((x) => x.id !== id));
   }
 
-  // Build modifiers for calendar
-  const fullyBooked = rows
-    .filter((r) => r.qty_booked >= (selectedProduct?.stock_qty ?? 1))
-    .map((r) => new Date(r.date + "T12:00:00"));
-  const partiallyBooked = rows
-    .filter((r) => r.qty_booked > 0 && r.qty_booked < (selectedProduct?.stock_qty ?? 1))
-    .map((r) => new Date(r.date + "T12:00:00"));
+  // Sum qty_booked per date (across manual + inquiry-derived rows) before
+  // colour-coding the calendar — multiple inquiries can stack on one date.
+  const totalsByDate = rows.reduce<Map<string, number>>((acc, r) => {
+    acc.set(r.date, (acc.get(r.date) ?? 0) + r.qty_booked);
+    return acc;
+  }, new Map());
+
+  const stockQty = selectedProduct?.stock_qty ?? 1;
+  const fullyBooked = Array.from(totalsByDate.entries())
+    .filter(([, total]) => total >= stockQty)
+    .map(([date]) => new Date(date + "T12:00:00"));
+  const partiallyBooked = Array.from(totalsByDate.entries())
+    .filter(([, total]) => total > 0 && total < stockQty)
+    .map(([date]) => new Date(date + "T12:00:00"));
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
@@ -190,15 +202,31 @@ export default function AvailabilityManager({ products }: { products: Product[] 
                 <div className="space-y-2 max-h-80 overflow-y-auto">
                   {rows.map((row) => {
                     const pct = row.qty_booked / selectedProduct.stock_qty;
+                    const fromInquiry = row.source_inquiry_id !== null;
                     return (
                       <div key={row.id} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-brand-text">
+                          <p className="text-sm font-medium text-brand-text flex items-center gap-1.5">
+                            {fromInquiry && <Lock className="h-3 w-3 text-gray-400" />}
                             {format(new Date(row.date + "T12:00:00"), "d. MMM yyyy", { locale: hr })}
                           </p>
                           <p className="text-xs text-gray-400">
                             {row.qty_booked}/{selectedProduct.stock_qty} rezervirano
-                            {row.note && ` · ${row.note}`}
+                            {row.note && (
+                              fromInquiry && row.source_inquiry_id ? (
+                                <>
+                                  {" · "}
+                                  <Link
+                                    href={`/admin/upiti/${row.source_inquiry_id}`}
+                                    className="text-brand-primary hover:underline"
+                                  >
+                                    {row.note}
+                                  </Link>
+                                </>
+                              ) : (
+                                ` · ${row.note}`
+                              )
+                            )}
                           </p>
                           <div className="mt-1 h-1.5 rounded-full bg-gray-100 w-full">
                             <div
@@ -207,12 +235,21 @@ export default function AvailabilityManager({ products }: { products: Product[] 
                             />
                           </div>
                         </div>
-                        <button
-                          onClick={() => handleDelete(row.id)}
-                          className="text-gray-300 hover:text-red-400 transition-colors flex-shrink-0"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                        {fromInquiry ? (
+                          <span
+                            className="text-gray-300 flex-shrink-0"
+                            title="Iz potvrđenog upita — promijenite status upita za uklanjanje"
+                          >
+                            <Lock className="h-4 w-4" />
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => handleDelete(row.id)}
+                            className="text-gray-300 hover:text-red-400 transition-colors flex-shrink-0"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
                       </div>
                     );
                   })}
