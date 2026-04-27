@@ -12,7 +12,7 @@ import { z } from "zod";
 import { useCartStore, CartItem } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
 import { trackPurchase } from "@/lib/gtag";
-import { Trash2, ShoppingBag, ChevronRight, Loader2, Phone } from "lucide-react";
+import { Trash2, ShoppingBag, ChevronRight, Loader2, Phone, Tag, X } from "lucide-react";
 
 const DELIVERY_FEE = 10;
 
@@ -78,9 +78,21 @@ function CartItemRow({ item, onRemove }: { item: CartItem; onRemove: () => void 
 
 export default function CartPage() {
   const router = useRouter();
-  const { items, removeItem, clearCart } = useCartStore();
+  const {
+    items,
+    removeItem,
+    removeBundle,
+    clearCart,
+    promoCode,
+    discount,
+    applyPromo,
+    clearPromo,
+  } = useCartStore();
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [promoInput, setPromoInput] = useState("");
+  const [promoChecking, setPromoChecking] = useState(false);
+  const [promoMessage, setPromoMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
   const {
     register,
@@ -91,10 +103,66 @@ export default function CartPage() {
 
   const wantsDelivery = watch("wants_delivery") ?? false;
 
+  // Group items: standalone items + items per bundleId
+  const standaloneItems = items.filter((i) => !i.bundleId);
+  const bundleGroups = items.reduce<Record<string, { name: string; items: CartItem[]; discount: number }>>((acc, i) => {
+    if (!i.bundleId) return acc;
+    if (!acc[i.bundleId]) {
+      acc[i.bundleId] = { name: i.bundleName ?? "Paket", items: [], discount: 0 };
+    }
+    acc[i.bundleId].items.push(i);
+    acc[i.bundleId].discount += i.bundleDiscountAmount ?? 0;
+    return acc;
+  }, {});
+  const bundleEntries = Object.entries(bundleGroups);
+
   const subtotal = items.reduce((sum, i) => sum + i.totalPrice, 0);
+  const bundleDiscountTotal = bundleEntries.reduce((sum, [, g]) => sum + g.discount, 0);
   const totalDeposit = items.reduce((sum, i) => sum + i.depositAmount, 0);
   const deliveryFee = wantsDelivery ? DELIVERY_FEE : 0;
-  const grandTotal = subtotal + totalDeposit + deliveryFee;
+  const promoDiscount = promoCode ? discount : 0;
+  const grandTotal =
+    Math.max(0, subtotal - bundleDiscountTotal - promoDiscount) + totalDeposit + deliveryFee;
+  const rentalDays = items[0]?.days ?? 0;
+
+  async function handleApplyPromo(e: React.FormEvent) {
+    e.preventDefault();
+    if (!promoInput.trim()) return;
+    setPromoChecking(true);
+    setPromoMessage(null);
+    try {
+      const res = await fetch("/api/promo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: promoInput.trim().toUpperCase(),
+          rentalDays,
+          items: items.map((i) => ({
+            productId: i.productId,
+            totalPrice: i.totalPrice,
+            bundleId: i.bundleId ?? null,
+          })),
+        }),
+      });
+      const json = await res.json();
+      if (json.ok) {
+        applyPromo(json.code, json.discount);
+        setPromoMessage({ type: "ok", text: `Primijenjen kod: -${json.discount.toFixed(0)} €` });
+        setPromoInput("");
+      } else {
+        setPromoMessage({ type: "err", text: json.error ?? "Greška pri provjeri promo koda." });
+      }
+    } catch {
+      setPromoMessage({ type: "err", text: "Greška pri provjeri promo koda." });
+    } finally {
+      setPromoChecking(false);
+    }
+  }
+
+  function handleClearPromo() {
+    clearPromo();
+    setPromoMessage(null);
+  }
 
   async function onSubmit(data: FormData) {
     setSubmitting(true);
@@ -109,6 +177,7 @@ export default function CartPage() {
           items,
           delivery_type: data.wants_delivery ? "delivery" : "pickup",
           delivery_fee: data.wants_delivery ? DELIVERY_FEE : 0,
+          promo_code: promoCode ?? undefined,
         }),
       });
 
@@ -316,12 +385,48 @@ export default function CartPage() {
             </h2>
 
             <div className="divide-y divide-gray-50">
-              {items.map((item) => (
+              {standaloneItems.map((item) => (
                 <CartItemRow
                   key={item.productId}
                   item={item}
                   onRemove={() => removeItem(item.productId)}
                 />
+              ))}
+              {bundleEntries.map(([bundleId, group]) => (
+                <div key={bundleId} className="py-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-bold text-brand-primary uppercase tracking-wider">
+                      Paket: {group.name}
+                    </p>
+                    <button
+                      onClick={() => removeBundle(bundleId)}
+                      aria-label="Ukloni paket iz košarice"
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="pl-3 border-l-2 border-brand-primary/20 space-y-2">
+                    {group.items.map((item) => (
+                      <div key={item.productId + bundleId} className="text-sm">
+                        <p className="font-medium text-brand-text">
+                          {item.productName} <span className="text-xs text-brand-muted">× {item.qty}</span>
+                        </p>
+                        <p className="text-xs text-brand-muted">
+                          {formatPrice(item.totalPrice)}
+                          {item.depositAmount > 0 && (
+                            <span className="text-amber-600"> · depozit {formatPrice(item.depositAmount)}</span>
+                          )}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  {group.discount > 0 && (
+                    <p className="text-xs text-green-600 font-semibold mt-2">
+                      Paket popust: -{formatPrice(group.discount)}
+                    </p>
+                  )}
+                </div>
               ))}
             </div>
 
@@ -330,6 +435,20 @@ export default function CartPage() {
                 <span className="text-brand-muted">Iznajmljivanje</span>
                 <span className="font-medium text-brand-text">{formatPrice(subtotal)}</span>
               </div>
+              {bundleDiscountTotal > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-green-600">Paket popust</span>
+                  <span className="font-medium text-green-600">- {formatPrice(bundleDiscountTotal)}</span>
+                </div>
+              )}
+              {promoDiscount > 0 && promoCode && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-green-600 flex items-center gap-1">
+                    <Tag className="h-3 w-3" /> Promo {promoCode}
+                  </span>
+                  <span className="font-medium text-green-600">- {formatPrice(promoDiscount)}</span>
+                </div>
+              )}
               {totalDeposit > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-amber-600">Depozit (povratni)</span>
@@ -348,6 +467,54 @@ export default function CartPage() {
                   {formatPrice(grandTotal)}
                 </span>
               </div>
+            </div>
+
+            {/* Promo code */}
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              {promoCode ? (
+                <div className="flex items-center justify-between bg-green-50 rounded-md px-3 py-2 text-sm">
+                  <span className="flex items-center gap-2 text-green-700 font-medium">
+                    <Tag className="h-4 w-4" />
+                    {promoCode}
+                    <span className="text-green-600 font-normal">(-{formatPrice(promoDiscount)})</span>
+                  </span>
+                  <button
+                    onClick={handleClearPromo}
+                    className="text-green-700 hover:text-red-500 transition-colors"
+                    aria-label="Ukloni promo kod"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleApplyPromo} className="space-y-2">
+                  <label className="block text-xs text-brand-muted font-medium">
+                    Imate promo kod?
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      value={promoInput}
+                      onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                      placeholder="LJETO10"
+                      className="flex-1 h-9 px-3 rounded-md border border-gray-200 text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                    />
+                    <button
+                      type="submit"
+                      disabled={promoChecking || !promoInput.trim()}
+                      className="px-3 h-9 bg-brand-text text-white rounded-md text-sm font-medium hover:opacity-90 disabled:opacity-50"
+                    >
+                      {promoChecking ? <Loader2 className="h-4 w-4 animate-spin" /> : "Primijeni"}
+                    </button>
+                  </div>
+                  {promoMessage && (
+                    <p
+                      className={`text-xs ${promoMessage.type === "ok" ? "text-green-600" : "text-red-500"}`}
+                    >
+                      {promoMessage.text}
+                    </p>
+                  )}
+                </form>
+              )}
             </div>
           </div>
 

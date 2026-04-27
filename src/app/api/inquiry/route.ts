@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { CartItem } from "@/lib/cart";
 import { checkRateLimit, getRequestIp } from "@/lib/rate-limit";
+import { validatePromoCode, toPromoItems } from "@/lib/promo";
 import {
   buildAdminInquiryHtml,
   buildCustomerConfirmationHtml,
@@ -24,6 +25,9 @@ const cartItemSchema = z.object({
   totalPrice: z.number(),
   depositAmount: z.number(),
   qty: z.number(),
+  bundleId: z.string().nullable().optional(),
+  bundleName: z.string().nullable().optional(),
+  bundleDiscountAmount: z.number().optional(),
 });
 
 const schema = z.object({
@@ -37,6 +41,7 @@ const schema = z.object({
   note: z.string().optional(),
   agree: z.literal(true),
   items: z.array(cartItemSchema).min(1),
+  promo_code: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -62,13 +67,60 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Validation error", details: parsed.error.flatten() }, { status: 422 });
   }
 
-  const { name, email, phone, delivery_address, note, items, delivery_type, delivery_fee } = parsed.data;
+  const {
+    name,
+    email,
+    phone,
+    delivery_address,
+    note,
+    items,
+    delivery_type,
+    delivery_fee,
+    promo_code,
+  } = parsed.data;
   const cartItems = items as CartItem[];
 
   const subtotal = items.reduce((sum, i) => sum + i.totalPrice, 0);
+  const bundleDiscount = items.reduce(
+    (sum, i) => sum + (i.bundleDiscountAmount ?? 0),
+    0
+  );
   const totalDeposit = items.reduce((sum, i) => sum + i.depositAmount, 0);
   const deliveryFee = delivery_fee ?? 0;
   const deliveryType = delivery_type ?? "pickup";
+
+  // Re-validate the promo code server-side and recompute the discount.
+  // The client-displayed amount is informational; this is what gets persisted.
+  let promoDiscount = 0;
+  let promoCodeNormalised: string | null = null;
+  let promotionIdToBump: string | null = null;
+  if (promo_code) {
+    const rentalDays = items[0]?.days ?? 0;
+    const promoResult = await validatePromoCode(
+      promo_code,
+      toPromoItems(cartItems),
+      rentalDays
+    );
+    if (promoResult.ok) {
+      promoDiscount = promoResult.discount;
+      promoCodeNormalised = promoResult.code;
+      promotionIdToBump = promoResult.promotionId;
+    }
+  }
+
+  const totalDiscount = bundleDiscount + promoDiscount;
+  const discountedSubtotal = Math.max(0, subtotal - totalDiscount);
+
+  // Inquiry-level rental window = earliest start, latest end across items.
+  // Read by the confirmation flow to auto-block availability.
+  const rentalStart = items.reduce(
+    (min, i) => (min === null || i.rentalStart < min ? i.rentalStart : min),
+    null as string | null
+  );
+  const rentalEnd = items.reduce(
+    (max, i) => (max === null || i.rentalEnd > max ? i.rentalEnd : max),
+    null as string | null
+  );
 
   const inquiryNumber = `RNT-${Date.now().toString(36).toUpperCase()}`;
 
@@ -85,8 +137,12 @@ export async function POST(req: NextRequest) {
       delivery_address: delivery_address || null,
       message: note || null,
       items: items as unknown as Json,
-      subtotal_estimate: subtotal,
-      total_estimate: subtotal + totalDeposit + deliveryFee,
+      rental_start: rentalStart,
+      rental_end: rentalEnd,
+      subtotal_estimate: discountedSubtotal,
+      discount_amount: totalDiscount,
+      promo_code: promoCodeNormalised,
+      total_estimate: discountedSubtotal + totalDeposit + deliveryFee,
       status: "new",
     })
     .select("id")
@@ -98,6 +154,22 @@ export async function POST(req: NextRequest) {
   }
 
   const inquiryId = inquiry.id;
+
+  // Bump promotion usage_count after the inquiry is safely persisted, so we
+  // don't increment for failed submissions.
+  if (promotionIdToBump) {
+    const { data: current } = await supabase
+      .from("promotions")
+      .select("usage_count")
+      .eq("id", promotionIdToBump)
+      .single();
+    if (current) {
+      await supabase
+        .from("promotions")
+        .update({ usage_count: (current.usage_count ?? 0) + 1 })
+        .eq("id", promotionIdToBump);
+    }
+  }
 
   const adminEmail = process.env.ADMIN_EMAIL ?? "info@rentanje.com";
   const fromEmail = process.env.FROM_EMAIL ?? "mail@list360.agency";

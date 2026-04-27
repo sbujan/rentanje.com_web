@@ -26,7 +26,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function OpremaPage() {
+interface PageProps {
+  searchParams?: { cat?: string };
+}
+
+export default async function OpremaPage({ searchParams }: PageProps) {
   const supabase = await createClient();
 
   const [{ data: products }, { data: categories }] = await Promise.all([
@@ -37,6 +41,11 @@ export default async function OpremaPage() {
       .order("sort_order"),
     supabase.from("categories").select("*").order("sort_order"),
   ]);
+
+  const requestedCat = searchParams?.cat;
+  const activeCategory = (categories ?? []).some((c) => c.slug === requestedCat)
+    ? requestedCat
+    : undefined;
 
   return (
     <main>
@@ -50,6 +59,7 @@ export default async function OpremaPage() {
         <ProductsClient
           products={(products ?? []) as any}
           categories={categories ?? []}
+          activeCategory={activeCategory}
         />
       </div>
     </main>

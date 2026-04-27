@@ -293,6 +293,7 @@ export interface Database {
           starts_at?: string | null;
           ends_at?: string | null;
           usage_limit?: number | null;
+          usage_count?: number;
           is_active?: boolean;
         };
         Relationships: [];
@@ -304,6 +305,7 @@ export interface Database {
           date: string;
           qty_booked: number;
           note: string | null;
+          source_inquiry_id: string | null;
         };
         Insert: {
           id?: string;
@@ -311,8 +313,13 @@ export interface Database {
           date: string;
           qty_booked?: number;
           note?: string | null;
+          source_inquiry_id?: string | null;
         };
-        Update: { qty_booked?: number; note?: string | null };
+        Update: {
+          qty_booked?: number;
+          note?: string | null;
+          source_inquiry_id?: string | null;
+        };
         Relationships: [];
       };
       inquiries: {

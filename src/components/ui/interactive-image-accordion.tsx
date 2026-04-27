@@ -137,7 +137,7 @@ export function CategoryAccordion() {
       <div className="flex flex-col lg:flex-row items-center gap-12">
 
         {/* Left: text */}
-        <div className="w-full lg:w-2/5 text-center lg:text-left">
+        <div className="w-full lg:w-2/5 text-left lg:text-left">
           <h2 className="font-display text-3xl sm:text-4xl font-bold text-brand-text leading-tight mb-4">
             Što možete iznajmiti?
           </h2>
@@ -153,8 +153,8 @@ export function CategoryAccordion() {
           </Link>
         </div>
 
-        {/* Right: accordion */}
-        <div className="w-full lg:w-3/5">
+        {/* Right: accordion (desktop) */}
+        <div className="w-full lg:w-3/5 hidden lg:block">
           <div className="flex flex-row gap-2 overflow-x-auto pb-2 lg:overflow-visible justify-center lg:justify-end">
             {categories.map((cat, index) => (
               <AccordionItem
@@ -163,6 +163,41 @@ export function CategoryAccordion() {
                 isActive={index === activeIndex}
                 onActivate={() => setActiveIndex(index)}
               />
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile / tablet: card grid */}
+        <div className="w-full lg:hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {categories.map((cat) => (
+              <Link
+                key={cat.id}
+                href={`/oprema?cat=${cat.slug}`}
+                className="group relative block aspect-[4/3] rounded-2xl overflow-hidden shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              >
+                <Image
+                  src={cat.imageUrl}
+                  alt={cat.title}
+                  fill
+                  sizes="(max-width: 640px) 100vw, 50vw"
+                  className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                />
+                <div
+                  className="absolute inset-0 transition-opacity"
+                  style={{
+                    background: `linear-gradient(to top, ${cat.color}E6 0%, ${cat.color}40 55%, transparent 100%)`,
+                  }}
+                />
+                <div className="absolute inset-x-0 bottom-0 p-4">
+                  <p className="text-white font-bold text-lg leading-tight drop-shadow">
+                    {cat.title}
+                  </p>
+                  <p className="text-white/85 text-sm leading-snug mt-0.5 line-clamp-2">
+                    {cat.subtitle}
+                  </p>
+                </div>
+              </Link>
             ))}
           </div>
         </div>

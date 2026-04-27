@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
-import { Package, Phone } from "lucide-react";
+import { Package, Phone, ChevronRight } from "lucide-react";
 import PageHero from "@/components/public/PageHero";
 
 export const revalidate = 3600;
@@ -82,13 +82,13 @@ export default async function PaketiPage() {
                       {bundle.description}
                     </p>
                   )}
-                  <a
-                    href={PHONE_HREF}
+                  <Link
+                    href={`/paketi/${bundle.slug}`}
                     className="mt-auto flex items-center justify-center gap-2 bg-brand-primary text-white font-semibold py-2.5 rounded-lg hover:opacity-90 transition-opacity text-sm"
                   >
-                    <Phone className="h-4 w-4" />
-                    Rezerviraj paket
-                  </a>
+                    Pogledaj paket
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
                 </div>
               </div>
             ))}

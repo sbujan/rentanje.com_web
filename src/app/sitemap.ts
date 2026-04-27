@@ -6,10 +6,16 @@ const BASE = "https://rentanje.com";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = await createClient();
 
-  const [{ data: products }, { data: categories }, { data: posts }] = await Promise.all([
+  const [
+    { data: products },
+    { data: categories },
+    { data: posts },
+    { data: seoPages },
+  ] = await Promise.all([
     supabase.from("products").select("slug, updated_at").eq("is_active", true),
     supabase.from("categories").select("slug, created_at"),
     supabase.from("blog_posts").select("slug, updated_at").eq("is_published", true),
+    supabase.from("seo_pages").select("slug, updated_at").eq("is_published", true),
   ]);
 
   const staticPages: MetadataRoute.Sitemap = [
@@ -42,5 +48,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...categoryPages, ...productPages, ...blogPages];
+  const seoPagesEntries: MetadataRoute.Sitemap = (seoPages ?? []).map((p) => ({
+    url: `${BASE}/stranica/${p.slug}`,
+    lastModified: new Date(p.updated_at),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...categoryPages, ...productPages, ...blogPages, ...seoPagesEntries];
 }
