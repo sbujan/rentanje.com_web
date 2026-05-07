@@ -11,6 +11,37 @@ interface Props {
   bucket?: string;
   folder?: string;
   label?: string;
+  /**
+   * Base name for the uploaded file (typically a product slug).
+   * Final filename: `${folder}/${slugBase}-${nonce}.${ext}` — readable by
+   * Google as a minor SEO signal. When empty, falls back to a timestamp.
+   */
+  slugBase?: string;
+  /**
+   * Optional name suffix to disambiguate multiple uploads for the same
+   * slugBase (e.g. "hero", "1", "2"). Mostly cosmetic — the nonce already
+   * guarantees uniqueness.
+   */
+  nameSuffix?: string;
+  disabled?: boolean;
+  disabledHint?: string;
+}
+
+/**
+ * Reduce arbitrary text to a filesystem-safe, ASCII-only token. Mirrors
+ * `slugify()` in lib/utils.ts but kept local so this component has no
+ * cross-module dependency.
+ */
+function safeSegment(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/[šŠ]/g, "s")
+    .replace(/[čČćĆ]/g, "c")
+    .replace(/[žŽ]/g, "z")
+    .replace(/[đĐ]/g, "d")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
 }
 
 const ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif"]);
@@ -53,6 +84,10 @@ export default function ImageUpload({
   bucket = "product-images",
   folder = "products",
   label = "Slika",
+  slugBase,
+  nameSuffix,
+  disabled = false,
+  disabledHint,
 }: Props) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,7 +116,15 @@ export default function ImageUpload({
 
     try {
       const ext = EXT_BY_MIME[detected] ?? "jpg";
-      const filename = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const slug = safeSegment(slugBase ?? "");
+      const suffix = safeSegment(nameSuffix ?? "");
+      const nonce = Math.random().toString(36).slice(2, 8);
+      // SEO-friendly: slug-suffix-nonce.ext (e.g. vespa-px-150-hero-x8k2nd.jpg).
+      // Without a slug, fall back to the legacy timestamp scheme.
+      const base = slug
+        ? [slug, suffix, nonce].filter(Boolean).join("-")
+        : `${Date.now()}-${nonce}`;
+      const filename = `${folder}/${base}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
         .from(bucket)
@@ -133,15 +176,34 @@ export default function ImageUpload({
         </div>
       ) : (
         <div
-          onDrop={handleDrop}
+          onDrop={(e) => {
+            if (disabled) {
+              e.preventDefault();
+              return;
+            }
+            handleDrop(e);
+          }}
           onDragOver={(e) => e.preventDefault()}
-          onClick={() => inputRef.current?.click()}
-          className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center cursor-pointer hover:border-brand-primary hover:bg-brand-light/50 transition-colors"
+          onClick={() => {
+            if (disabled) return;
+            inputRef.current?.click();
+          }}
+          aria-disabled={disabled}
+          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+            disabled
+              ? "border-gray-200 bg-gray-50 cursor-not-allowed opacity-60"
+              : "border-gray-200 cursor-pointer hover:border-brand-primary hover:bg-brand-light/50"
+          }`}
         >
           {uploading ? (
             <div className="flex flex-col items-center gap-2 text-brand-muted">
               <Loader2 className="h-8 w-8 animate-spin text-brand-primary" />
               <span className="text-sm">Uploadanje...</span>
+            </div>
+          ) : disabled ? (
+            <div className="flex flex-col items-center gap-2 text-brand-muted">
+              <Upload className="h-8 w-8" />
+              <span className="text-sm font-medium">{disabledHint ?? "Upload je trenutno onemogućen."}</span>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2 text-brand-muted">

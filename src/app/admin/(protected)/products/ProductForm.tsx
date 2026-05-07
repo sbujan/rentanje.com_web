@@ -69,7 +69,9 @@ export default function ProductForm({
     is_active: product?.is_active ?? true,
     sort_order: product?.sort_order?.toString() ?? "0",
     hero_image_url: product?.hero_image_url ?? "",
+    hero_image_alt: product?.hero_image_alt ?? "",
     images: (product?.images as string[] | null) ?? [],
+    image_alts: ((product?.image_alts as string[] | null) ?? []) as string[],
   });
   const [tagIds, setTagIds] = useState<string[]>(selectedTagIds);
   const [relatedIds, setRelatedIds] = useState<string[]>(selectedRelatedIds);
@@ -132,7 +134,13 @@ export default function ProductForm({
       stock_qty: parseInt(form.stock_qty) || 1,
       weight_kg: form.weight_kg ? parseFloat(form.weight_kg) : null,
       hero_image_url: form.hero_image_url || null,
+      hero_image_alt: form.hero_image_alt.trim() || null,
       images: form.images.length > 0 ? form.images : null,
+      // Pad image_alts to match images.length so index alignment is preserved.
+      image_alts:
+        form.images.length > 0
+          ? form.images.map((_, i) => form.image_alts[i]?.trim() || null)
+          : null,
       dimensions_cm: form.dimensions_cm || null,
       seo_title: form.seo_title || null,
       seo_description: form.seo_description || null,
@@ -303,15 +311,41 @@ export default function ProductForm({
 
       {/* Images */}
       <div className="bg-white rounded-lg shadow-card p-6 space-y-6">
-        <h2 className="font-display text-base font-semibold text-brand-text">
-          Slike
-        </h2>
+        <div>
+          <h2 className="font-display text-base font-semibold text-brand-text">
+            Slike
+          </h2>
+          <p className="text-xs text-brand-muted mt-1">
+            Slug se koristi kao naziv datoteke (npr. <code className="font-mono">{form.slug || "vespa-px-150"}-x8k2.jpg</code>) — bolje za SEO. Ispunite naziv proizvoda prije uploada.
+          </p>
+        </div>
 
-        <ImageUpload
-          label="Hero slika *"
-          value={form.hero_image_url}
-          onChange={(url) => setForm((f) => ({ ...f, hero_image_url: url }))}
-        />
+        <div className="space-y-2">
+          <ImageUpload
+            label="Hero slika *"
+            value={form.hero_image_url}
+            onChange={(url) => setForm((f) => ({ ...f, hero_image_url: url }))}
+            slugBase={form.slug}
+            nameSuffix="hero"
+            disabled={!form.slug}
+            disabledHint="Prvo unesite naziv proizvoda."
+          />
+          <div className="space-y-1.5">
+            <Label htmlFor="hero_image_alt">Alt tekst hero slike</Label>
+            <Input
+              id="hero_image_alt"
+              value={form.hero_image_alt}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, hero_image_alt: e.target.value }))
+              }
+              placeholder={form.name ? `npr. ${form.name} — iznajmljivanje u Splitu` : "Opišite što je na slici"}
+              maxLength={120}
+            />
+            <p className="text-xs text-brand-muted">
+              Kratki opis slike za Google i čitače ekrana. Ako ostavite prazno, koristi se naziv proizvoda.
+            </p>
+          </div>
+        </div>
 
         {/* Gallery — additional images */}
         <div className="space-y-3 pt-2 border-t border-gray-100">
@@ -322,21 +356,40 @@ export default function ProductForm({
 
           {/* Thumbnails grid */}
           {form.images.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {form.images.map((url, i) => (
-                <div key={`${url}-${i}`} className="relative group aspect-square rounded-md overflow-hidden bg-gray-100 border border-gray-200">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={url} alt={`Slika ${i + 1}`} className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setForm((f) => ({ ...f, images: f.images.filter((_, idx) => idx !== i) }))
+                <div key={`${url}-${i}`} className="space-y-2 rounded-md border border-gray-200 p-2">
+                  <div className="relative group aspect-square rounded-md overflow-hidden bg-gray-100">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={url} alt={form.image_alts[i] || `Slika ${i + 1}`} className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setForm((f) => ({
+                          ...f,
+                          images: f.images.filter((_, idx) => idx !== i),
+                          image_alts: f.image_alts.filter((_, idx) => idx !== i),
+                        }))
+                      }
+                      className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-red-500 text-white text-sm font-bold flex items-center justify-center hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="Ukloni sliku"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <Input
+                    value={form.image_alts[i] ?? ""}
+                    onChange={(e) =>
+                      setForm((f) => {
+                        const next = [...f.image_alts];
+                        next[i] = e.target.value;
+                        return { ...f, image_alts: next };
+                      })
                     }
-                    className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-red-500 text-white text-sm font-bold flex items-center justify-center hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                    aria-label="Ukloni sliku"
-                  >
-                    ×
-                  </button>
+                    placeholder={`Alt tekst — slika ${i + 1}`}
+                    maxLength={120}
+                    className="text-sm"
+                  />
                 </div>
               ))}
             </div>
@@ -349,9 +402,17 @@ export default function ProductForm({
               value=""
               onChange={(url) => {
                 if (url) {
-                  setForm((f) => ({ ...f, images: [...f.images, url] }));
+                  setForm((f) => ({
+                    ...f,
+                    images: [...f.images, url],
+                    image_alts: [...f.image_alts, ""],
+                  }));
                 }
               }}
+              slugBase={form.slug}
+              nameSuffix={String(form.images.length + 1)}
+              disabled={!form.slug}
+              disabledHint="Prvo unesite naziv proizvoda."
             />
           )}
 

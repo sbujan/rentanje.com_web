@@ -33,7 +33,7 @@ export default function ProductCard({ product }: { product: Product }) {
         {product.hero_image_url ? (
           <Image
             src={product.hero_image_url}
-            alt={`${product.name} za iznajmljivanje — rentanje.com`}
+            alt={product.hero_image_alt?.trim() || `${product.name} za iznajmljivanje — rentanje.com`}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

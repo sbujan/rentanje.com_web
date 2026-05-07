@@ -6,10 +6,21 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Props {
   images: string[];
+  /** Default alt used as a fallback for any image without its own alt. */
   alt: string;
+  /**
+   * Optional per-image alt text aligned with `images`. Indexes can be
+   * null/empty — those fall back to `alt` so the SEO/accessibility
+   * baseline never disappears.
+   */
+  alts?: (string | null | undefined)[];
 }
 
-export default function ImageLightbox({ images, alt }: Props) {
+export default function ImageLightbox({ images, alt, alts }: Props) {
+  const altFor = (i: number) => {
+    const candidate = alts?.[i];
+    return candidate && candidate.trim() ? candidate : alt;
+  };
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
 
@@ -48,7 +59,7 @@ export default function ImageLightbox({ images, alt }: Props) {
         className="relative aspect-video rounded-lg overflow-hidden mb-6 lg:hidden cursor-pointer"
         onClick={() => openAt(0)}
       >
-        <Image src={heroUrl} alt={alt} fill className="object-cover" priority />
+        <Image src={heroUrl} alt={altFor(0)} fill className="object-cover" priority />
         {images.length > 1 && (
           <span className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
             1/{images.length}
@@ -63,7 +74,7 @@ export default function ImageLightbox({ images, alt }: Props) {
       >
         <Image
           src={heroUrl}
-          alt={alt}
+          alt={altFor(0)}
           fill
           className="object-cover hover:scale-105 transition-transform duration-300"
           priority
@@ -82,7 +93,7 @@ export default function ImageLightbox({ images, alt }: Props) {
             >
               <Image
                 src={img}
-                alt={`${alt} ${i + 2}`}
+                alt={altFor(i + 1)}
                 fill
                 className="object-cover hover:scale-105 transition-transform duration-300"
               />
@@ -140,7 +151,7 @@ export default function ImageLightbox({ images, alt }: Props) {
           >
             <Image
               src={images[index]}
-              alt={`${alt} ${index + 1}`}
+              alt={altFor(index)}
               fill
               className="object-contain"
               sizes="100vw"

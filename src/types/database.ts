@@ -97,7 +97,9 @@ export interface Database {
           short_desc: string | null;
           description: string | null;
           hero_image_url: string | null;
+          hero_image_alt: string | null;
           images: string[] | null;
+          image_alts: (string | null)[] | null;
           price_per_day: number | null;
           price_per_3days: number | null;
           price_per_7days: number;
@@ -130,7 +132,9 @@ export interface Database {
           short_desc?: string | null;
           description?: string | null;
           hero_image_url?: string | null;
+          hero_image_alt?: string | null;
           images?: string[] | null;
+          image_alts?: (string | null)[] | null;
           price_per_day?: number | null;
           price_per_3days?: number | null;
           price_per_7days: number;
@@ -158,7 +162,9 @@ export interface Database {
           short_desc?: string | null;
           description?: string | null;
           hero_image_url?: string | null;
+          hero_image_alt?: string | null;
           images?: string[] | null;
+          image_alts?: (string | null)[] | null;
           price_per_day?: number | null;
           price_per_3days?: number | null;
           price_per_7days?: number;

@@ -121,6 +121,7 @@ export default function ProductPage({ product, availability, tags, relatedProduc
           <div className="lg:hidden">
             <ImageLightbox
               images={[product.hero_image_url, ...(product.images ?? [])]}
+              alts={[product.hero_image_alt, ...(product.image_alts ?? [])]}
               alt={`${product.name} za iznajmljivanje — rentanje.com`}
             />
           </div>
@@ -170,6 +171,7 @@ export default function ProductPage({ product, availability, tags, relatedProduc
               <div className="hidden lg:block">
                 <ImageLightbox
                   images={[product.hero_image_url, ...(product.images ?? [])]}
+                  alts={[product.hero_image_alt, ...(product.image_alts ?? [])]}
                   alt={`${product.name} za iznajmljivanje — rentanje.com`}
                 />
               </div>

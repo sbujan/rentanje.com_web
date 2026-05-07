@@ -26,7 +26,12 @@ const productPayloadSchema = z.object({
   stock_qty: z.number().int().min(0),
   weight_kg: z.number().nullable(),
   hero_image_url: z.string().nullable(),
+  hero_image_alt: z.string().nullable(),
   images: z.array(z.string()).nullable(),
+  // Aligned by index with `images`. Individual entries may be null when
+  // the admin hasn't filled in the alt yet — the public renderer falls
+  // back to the product name.
+  image_alts: z.array(z.string().nullable()).nullable(),
   dimensions_cm: z.string().nullable(),
   seo_title: z.string().nullable(),
   seo_description: z.string().nullable(),

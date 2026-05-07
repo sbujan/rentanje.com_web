@@ -85,7 +85,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Try product
   const { data: product } = await supabase
     .from("products")
-    .select("name, seo_title, seo_description, slug, hero_image_url, short_desc")
+    .select("name, seo_title, seo_description, slug, hero_image_url, hero_image_alt, short_desc")
     .eq("slug", params.slug)
     .eq("is_active", true)
     .single();
@@ -98,7 +98,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       `Iznajmite ${product.name} u Zagrebu. Pošaljite upit danas! | rentanje.com`;
     const canonical = `https://rentanje.com/najam/${product.slug}`;
     const ogImages = product.hero_image_url
-      ? [{ url: product.hero_image_url, width: 1200, height: 630, alt: product.name }]
+      ? [{ url: product.hero_image_url, width: 1200, height: 630, alt: product.hero_image_alt?.trim() || product.name }]
       : [];
     return {
       title,
