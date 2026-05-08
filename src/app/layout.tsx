@@ -32,6 +32,9 @@ export const metadata: Metadata = {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
   },
+  verification: {
+    google: "A9x73begeWeFmlYNJ0yZpaPPUDQMZPkGcvdyS8M69CY",
+  },
 };
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;

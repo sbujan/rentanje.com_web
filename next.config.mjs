@@ -35,6 +35,18 @@ const nextConfig = {
       { source: "/rent-list/",   destination: "/oprema",   permanent: true },
       { source: "/rent-grid/",   destination: "/oprema",   permanent: true },
 
+      // Old WP categories — semantic mapping to new structure
+      { source: "/product-category/kamere/",                destination: "/oprema?cat=audio-video-oprema", permanent: true },
+      { source: "/product-category/dozivljaji/",            destination: "/paketi",                         permanent: true },
+      { source: "/product-category/kamping/",               destination: "/oprema?cat=kamp-outdoor",        permanent: true },
+      { source: "/product-category/proizvodi/",             destination: "/oprema",                         permanent: true },
+      { source: "/product-category/proizvodi/page/:n",      destination: "/oprema",                         permanent: true },
+      { source: "/product-category/proizvodi/page/:n/",     destination: "/oprema",                         permanent: true },
+      { source: "/product-category/kamere",                 destination: "/oprema?cat=audio-video-oprema", permanent: true },
+      { source: "/product-category/dozivljaji",             destination: "/paketi",                         permanent: true },
+      { source: "/product-category/kamping",                destination: "/oprema?cat=kamp-outdoor",        permanent: true },
+      { source: "/product-category/proizvodi",              destination: "/oprema",                         permanent: true },
+
       // Products — /proizvod/:slug → /najam/:slug
       {
         source: "/proizvod/gopro-hero-10/",

@@ -44,6 +44,23 @@ const localBusinessSchema = {
   description: "Iznajmljivanje opreme za evente, roštilj, kamp i audio/video u Hrvatskoj.",
 };
 
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "rentanje.com",
+  legalName: "List 360 d.o.o.",
+  url: "https://rentanje.com",
+  logo: "https://rentanje.com/favicon.svg",
+  telephone: "+385952044414",
+  email: "info@rentanje.com",
+  address: {
+    "@type": "PostalAddress",
+    addressCountry: "HR",
+    addressLocality: "Zagreb",
+    streetAddress: "Naserov trg 4",
+  },
+};
+
 const whyUs = [
   {
     icon: <Zap className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />,
@@ -83,6 +100,10 @@ export default async function HomePage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}

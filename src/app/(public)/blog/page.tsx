@@ -22,11 +22,13 @@ export const metadata: Metadata = {
     siteName: "rentanje.com",
     type: "website",
     locale: "hr_HR",
+    images: [{ url: "/rentanje-com-hero.jpg", width: 1200, height: 630, alt: "rentanje.com" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Blog — rentanje.com",
     description: "Savjeti, ideje i vodiči za iznajmljivanje opreme u Zagrebu.",
+    images: ["/rentanje-com-hero.jpg"],
   },
 };
 

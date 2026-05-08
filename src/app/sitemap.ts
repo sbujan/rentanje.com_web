@@ -9,11 +9,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [
     { data: products },
     { data: categories },
+    { data: bundles },
     { data: posts },
     { data: seoPages },
   ] = await Promise.all([
     supabase.from("products").select("slug, updated_at").eq("is_active", true),
     supabase.from("categories").select("slug, created_at"),
+    supabase.from("bundles").select("slug, created_at").eq("is_active", true),
     supabase.from("blog_posts").select("slug, updated_at").eq("is_published", true),
     supabase.from("seo_pages").select("slug, updated_at").eq("is_published", true),
   ]);
@@ -28,10 +30,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const categoryPages: MetadataRoute.Sitemap = (categories ?? []).map((c) => ({
-    url: `${BASE}/najam/${c.slug}`,
+    url: `${BASE}/oprema?cat=${c.slug}`,
     lastModified: new Date(c.created_at),
     changeFrequency: "weekly",
-    priority: 0.8,
+    priority: 0.7,
   }));
 
   const productPages: MetadataRoute.Sitemap = (products ?? []).map((p) => ({
@@ -39,6 +41,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(p.updated_at),
     changeFrequency: "weekly",
     priority: 0.8,
+  }));
+
+  const bundlePages: MetadataRoute.Sitemap = (bundles ?? []).map((b) => ({
+    url: `${BASE}/paketi/${b.slug}`,
+    lastModified: new Date(b.created_at),
+    changeFrequency: "weekly",
+    priority: 0.7,
   }));
 
   const blogPages: MetadataRoute.Sitemap = (posts ?? []).map((p) => ({
@@ -55,5 +64,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...categoryPages, ...productPages, ...blogPages, ...seoPagesEntries];
+  return [...staticPages, ...categoryPages, ...productPages, ...bundlePages, ...blogPages, ...seoPagesEntries];
 }
