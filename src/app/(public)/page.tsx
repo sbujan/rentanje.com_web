@@ -10,12 +10,13 @@ import { Star, ArrowRight, Zap, Truck, BadgeCent } from "lucide-react";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Iznajmljivanje opreme — rentanje.com",
+  // `absolute` bypasses the layout template so the homepage isn't double-suffixed.
+  title: { absolute: "Iznajmljivanje opreme u Zagrebu | rentanje.com" },
   description:
     "Iznajmite audio, video, event, roštilj, kamp i outdoor opremu u Zagrebu. Brza dostava, povoljne cijene. Pošaljite upit danas!",
   alternates: { canonical: "https://rentanje.com/" },
   openGraph: {
-    title: "Iznajmljivanje opreme — rentanje.com",
+    title: "Iznajmljivanje opreme u Zagrebu | rentanje.com",
     description:
       "Iznajmite audio, video, event, roštilj, kamp i outdoor opremu u Zagrebu. Brza dostava, povoljne cijene.",
     url: "https://rentanje.com/",
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Iznajmljivanje opreme — rentanje.com",
+    title: "Iznajmljivanje opreme u Zagrebu | rentanje.com",
     description: "Iznajmite audio, video, event, roštilj, kamp i outdoor opremu u Zagrebu.",
     images: ["/rentanje-com-hero.jpg"],
   },
