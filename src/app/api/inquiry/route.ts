@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { CartItem } from "@/lib/cart";
 import { checkRateLimit, getRequestIp } from "@/lib/rate-limit";
 import { validatePromoCode, toPromoItems } from "@/lib/promo";
+import {
+  validateCartAvailability,
+  insertAvailabilityRowsForInquiry,
+} from "@/lib/availability";
 import {
   buildAdminInquiryHtml,
   buildCustomerConfirmationHtml,
@@ -125,6 +130,29 @@ export async function POST(req: NextRequest) {
   const inquiryNumber = `RNT-${Date.now().toString(36).toUpperCase()}`;
 
   const supabase = createAdminClient();
+
+  // Block double-booking: every (product, date) in the cart must have
+  // remaining stock after summing existing availability rows (manual blocks
+  // + rows from already-submitted inquiries).
+  try {
+    const availability = await validateCartAvailability(supabase, cartItems);
+    if (!availability.ok) {
+      return NextResponse.json(
+        {
+          error: "Odabrani datumi više nisu dostupni za neke proizvode.",
+          conflicts: availability.conflicts,
+        },
+        { status: 422 }
+      );
+    }
+  } catch (availErr) {
+    console.error("Availability check failed:", availErr);
+    return NextResponse.json(
+      { error: "Greška pri provjeri dostupnosti." },
+      { status: 500 }
+    );
+  }
+
   const { data: inquiry, error: dbError } = await supabase
     .from("inquiries")
     .insert({
@@ -154,6 +182,27 @@ export async function POST(req: NextRequest) {
   }
 
   const inquiryId = inquiry.id;
+
+  // Soft-reserve dates: write availability rows tied to this inquiry so
+  // subsequent public submissions and the calendar both see them as taken.
+  // Admin can release them by cancelling the inquiry.
+  try {
+    await insertAvailabilityRowsForInquiry(
+      supabase,
+      inquiryId,
+      inquiryNumber,
+      cartItems
+    );
+    // Bust the ISR cache for every reserved product so the calendar shows
+    // the new booking immediately instead of waiting for the 1-hour revalidate.
+    const reservedSlugs = Array.from(new Set(cartItems.map((i) => i.slug)));
+    for (const slug of reservedSlugs) {
+      revalidatePath(`/najam/${slug}`);
+    }
+  } catch (availErr) {
+    // Don't fail the request — inquiry is saved. Admin can recover manually.
+    console.error("Availability row insert failed:", availErr);
+  }
 
   // Bump promotion usage_count after the inquiry is safely persisted, so we
   // don't increment for failed submissions.

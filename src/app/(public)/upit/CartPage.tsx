@@ -186,6 +186,17 @@ export default function CartPage() {
         try {
           const j = await res.json();
           if (j && typeof j.error === "string") message = j.error;
+          if (j && Array.isArray(j.conflicts) && j.conflicts.length > 0) {
+            const lines = j.conflicts
+              .map((c: { productName?: string; dates?: string[] }) => {
+                const dates = (c.dates ?? [])
+                  .map((d) => format(parseISO(d), "d. MMM yyyy", { locale: hr }))
+                  .join(", ");
+                return `${c.productName ?? "Proizvod"}: ${dates}`;
+              })
+              .join("\n");
+            message = `Sljedeći termini više nisu dostupni:\n${lines}\n\nVratite se u košaricu i odaberite drugi period.`;
+          }
         } catch (parseErr) {
           console.warn("inquiry error response was not JSON:", parseErr);
         }
@@ -345,7 +356,7 @@ export default function CartPage() {
           </div>
 
           {serverError && (
-            <div className="bg-red-50 border border-red-100 rounded-lg px-4 py-3 text-sm text-red-700">
+            <div className="bg-red-50 border border-red-100 rounded-lg px-4 py-3 text-sm text-red-700 whitespace-pre-line">
               {serverError}
             </div>
           )}

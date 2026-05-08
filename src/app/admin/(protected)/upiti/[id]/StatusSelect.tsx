@@ -56,9 +56,14 @@ export default function StatusSelect({ inquiryId, currentStatus }: Props) {
       {error && (
         <p className="text-xs text-red-600 bg-red-50 rounded-md px-2 py-1.5">{error}</p>
       )}
-      {status === "confirmed" && !error && (
+      {status === "cancelled" && !error && (
         <p className="text-xs text-gray-500">
-          Datumi su automatski blokirani u kalendaru dostupnosti.
+          Datumi su oslobođeni u kalendaru dostupnosti.
+        </p>
+      )}
+      {status !== "cancelled" && !error && (
+        <p className="text-xs text-gray-500">
+          Datumi su rezervirani u kalendaru dostupnosti.
         </p>
       )}
     </div>

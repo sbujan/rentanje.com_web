@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { DayPicker, DateRange } from "react-day-picker";
-import { format, differenceInCalendarDays } from "date-fns";
+import { DayPicker, DateRange, Matcher } from "react-day-picker";
+import { format, differenceInCalendarDays, eachDayOfInterval } from "date-fns";
 import { hr } from "date-fns/locale";
 import "react-day-picker/dist/style.css";
 
@@ -36,9 +36,26 @@ export default function AvailabilityCalendar({
   onRangeChange,
 }: Props) {
   const [range, setRange] = useState<DateRange | undefined>();
+  const [error, setError] = useState<string | null>(null);
   const today = new Date();
 
+  function isUnavailable(date: Date) {
+    return date >= today && getStatus(date, availability, stockQty) === "unavailable";
+  }
+
   function handleSelect(r: DateRange | undefined) {
+    if (r?.from && r?.to) {
+      const blocked = eachDayOfInterval({ start: r.from, end: r.to }).find(isUnavailable);
+      if (blocked) {
+        setError(
+          `Odabrani period uključuje nedostupan datum (${format(blocked, "d. MMM yyyy", { locale: hr })}). Molimo odaberite drugi raspon.`
+        );
+        setRange(undefined);
+        onRangeChange?.(null, null, 0);
+        return;
+      }
+    }
+    setError(null);
     setRange(r);
     if (r?.from && r?.to) {
       const days = differenceInCalendarDays(r.to, r.from) + 1;
@@ -47,6 +64,8 @@ export default function AvailabilityCalendar({
       onRangeChange?.(r?.from ?? null, null, 0);
     }
   }
+
+  const disabled: Matcher[] = [{ before: today }, isUnavailable];
 
   const modifiers = {
     unavailable: (date: Date) =>
@@ -60,6 +79,7 @@ export default function AvailabilityCalendar({
       backgroundColor: "#fee2e2",
       color: "#ef4444",
       textDecoration: "line-through",
+      opacity: 1,
     },
     low: {
       backgroundColor: "#fef9c3",
@@ -81,7 +101,7 @@ export default function AvailabilityCalendar({
           mode="range"
           selected={range}
           onSelect={handleSelect}
-          disabled={{ before: today }}
+          disabled={disabled}
           modifiers={modifiers}
           modifiersStyles={modifiersStyles}
           locale={hr}
@@ -105,6 +125,12 @@ export default function AvailabilityCalendar({
           <span className="h-3 w-3 rounded-full bg-red-400" /> Nedostupno
         </span>
       </div>
+
+      {error && (
+        <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-md px-3 py-2">
+          {error}
+        </p>
+      )}
 
       {/* Selected range info */}
       {range?.from && (

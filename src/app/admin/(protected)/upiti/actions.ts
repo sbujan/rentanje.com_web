@@ -2,9 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { eachDayOfInterval, parseISO, format } from "date-fns";
 import { requireAdmin, NotAuthorizedError } from "@/lib/admin-auth";
 import type { CartItem } from "@/lib/cart";
+import {
+  insertAvailabilityRowsForInquiry,
+  deleteAvailabilityRowsForInquiry,
+} from "@/lib/availability";
 
 const STATUS_VALUES = ["new", "read", "replied", "confirmed", "cancelled"] as const;
 type InquiryStatus = (typeof STATUS_VALUES)[number];
@@ -36,70 +39,43 @@ export async function setInquiryStatus(
 
   const { data: inquiry, error: loadErr } = await supabase
     .from("inquiries")
-    .select("id, inquiry_number, status, rental_start, rental_end, items")
+    .select("id, inquiry_number, status, items")
     .eq("id", inquiryId)
     .maybeSingle();
 
   if (loadErr) return { ok: false, error: loadErr.message };
   if (!inquiry) return { ok: false, error: "Upit ne postoji." };
 
-  const wasConfirmed = inquiry.status === "confirmed";
-  const willBeConfirmed = nextStatus === "confirmed";
+  const wasCancelled = inquiry.status === "cancelled";
+  const willBeCancelled = nextStatus === "cancelled";
 
-  // Confirming (from any non-confirmed state, or re-confirming): rebuild
-  // availability rows from scratch so they always reflect the current
-  // inquiry items / dates.
-  if (willBeConfirmed) {
-    const dates = expandRentalDates(inquiry.rental_start, inquiry.rental_end);
-    if (dates.length === 0) {
-      return {
-        ok: false,
-        error: "Upit nema postavljene datume najma. Provjerite rental_start i rental_end.",
-      };
+  // Availability rows are written when an inquiry is submitted. Status
+  // transitions only matter when crossing the cancelled boundary:
+  //  - going to cancelled: free the dates
+  //  - leaving cancelled: re-reserve them
+  if (willBeCancelled && !wasCancelled) {
+    try {
+      await deleteAvailabilityRowsForInquiry(supabase, inquiryId);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Greška pri oslobađanju datuma.";
+      return { ok: false, error: msg };
     }
-
+  } else if (!willBeCancelled && wasCancelled) {
     const items = parseItems(inquiry.items);
-    const quantities = sumQuantitiesByProduct(items);
-    if (quantities.size === 0) {
+    if (items.length === 0) {
       return { ok: false, error: "Upit nema stavki za blokiranje." };
     }
-
-    // Wipe any prior rows from this inquiry (idempotent re-confirm).
-    const { error: delErr } = await supabase
-      .from("availability")
-      .delete()
-      .eq("source_inquiry_id", inquiryId);
-    if (delErr) return { ok: false, error: delErr.message };
-
-    const note = `Iz upita ${inquiry.inquiry_number}`;
-    const rows: Array<{
-      product_id: string;
-      date: string;
-      qty_booked: number;
-      note: string;
-      source_inquiry_id: string;
-    }> = [];
-    for (const [productId, qty] of Array.from(quantities.entries())) {
-      for (const date of dates) {
-        rows.push({
-          product_id: productId,
-          date,
-          qty_booked: qty,
-          note,
-          source_inquiry_id: inquiryId,
-        });
-      }
+    try {
+      await insertAvailabilityRowsForInquiry(
+        supabase,
+        inquiryId,
+        inquiry.inquiry_number,
+        items
+      );
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Greška pri rezervaciji datuma.";
+      return { ok: false, error: msg };
     }
-
-    const { error: insErr } = await supabase.from("availability").insert(rows);
-    if (insErr) return { ok: false, error: insErr.message };
-  } else if (wasConfirmed) {
-    // Un-confirming: free the dates this inquiry blocked.
-    const { error: delErr } = await supabase
-      .from("availability")
-      .delete()
-      .eq("source_inquiry_id", inquiryId);
-    if (delErr) return { ok: false, error: delErr.message };
   }
 
   const { error: updErr } = await supabase
@@ -111,7 +87,6 @@ export async function setInquiryStatus(
   revalidatePath("/admin/upiti");
   revalidatePath(`/admin/upiti/${inquiryId}`);
   revalidatePath("/admin/availability");
-  // Public product pages render the calendar; bust their caches too.
   for (const slug of collectProductSlugs(inquiry.items)) {
     revalidatePath(`/najam/${slug}`);
   }
@@ -119,29 +94,9 @@ export async function setInquiryStatus(
   return { ok: true, data: { status: nextStatus } };
 }
 
-function expandRentalDates(start: string | null, end: string | null): string[] {
-  if (!start || !end) return [];
-  const startDate = parseISO(start);
-  const endDate = parseISO(end);
-  if (endDate < startDate) return [];
-  return eachDayOfInterval({ start: startDate, end: endDate }).map((d) =>
-    format(d, "yyyy-MM-dd")
-  );
-}
-
 function parseItems(raw: unknown): CartItem[] {
   if (!Array.isArray(raw)) return [];
   return raw as CartItem[];
-}
-
-function sumQuantitiesByProduct(items: CartItem[]): Map<string, number> {
-  const totals = new Map<string, number>();
-  for (const item of items) {
-    if (!item?.productId) continue;
-    const qty = Number(item.qty) > 0 ? Number(item.qty) : 1;
-    totals.set(item.productId, (totals.get(item.productId) ?? 0) + qty);
-  }
-  return totals;
 }
 
 function collectProductSlugs(raw: unknown): string[] {
