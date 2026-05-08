@@ -37,6 +37,16 @@ export function calcRentalPrice(days: number, p: PricingTiers): { price: number;
   return { price, upgraded };
 }
 
+/**
+ * Lowest effective daily rate for "od X €/dan" displays and price-asc sort.
+ * Falls back per-day → (per-3-day / 3) → (per-7-day / 7), rounded to whole euros.
+ */
+export function effectiveDailyRate(p: PricingTiers): number {
+  if (p.price_per_day != null) return p.price_per_day;
+  if (p.price_per_3days != null) return Math.round(p.price_per_3days / 3);
+  return Math.round(p.price_per_7days / 7);
+}
+
 export function applyBundleDiscount(
   subtotal: number,
   discountType: "percent" | "fixed" | null,

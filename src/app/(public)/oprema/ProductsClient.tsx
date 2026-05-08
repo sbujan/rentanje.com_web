@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import ProductCard from "@/components/public/ProductCard";
 import { Search } from "lucide-react";
+import { effectiveDailyRate } from "@/lib/pricing";
 
 type Product = {
   id: string;
@@ -11,6 +12,7 @@ type Product = {
   short_desc: string | null;
   hero_image_url: string | null;
   price_per_day: number | null;
+  price_per_3days: number | null;
   price_per_7days: number;
   min_rental_days: 1 | 3 | 7;
   is_available: boolean;
@@ -62,9 +64,9 @@ export default function ProductsClient({ products, categories, activeCategory }:
 
     // Sort
     if (sort === "price_asc") {
-      list.sort((a, b) => (a.price_per_day ?? a.price_per_7days) - (b.price_per_day ?? b.price_per_7days));
+      list.sort((a, b) => effectiveDailyRate(a) - effectiveDailyRate(b));
     } else if (sort === "price_desc") {
-      list.sort((a, b) => (b.price_per_day ?? b.price_per_7days) - (a.price_per_day ?? a.price_per_7days));
+      list.sort((a, b) => effectiveDailyRate(b) - effectiveDailyRate(a));
     } else if (sort === "name_asc") {
       list.sort((a, b) => a.name.localeCompare(b.name, "hr"));
     } else {

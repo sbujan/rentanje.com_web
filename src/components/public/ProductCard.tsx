@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
 import type { Database } from "@/types/database";
+import { effectiveDailyRate } from "@/lib/pricing";
 
 type Product = Database["public"]["Tables"]["products"]["Row"] & {
   categories?: { name: string; color: string | null; slug: string } | null;
@@ -16,7 +17,7 @@ function AvailabilityDot({ isAvailable }: { isAvailable: boolean }) {
 }
 
 export default function ProductCard({ product }: { product: Product }) {
-  const lowestPrice = product.price_per_day ?? product.price_per_7days;
+  const lowestPrice = effectiveDailyRate(product);
   const categoryColor = product.categories?.color ?? "#6B7280";
 
   return (
