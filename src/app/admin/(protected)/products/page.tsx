@@ -57,7 +57,11 @@ export default async function ProductsPage() {
                 return (
                   <tr
                     key={p.id}
-                    className="hover:bg-gray-50 transition-colors"
+                    className={`transition-colors ${
+                      p.is_active
+                        ? "bg-green-50/60 hover:bg-green-50"
+                        : "bg-red-50/60 hover:bg-red-50"
+                    }`}
                   >
                     <td className="px-4 py-3">
                       <div className="font-medium text-brand-text">{p.name}</div>
