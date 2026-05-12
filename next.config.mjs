@@ -17,6 +17,7 @@ const nextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
           { key: "X-DNS-Prefetch-Control", value: "on" },
+          { key: "Link", value: '<https://rentanje.com/sitemap.xml>; rel="sitemap", <https://rentanje.com/llms.txt>; rel="llms-txt"' },
         ],
       },
     ];

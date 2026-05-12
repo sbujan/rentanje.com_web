@@ -21,22 +21,28 @@ interface Props {
 }
 
 function buildProductSchema(product: Product) {
-  const lowestPrice = product.price_per_day ?? product.price_per_7days;
+  const productUrl = `https://rentanje.com/najam/${product.slug}`;
+  const priceValidUntil = new Date();
+  priceValidUntil.setFullYear(priceValidUntil.getFullYear() + 1);
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
     description: product.short_desc ?? product.name,
     image: product.hero_image_url ? [product.hero_image_url] : undefined,
+    sku: product.slug,
+    url: productUrl,
+    ...(product.categories ? { category: product.categories.name } : {}),
     offers: {
-      "@type": "AggregateOffer",
+      "@type": "Offer",
       priceCurrency: "EUR",
-      lowPrice: String(lowestPrice),
-      highPrice: String(product.price_per_7days),
-      offerCount: "1",
+      price: String(product.price_per_day),
+      priceValidUntil: priceValidUntil.toISOString().slice(0, 10),
+      itemCondition: "https://schema.org/UsedCondition",
       availability: product.is_available
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",
+      url: productUrl,
     },
   };
 }
