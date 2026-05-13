@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getCategoryImageUrl } from "@/lib/category-images";
 import CategoryPage from "./CategoryPage";
 import ProductPage from "./ProductPage";
 
@@ -62,6 +63,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       cat.seo_description ??
       `Iznajmite ${cat.name.toLowerCase()} u Zagrebu. Povoljne cijene, brz odgovor. | rentanje.com`;
     const canonical = `https://rentanje.com/najam/${cat.slug}`;
+    const ogImage = getCategoryImageUrl(cat.slug);
+    const ogImages = ogImage
+      ? [{ url: ogImage, width: 1200, height: 630, alt: cat.name }]
+      : [];
     return {
       title,
       description,
@@ -73,11 +78,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         siteName: "rentanje.com",
         type: "website",
         locale: "hr_HR",
+        images: ogImages,
       },
       twitter: {
         card: "summary_large_image",
         title,
         description,
+        images: ogImage ? [ogImage] : undefined,
       },
     };
   }

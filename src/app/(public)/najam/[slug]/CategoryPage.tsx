@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import ProductCard from "@/components/public/ProductCard";
 import PageHero from "@/components/public/PageHero";
+import { CATEGORY_IMAGES, getCategoryImageUrl } from "@/lib/category-images";
 import type { Database } from "@/types/database";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
@@ -9,27 +10,64 @@ type Product = Database["public"]["Tables"]["products"]["Row"] & {
   categories?: { name: string; color: string | null; slug: string } | null;
 };
 
-// Fallback images per slug (used if category has no hero_image_url in DB)
-const CATEGORY_IMAGES: Record<string, string> = {
-  "audio-video-oprema": "/Projektor-s-platnom.jpg",
-  "oprema-za-evente": "/Druzenje-na-otvorenom.jpg",
-  "rostilj-kuhanje": "/Kulinarski-dozivljaj.jpg",
-  "kamp-outdoor": "/sator-za-kampiranje-mh100-fresh-black-za-tri-osobe-2.avif",
-  "alati-ciscenje": "/kercher%20puzzi.jpg",
-  "ostalo": "/Hiluckey-solarni-Powerbank-25000mAh.jpg",
-};
-
 interface Props {
   category: Category;
   products: Product[];
 }
 
+function buildCollectionPageSchema(category: Category, products: Product[]) {
+  const url = `https://rentanje.com/najam/${category.slug}`;
+  const absoluteImage = getCategoryImageUrl(category.slug);
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: category.name,
+    description:
+      category.description ??
+      category.seo_description ??
+      `Iznajmite ${category.name.toLowerCase()} u Zagrebu.`,
+    url,
+    ...(absoluteImage ? { image: absoluteImage } : {}),
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: products.length,
+      itemListElement: products.map((p, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `https://rentanje.com/najam/${p.slug}`,
+        name: p.name,
+      })),
+    },
+  };
+}
+
+function buildBreadcrumbSchema(category: Category) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Početna", item: "https://rentanje.com" },
+      { "@type": "ListItem", position: 2, name: "Oprema", item: "https://rentanje.com/oprema" },
+      { "@type": "ListItem", position: 3, name: category.name, item: `https://rentanje.com/najam/${category.slug}` },
+    ],
+  };
+}
+
 export default function CategoryPage({ category, products }: Props) {
-  const imageUrl = (category as any).hero_image_url ?? CATEGORY_IMAGES[category.slug] ?? undefined;
+  const imageUrl = CATEGORY_IMAGES[category.slug];
   const color = category.color ?? "#6B7280";
 
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildCollectionPageSchema(category, products)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbSchema(category)) }}
+      />
+
       <PageHero
         title={category.name}
         subtitle={category.description ?? undefined}

@@ -140,7 +140,7 @@ export default async function HomePage() {
             Iznajmi, uživaj, vrati.
           </h1>
           <p className="text-base sm:text-lg text-white/80 max-w-2xl mx-auto">
-            Oprema za evente, roštilj, kamp i zabavu — dostava u Zagreb i okolicu.
+            Oprema za evente, roštilj, kamp i zabavu. Dostava u Zagreb i okolicu.
           </p>
         </div>
       </section>

@@ -18,7 +18,7 @@ const categories = [
   {
     id: 2,
     slug: "oprema-za-evente",
-    title: "Evente i zabava",
+    title: "Eventi i zabava",
     subtitle: "Šatori, stolovi, dekoracije, igre",
     imageUrl: "/Druzenje-na-otvorenom.jpg",
     color: "#FF6B6B",
@@ -174,7 +174,7 @@ export function CategoryAccordion() {
             {categories.map((cat) => (
               <Link
                 key={cat.id}
-                href={`/oprema?cat=${cat.slug}`}
+                href={`/najam/${cat.slug}`}
                 className="group relative block aspect-[3/1] rounded-2xl overflow-hidden shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
               >
                 <Image

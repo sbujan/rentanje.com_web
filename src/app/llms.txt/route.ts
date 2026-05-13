@@ -16,8 +16,8 @@ export async function GET() {
       const raw = c.seo_description?.trim();
       const desc = raw && raw.length > 140 ? `${raw.slice(0, 137)}...` : raw;
       return desc
-        ? `- [${c.name}](${BASE}/oprema?cat=${c.slug}): ${desc}`
-        : `- [${c.name}](${BASE}/oprema?cat=${c.slug})`;
+        ? `- [${c.name}](${BASE}/najam/${c.slug}): ${desc}`
+        : `- [${c.name}](${BASE}/najam/${c.slug})`;
     })
     .join("\n");
 

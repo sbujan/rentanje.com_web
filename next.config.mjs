@@ -26,6 +26,16 @@ const nextConfig = {
   // SEO 301 redirects — old WordPress/WooCommerce URLs → new site
   async redirects() {
     return [
+      // Category canonical migration: /oprema?cat=<slug> → /najam/<slug>
+      // Captures the cat query string into :slug. Fires before the page function,
+      // so it bypasses ISR caching that would otherwise eat in-page redirects.
+      {
+        source: "/oprema",
+        has: [{ type: "query", key: "cat", value: "(?<slug>.+)" }],
+        destination: "/najam/:slug",
+        permanent: true,
+      },
+
       // Pages
       { source: "/basket/",      destination: "/upit",     permanent: true },
       { source: "/checkout/",    destination: "/upit",     permanent: true },

@@ -30,7 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const categoryPages: MetadataRoute.Sitemap = (categories ?? []).map((c) => ({
-    url: `${BASE}/oprema?cat=${c.slug}`,
+    url: `${BASE}/najam/${c.slug}`,
     lastModified: new Date(c.created_at),
     changeFrequency: "weekly",
     priority: 0.7,
