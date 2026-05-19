@@ -15,9 +15,9 @@ export const metadata: Metadata = {
     siteName: "rentanje.com",
     type: "website",
     locale: "hr_HR",
-    images: [{ url: "/rentanje-com-hero.jpg", width: 1200, height: 630, alt: "rentanje.com" }],
+    images: [{ url: "/rentanje-najam-zagreb-iznajmi.jpg", width: 1254, height: 1254, alt: "RENTANJE.COM — Ne kupuj, iznajmi." }],
   },
-  twitter: { card: "summary", title: "O nama — rentanje.com", images: ["/rentanje-com-hero.jpg"] },
+  twitter: { card: "summary", title: "O nama — rentanje.com", images: ["/rentanje-najam-zagreb-iznajmi.jpg"] },
 };
 
 const PHONE = "+385 95 204 4414";

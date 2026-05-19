@@ -23,13 +23,13 @@ export const metadata: Metadata = {
     siteName: "rentanje.com",
     type: "website",
     locale: "hr_HR",
-    images: [{ url: "/rentanje-com-hero.jpg", width: 1200, height: 630, alt: "rentanje.com" }],
+    images: [{ url: "/rentanje-najam-zagreb-iznajmi.jpg", width: 1254, height: 1254, alt: "RENTANJE.COM — Ne kupuj, iznajmi." }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Iznajmljivanje opreme u Zagrebu | rentanje.com",
     description: "Iznajmite audio, video, event, roštilj, kamp i outdoor opremu u Zagrebu.",
-    images: ["/rentanje-com-hero.jpg"],
+    images: ["/rentanje-najam-zagreb-iznajmi.jpg"],
   },
 };
 
@@ -40,7 +40,7 @@ const localBusinessSchema = {
   telephone: "+385952044414",
   email: "info@rentanje.com",
   url: "https://rentanje.com",
-  image: "https://rentanje.com/rentanje-com-hero.jpg",
+  image: "https://rentanje.com/rentanje-najam-zagreb-iznajmi.jpg",
   address: { "@type": "PostalAddress", addressCountry: "HR", addressLocality: "Zagreb", streetAddress: "Naserov trg 4" },
   areaServed: [
     { "@type": "City", name: "Zagreb" },

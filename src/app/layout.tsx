@@ -24,13 +24,23 @@ export const metadata: Metadata = {
     locale: "hr_HR",
     siteName: "rentanje.com",
     type: "website",
+    images: [
+      {
+        url: "/rentanje-najam-zagreb-iznajmi.jpg",
+        width: 1254,
+        height: 1254,
+        alt: "RENTANJE.COM — Ne kupuj, iznajmi.",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
+    images: ["/rentanje-najam-zagreb-iznajmi.jpg"],
   },
   icons: {
-    icon: "/favicon.svg",
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
     shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
   },
   verification: {
     google: "A9x73begeWeFmlYNJ0yZpaPPUDQMZPkGcvdyS8M69CY",
