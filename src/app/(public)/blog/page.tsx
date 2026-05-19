@@ -35,11 +35,14 @@ export const metadata: Metadata = {
 export default async function BlogPage() {
   const supabase = await createClient();
 
-  const { data: posts } = await supabase
+  const { data: posts, error: postsErr } = await supabase
     .from("blog_posts")
     .select("id, title, slug, excerpt, hero_image_url, author, published_at, reading_time")
     .eq("is_published", true)
     .order("published_at", { ascending: false });
+
+  // Degrade to "coming soon" empty-state, but make the failure observable.
+  if (postsErr) console.error("Blog listing query failed:", postsErr);
 
   return (
     <main>

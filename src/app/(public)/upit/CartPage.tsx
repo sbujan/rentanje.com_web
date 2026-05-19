@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -89,6 +89,9 @@ export default function CartPage() {
     clearPromo,
   } = useCartStore();
   const [submitting, setSubmitting] = useState(false);
+  // Synchronous lock: `submitting` state lags a render behind, so a fast
+  // double-click could fire onSubmit twice and create duplicate inquiries.
+  const submitLock = useRef(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [promoInput, setPromoInput] = useState("");
   const [promoChecking, setPromoChecking] = useState(false);
@@ -165,6 +168,8 @@ export default function CartPage() {
   }
 
   async function onSubmit(data: FormData) {
+    if (submitLock.current) return;
+    submitLock.current = true;
     setSubmitting(true);
     setServerError(null);
 
@@ -210,6 +215,9 @@ export default function CartPage() {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Greška pri slanju upita. Pokušajte ponovo.";
       setServerError(message);
+      // Only release the lock on failure so the user can retry. On success the
+      // page navigates to /hvala and should stay locked until it unmounts.
+      submitLock.current = false;
     } finally {
       setSubmitting(false);
     }

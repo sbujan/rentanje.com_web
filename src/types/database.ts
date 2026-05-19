@@ -182,6 +182,8 @@ export interface Database {
           seo_description?: string | null;
           seo_keywords?: string[] | null;
           schema_json?: Json | null;
+          view_count?: number;
+          inquiry_count?: number;
           sort_order?: number;
           faq?: Array<{ question: string; answer: string }> | null;
         };

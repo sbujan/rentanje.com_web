@@ -13,17 +13,24 @@ export async function POST(req: NextRequest) {
   const supabase = createAdminClient();
 
   // Fetch current count then increment (atomic enough for analytics)
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("products")
     .select("view_count")
     .eq("id", productId)
     .single();
 
-  if (data) {
-    await supabase
+  // Fire-and-forget beacon: log failures but always 200 so the client
+  // doesn't retry or surface analytics noise to the user.
+  if (error) {
+    if (error.code !== "PGRST116") {
+      console.error("track-view select failed:", error);
+    }
+  } else if (data) {
+    const { error: updateErr } = await supabase
       .from("products")
-      .update({ view_count: (data.view_count ?? 0) + 1 } as any)
+      .update({ view_count: (data.view_count ?? 0) + 1 })
       .eq("id", productId);
+    if (updateErr) console.error("track-view update failed:", updateErr);
   }
 
   return NextResponse.json({ ok: true });

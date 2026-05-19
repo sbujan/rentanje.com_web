@@ -155,7 +155,13 @@ export default function ImageUpload({
       {value ? (
         <div className="relative group">
           <div className="relative aspect-video rounded-lg overflow-hidden bg-gray-100">
-            <Image src={value} alt="Pregled slike" fill className="object-cover" />
+            <Image
+              src={value}
+              alt="Pregled slike"
+              fill
+              sizes="(max-width: 768px) 100vw, 400px"
+              className="object-cover"
+            />
           </div>
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-3">
             <button

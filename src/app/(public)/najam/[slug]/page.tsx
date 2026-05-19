@@ -135,39 +135,55 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function NajamSlugPage({ params }: Props) {
   const supabase = await createClient();
 
-  // Check if slug is a category
-  const { data: category } = await supabase
+  // Check if slug is a category. `.single()` reports "no rows" as PGRST116 —
+  // that's the expected "not a category, try product" path, not a failure.
+  const { data: category, error: categoryErr } = await supabase
     .from("categories")
     .select("*")
     .eq("slug", params.slug)
     .single();
 
+  if (categoryErr && categoryErr.code !== "PGRST116") {
+    console.error("Category lookup failed:", categoryErr);
+    throw new Error("Failed to load category");
+  }
+
   if (category) {
-    const { data: products } = await supabase
+    const { data: products, error: productsErr } = await supabase
       .from("products")
       .select("*, categories(name, color, slug)")
       .eq("is_active", true)
       .eq("category_id", category.id)
       .order("sort_order");
 
+    if (productsErr) {
+      console.error("Category products query failed:", productsErr);
+      throw new Error("Failed to load category products");
+    }
+
     return <CategoryPage category={category} products={(products ?? []) as any} />;
   }
 
-  // Check if slug is a product
-  const { data: product } = await supabase
+  // Check if slug is a product. Same PGRST116 nuance: no rows → notFound().
+  const { data: product, error: productErr } = await supabase
     .from("products")
     .select("*, categories(name, color, slug)")
     .eq("slug", params.slug)
     .eq("is_active", true)
     .single();
 
+  if (productErr && productErr.code !== "PGRST116") {
+    console.error("Product lookup failed:", productErr);
+    throw new Error("Failed to load product");
+  }
+
   if (!product) notFound();
 
   // Fan out the three independent reads in parallel instead of awaiting each.
   const [
-    { data: availability },
-    { data: tags },
-    { data: relatedRows },
+    { data: availability, error: availErr },
+    { data: tags, error: tagsErr },
+    { data: relatedRows, error: relErr },
   ] = await Promise.all([
     supabase
       .from("availability")
@@ -185,14 +201,21 @@ export default async function NajamSlugPage({ params }: Props) {
       .order("sort_order"),
   ]);
 
+  if (availErr || tagsErr || relErr) {
+    console.error("Product detail queries failed:", availErr || tagsErr || relErr);
+    throw new Error("Failed to load product details");
+  }
+
   let relatedProducts: any[] = [];
   if (relatedRows && relatedRows.length > 0) {
     const ids = relatedRows.map((r) => r.related_id);
-    const { data } = await supabase
+    // Related products are supplementary — log and degrade rather than fail the page.
+    const { data, error: relProdErr } = await supabase
       .from("products")
       .select("*, categories(name, color, slug)")
       .in("id", ids)
       .eq("is_active", true);
+    if (relProdErr) console.error("Related products query failed:", relProdErr);
     relatedProducts = ids
       .map((id) => data?.find((p: any) => p.id === id))
       .filter(Boolean);

@@ -7,11 +7,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = await createClient();
 
   const [
-    { data: products },
-    { data: categories },
-    { data: bundles },
-    { data: posts },
-    { data: seoPages },
+    { data: products, error: productsErr },
+    { data: categories, error: categoriesErr },
+    { data: bundles, error: bundlesErr },
+    { data: posts, error: postsErr },
+    { data: seoPages, error: seoPagesErr },
   ] = await Promise.all([
     supabase.from("products").select("slug, updated_at").eq("is_active", true),
     supabase.from("categories").select("slug, created_at"),
@@ -19,6 +19,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     supabase.from("blog_posts").select("slug, updated_at").eq("is_published", true),
     supabase.from("seo_pages").select("slug, updated_at").eq("is_published", true),
   ]);
+
+  // A partial sitemap (static pages + whatever succeeded) is far better than an
+  // empty one that silently de-indexes the catalog. Each section already
+  // degrades via `?? []`; we only need the failure to be observable.
+  if (productsErr || categoriesErr || bundlesErr || postsErr || seoPagesErr) {
+    console.error("Sitemap query partial failure:", {
+      productsErr,
+      categoriesErr,
+      bundlesErr,
+      postsErr,
+      seoPagesErr,
+    });
+  }
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE, lastModified: new Date(), changeFrequency: "weekly", priority: 1.0 },

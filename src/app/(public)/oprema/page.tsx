@@ -35,7 +35,10 @@ export const metadata: Metadata = {
 export default async function OpremaPage() {
   const supabase = await createClient();
 
-  const [{ data: products }, { data: categories }] = await Promise.all([
+  const [
+    { data: products, error: productsErr },
+    { data: categories, error: categoriesErr },
+  ] = await Promise.all([
     supabase
       .from("products")
       .select("*, categories(name, color, slug)")
@@ -43,6 +46,11 @@ export default async function OpremaPage() {
       .order("sort_order"),
     supabase.from("categories").select("*").order("sort_order"),
   ]);
+
+  // Listing degrades to empty-state on failure, but the failure must be observable.
+  if (productsErr || categoriesErr) {
+    console.error("Oprema listing query failed:", productsErr || categoriesErr);
+  }
 
   return (
     <main>

@@ -89,7 +89,10 @@ const whyUs = [
 export default async function HomePage() {
   const supabase = await createClient();
 
-  const [{ data: featured }, { data: testimonials }] = await Promise.all([
+  const [
+    { data: featured, error: featuredErr },
+    { data: testimonials, error: testimonialsErr },
+  ] = await Promise.all([
     supabase
       .from("products")
       .select("*, categories(name, color, slug)")
@@ -104,6 +107,11 @@ export default async function HomePage() {
       .order("sort_order")
       .limit(6),
   ]);
+
+  // Homepage degrades gracefully (sections hide if empty), but log failures.
+  if (featuredErr || testimonialsErr) {
+    console.error("Homepage data query failed:", featuredErr || testimonialsErr);
+  }
 
   return (
     <>

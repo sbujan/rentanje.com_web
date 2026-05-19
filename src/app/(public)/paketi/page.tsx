@@ -30,11 +30,14 @@ const PHONE_HREF = "tel:+385952044414";
 export default async function PaketiPage() {
   const supabase = await createClient();
 
-  const { data: bundles } = await supabase
+  const { data: bundles, error: bundlesErr } = await supabase
     .from("bundles")
     .select("*")
     .eq("is_active", true)
     .order("is_featured", { ascending: false });
+
+  // Degrade to "Paketi uskoro!" empty-state, but make the failure observable.
+  if (bundlesErr) console.error("Bundles listing query failed:", bundlesErr);
 
   return (
     <main>

@@ -15,9 +15,21 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const supabase = createAdminClient();
-  const { data } = await supabase.from("bundles").select("slug").eq("is_active", true);
-  return (data ?? []).map((b) => ({ slug: b.slug }));
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("bundles")
+      .select("slug")
+      .eq("is_active", true);
+    if (error) {
+      console.error("generateStaticParams (paketi) query failed:", error);
+      return [];
+    }
+    return (data ?? []).map((b) => ({ slug: b.slug }));
+  } catch (err) {
+    console.error("generateStaticParams (paketi) threw:", err);
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -62,19 +74,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BundlePage({ params }: Props) {
   const supabase = await createClient();
 
-  const { data: bundle } = await supabase
+  // `.single()` reports "no rows" as PGRST116 — that's the notFound() path,
+  // not a failure. Any other error is a real DB problem.
+  const { data: bundle, error: bundleErr } = await supabase
     .from("bundles")
     .select("*")
     .eq("slug", params.slug)
     .eq("is_active", true)
     .single();
 
+  if (bundleErr && bundleErr.code !== "PGRST116") {
+    console.error("Bundle lookup failed:", bundleErr);
+    throw new Error("Failed to load bundle");
+  }
+
   if (!bundle) notFound();
 
-  const { data: bundleProductRows } = await supabase
+  const { data: bundleProductRows, error: bundleProductsErr } = await supabase
     .from("bundle_products")
     .select("qty, product:products(id, name, slug, hero_image_url, price_per_day, price_per_3days, price_per_7days, min_rental_days, requires_deposit, deposit_amount)")
     .eq("bundle_id", bundle.id);
+
+  if (bundleProductsErr) {
+    console.error("Bundle products query failed:", bundleProductsErr);
+    throw new Error("Failed to load bundle contents");
+  }
 
   type BundleProductRow = {
     qty: number;

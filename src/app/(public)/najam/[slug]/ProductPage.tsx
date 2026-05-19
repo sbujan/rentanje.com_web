@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DOMPurify from "isomorphic-dompurify";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import AddToCartCard from "@/components/public/AddToCartCard";
 import ProductCard from "@/components/public/ProductCard";
@@ -189,7 +190,13 @@ export default function ProductPage({ product, availability, tags, relatedProduc
                 <h2 className="font-display font-bold text-lg text-brand-text">Opis</h2>
                 <div
                   className="prose prose-sm max-w-none text-brand-text leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(product.description, {
+                      USE_PROFILES: { html: true },
+                      FORBID_TAGS: ["script", "style", "iframe", "object", "embed", "form"],
+                      FORBID_ATTR: ["onerror", "onload", "onclick", "onmouseover", "onfocus", "onblur", "style"],
+                    }),
+                  }}
                 />
               </div>
             )}

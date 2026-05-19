@@ -20,10 +20,16 @@ function formatPrice(n: number | null) {
 export default async function UpitiPage() {
   const supabase = await createClient();
 
-  const { data: inquiries } = await supabase
+  const { data: inquiries, error: inquiriesErr } = await supabase
     .from("inquiries")
     .select("id, inquiry_number, status, customer_name, customer_email, customer_phone, subtotal_estimate, created_at")
     .order("created_at", { ascending: false });
+
+  // Admin must never see a misleading "Nema upita." when the DB is actually down.
+  if (inquiriesErr) {
+    console.error("Inquiries query failed:", inquiriesErr);
+    throw new Error("Failed to load inquiries");
+  }
 
   const newCount = inquiries?.filter((i) => i.status === "new").length ?? 0;
 

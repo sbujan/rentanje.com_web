@@ -18,12 +18,21 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const supabase = createAdminClient();
-  const { data } = await supabase
-    .from("blog_posts")
-    .select("slug")
-    .eq("is_published", true);
-  return (data ?? []).map((p) => ({ slug: p.slug }));
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("blog_posts")
+      .select("slug")
+      .eq("is_published", true);
+    if (error) {
+      console.error("generateStaticParams (blog) query failed:", error);
+      return [];
+    }
+    return (data ?? []).map((p) => ({ slug: p.slug }));
+  } catch (err) {
+    console.error("generateStaticParams (blog) threw:", err);
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
