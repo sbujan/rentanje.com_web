@@ -6,6 +6,37 @@ import { useEffect, useRef } from "react";
 const MAPS_API_KEY = "AIzaSyCLNz1nlO6Q1Qyb_kLoxgwYVKzsDcYfB_c";
 const COORDS = { lat: 45.77584998301192, lng: 15.954651579762267 };
 
+const QUICK_BUILDER_CONFIG = {
+  locations: [
+    {
+      title: "rentanje.com — Naserov trg 4",
+      address1: "Naserov trg 4",
+      address2: "10000 Zagreb, Hrvatska",
+      coords: COORDS,
+      placeId: "ChIJbR0j6N3VZUcR32yzwIXFO3Q",
+    },
+  ],
+  mapOptions: {
+    center: COORDS,
+    fullscreenControl: true,
+    mapTypeControl: false,
+    streetViewControl: false,
+    zoom: 15,
+    zoomControl: true,
+    maxZoom: 17,
+    mapId: "",
+  },
+  mapsApiKey: MAPS_API_KEY,
+  capabilities: {
+    input: false,
+    autocomplete: false,
+    directions: true,
+    distanceMatrix: false,
+    details: false,
+    actions: false,
+  },
+};
+
 type MapLocatorProps = {
   height?: number;
   className?: string;
@@ -15,37 +46,6 @@ export default function MapLocator({ height = 360, className }: MapLocatorProps)
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    (window as unknown as { CONFIGURATION: unknown }).CONFIGURATION = {
-      locations: [
-        {
-          title: "Naserov trg 4",
-          address1: "Naserov trg 4",
-          address2: "10000, Zagreb, Croatia",
-          coords: COORDS,
-          placeId: "ChIJbR0j6N3VZUcR32yzwIXFO3Q",
-        },
-      ],
-      mapOptions: {
-        center: COORDS,
-        fullscreenControl: true,
-        mapTypeControl: false,
-        streetViewControl: false,
-        zoom: 15,
-        zoomControl: true,
-        maxZoom: 17,
-        mapId: "",
-      },
-      mapsApiKey: MAPS_API_KEY,
-      capabilities: {
-        input: false,
-        autocomplete: false,
-        directions: false,
-        distanceMatrix: false,
-        details: false,
-        actions: false,
-      },
-    };
-
     const el = containerRef.current;
     if (!el || el.childElementCount > 0) return;
 
@@ -59,6 +59,13 @@ export default function MapLocator({ height = 360, className }: MapLocatorProps)
     (locator as HTMLElement).style.height = "100%";
 
     el.append(loader, locator);
+
+    customElements.whenDefined("gmpx-store-locator").then(() => {
+      const locatorEl = locator as HTMLElement & {
+        configureFromQuickBuilder?: (config: typeof QUICK_BUILDER_CONFIG) => void;
+      };
+      locatorEl.configureFromQuickBuilder?.(QUICK_BUILDER_CONFIG);
+    });
   }, []);
 
   return (
@@ -70,10 +77,7 @@ export default function MapLocator({ height = 360, className }: MapLocatorProps)
       />
       <div
         ref={containerRef}
-        className={
-          className ??
-          "rounded-xl overflow-hidden border border-gray-100"
-        }
+        className={className ?? "rounded-xl overflow-hidden border border-gray-100"}
         style={{ height }}
       />
     </>
