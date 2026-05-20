@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Phone, Mail, MapPin, Clock, Loader2, CheckCircle } from "lucide-react";
+import MapLocator from "@/components/public/MapLocator";
 
 const PHONE = "+385 95 204 4414";
 const PHONE_HREF = "tel:+385952044414";
@@ -155,17 +156,8 @@ export default function HomeCTAContact() {
         </div>
 
         {/* Google Maps */}
-        <div className="mt-8 rounded-xl overflow-hidden" style={{ height: 280 }}>
-          <iframe
-            src="https://maps.google.com/maps?q=Naserov+trg+4,+Zagreb&t=m&z=16&ie=UTF8&iwloc=&output=embed"
-            width="100%"
-            height="100%"
-            className="w-full h-full border-0 opacity-90"
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Lokacija — Naserov trg 4, Zagreb"
-          />
+        <div className="mt-8">
+          <MapLocator height={280} className="rounded-xl overflow-hidden" />
         </div>
       </div>
     </section>
