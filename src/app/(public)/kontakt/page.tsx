@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import PageHero from "@/components/public/PageHero";
-import MapLocator from "@/components/public/MapLocator";
 import KontaktForm from "./KontaktForm";
 
 const PHONE = "+385 95 204 4414";
@@ -107,8 +106,17 @@ export default function KontaktPage() {
         </div>
 
         {/* Google Maps */}
-        <div className="mt-10">
-          <MapLocator height={360} />
+        <div className="mt-10 rounded-xl overflow-hidden border border-gray-100" style={{ height: 360 }}>
+          <iframe
+            src="https://maps.google.com/maps?q=Naserov+trg+4,+Zagreb&t=m&z=16&ie=UTF8&iwloc=&output=embed"
+            width="100%"
+            height="100%"
+            className="w-full h-full border-0"
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Lokacija — Naserov trg 4, Zagreb"
+          />
         </div>
       </main>
     </>

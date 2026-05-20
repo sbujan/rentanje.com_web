@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Phone, Mail, MapPin, CheckCircle } from "lucide-react";
 import PageHero from "@/components/public/PageHero";
-import MapLocator from "@/components/public/MapLocator";
 
 export const metadata: Metadata = {
   title: "O nama — rentanje.com",
@@ -89,10 +88,6 @@ export default function ONamaPage() {
         <p className="text-xs text-brand-muted pt-2 border-t border-gray-100">
           List 360 d.o.o. · OIB: 30800965664
         </p>
-      </div>
-
-      <div className="mt-6">
-        <MapLocator height={320} />
       </div>
 
       <div className="mt-8 flex gap-3">
