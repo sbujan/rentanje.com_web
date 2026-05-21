@@ -3,7 +3,7 @@
 > Stack: Next.js 14 (App Router) · Supabase · Resend · Vercel  
 > Primary color: `#F05554` · Domain: rentanje.com  
 > Company: **List 360 d.o.o.** · Phone: **+385 95 204 4414**  
-> GA4 Measurement ID: `G-9DHK95X546`  
+> GA4 Measurement ID: `G-1P1FZ42KL7`  
 > Last updated: all founder Q&A answers incorporated
 
 ---
@@ -77,7 +77,7 @@
 | Email | Resend + React Email | Inquiry confirmations, admin alerts |
 | Deployment | Vercel | Edge middleware for redirects |
 | Image optimisation | Next.js `<Image>` + Supabase CDN | WebP auto-conversion |
-| Analytics | Google Analytics 4 (`G-9DHK95X546`) + Vercel Analytics | |
+| Analytics | Google Analytics 4 (`G-1P1FZ42KL7`) + Vercel Analytics | |
 | SEO tooling | next-sitemap | Auto-generates sitemap.xml |
 | Forms | React Hook Form + Zod | Validation |
 | Dates | date-fns | Availability calendar |
@@ -1245,7 +1245,7 @@ export function localBusinessSchema() {
 ```typescript
 // app/layout.tsx
 import { GoogleAnalytics } from '@next/third-parties/google'
-// <GoogleAnalytics gaId="G-9DHK95X546" />
+// <GoogleAnalytics gaId="G-1P1FZ42KL7" />
 ```
 
 ### GA4 Events to fire
@@ -1553,7 +1553,7 @@ RESEND_FROM_EMAIL=info@rentanje.com
 NEXT_PUBLIC_SITE_URL=https://rentanje.com
 NEXT_PUBLIC_SITE_NAME=rentanje.com
 NEXT_PUBLIC_PHONE=+385952044414
-NEXT_PUBLIC_GA_ID=G-9DHK95X546
+NEXT_PUBLIC_GA_ID=G-1P1FZ42KL7
 ADMIN_EMAIL=                      # inquiry alert destination
 CRON_SECRET=                      # random string to auth Vercel cron calls
 
