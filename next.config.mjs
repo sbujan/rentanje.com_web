@@ -7,6 +7,12 @@ const nextConfig = {
     ],
   },
 
+  // jsdom (pulled in by isomorphic-dompurify) does dynamic require()s that break
+  // when bundled into a serverless function — keep it external so it loads intact.
+  experimental: {
+    serverComponentsExternalPackages: ["isomorphic-dompurify"],
+  },
+
   async headers() {
     return [
       {
