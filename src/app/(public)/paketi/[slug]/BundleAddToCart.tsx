@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DayPicker, DateRange } from "react-day-picker";
 import { differenceInCalendarDays } from "date-fns";
@@ -9,6 +9,7 @@ import { ShoppingCart, Phone } from "lucide-react";
 import "react-day-picker/dist/style.css";
 import { useCartStore, type CartItem } from "@/lib/cart";
 import { calcRentalPrice, applyBundleDiscount } from "@/lib/pricing";
+import { gtagEvent, trackBundleViewed, trackPhoneClick } from "@/lib/gtag";
 
 interface BundleProduct {
   id: string;
@@ -46,6 +47,10 @@ export default function BundleAddToCart({ bundle, products }: Props) {
 
   const [range, setRange] = useState<DateRange | undefined>();
   const [added, setAdded] = useState(false);
+
+  useEffect(() => {
+    trackBundleViewed(bundle.id, bundle.name);
+  }, [bundle.id, bundle.name]);
 
   const today = new Date();
   const days =
@@ -102,6 +107,17 @@ export default function BundleAddToCart({ bundle, products }: Props) {
     }
 
     addBundle(items);
+
+    gtagEvent("add_to_cart", {
+      currency: "EUR",
+      value: total,
+      items: items.map((i) => ({
+        item_id: i.productId,
+        item_name: i.productName,
+        price: i.totalPrice,
+      })),
+    });
+
     setAdded(true);
     setTimeout(() => router.push("/upit"), 600);
   }
@@ -110,6 +126,7 @@ export default function BundleAddToCart({ bundle, products }: Props) {
     <div className="bg-white rounded-xl shadow-card p-5 space-y-5 border border-gray-100">
       <a
         href={PHONE_HREF}
+        onClick={trackPhoneClick}
         className="flex items-center gap-2 text-brand-primary font-bold hover:text-brand-dark transition-colors"
       >
         <Phone className="h-5 w-5" />

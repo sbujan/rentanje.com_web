@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Open_Sans } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import CookieBanner from "@/components/public/CookieBanner";
+import RouteAnalytics from "@/components/public/RouteAnalytics";
 
 const openSans = Open_Sans({
   subsets: ["latin", "latin-ext"],
@@ -71,6 +74,10 @@ export default function RootLayout({
       <body className={`${openSans.variable} antialiased`}>
         {children}
         <CookieBanner />
+        <Suspense fallback={null}>
+          <RouteAnalytics />
+        </Suspense>
+        <SpeedInsights />
       </body>
     </html>
   );

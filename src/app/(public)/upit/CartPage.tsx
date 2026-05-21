@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCartStore, CartItem } from "@/lib/cart";
 import { formatPrice } from "@/lib/utils";
-import { trackPurchase } from "@/lib/gtag";
+import {
+  gtagEvent,
+  trackBeginCheckout,
+  trackViewCart,
+  trackRemoveFromCart,
+  trackPromoApplied,
+  trackGenerateLead,
+  trackPhoneClick,
+} from "@/lib/gtag";
 import { Trash2, ShoppingBag, ChevronRight, Loader2, Phone, Tag, X } from "lucide-react";
 
 const DELIVERY_FEE = 10;
@@ -128,6 +136,21 @@ export default function CartPage() {
     Math.max(0, subtotal - bundleDiscountTotal - promoDiscount) + totalDeposit + deliveryFee;
   const rentalDays = items[0]?.days ?? 0;
 
+  // Fire begin_checkout + view_cart once per cart-page visit, after the
+  // persisted cart has hydrated from localStorage.
+  const checkoutTracked = useRef(false);
+  useEffect(() => {
+    if (checkoutTracked.current || items.length === 0) return;
+    checkoutTracked.current = true;
+    const eventItems = items.map((i) => ({
+      id: i.productId,
+      name: i.productName,
+      price: i.totalPrice,
+    }));
+    trackViewCart(grandTotal, eventItems);
+    trackBeginCheckout(grandTotal, eventItems);
+  }, [items, grandTotal]);
+
   async function handleApplyPromo(e: React.FormEvent) {
     e.preventDefault();
     if (!promoInput.trim()) return;
@@ -150,6 +173,7 @@ export default function CartPage() {
       const json = await res.json();
       if (json.ok) {
         applyPromo(json.code, json.discount);
+        trackPromoApplied(json.code, json.discount);
         setPromoMessage({ type: "ok", text: `Primijenjen kod: -${json.discount.toFixed(0)} €` });
         setPromoInput("");
       } else {
@@ -209,7 +233,10 @@ export default function CartPage() {
       }
 
       const { inquiryId } = await res.json();
-      trackPurchase(inquiryId, grandTotal, items.map((i) => ({ id: i.productId, name: i.productName, price: i.totalPrice })));
+      trackGenerateLead(inquiryId, grandTotal, {
+        itemsCount: items.length,
+        deliveryType: data.wants_delivery ? "delivery" : "pickup",
+      });
       clearCart();
       router.push("/hvala");
     } catch (err: unknown) {
@@ -408,7 +435,14 @@ export default function CartPage() {
                 <CartItemRow
                   key={item.productId}
                   item={item}
-                  onRemove={() => removeItem(item.productId)}
+                  onRemove={() => {
+                    trackRemoveFromCart({
+                      id: item.productId,
+                      name: item.productName,
+                      price: item.totalPrice,
+                    });
+                    removeItem(item.productId);
+                  }}
                 />
               ))}
               {bundleEntries.map(([bundleId, group]) => (
@@ -418,7 +452,18 @@ export default function CartPage() {
                       Paket: {group.name}
                     </p>
                     <button
-                      onClick={() => removeBundle(bundleId)}
+                      onClick={() => {
+                        gtagEvent("remove_from_cart", {
+                          currency: "EUR",
+                          value: group.items.reduce((s, i) => s + i.totalPrice, 0),
+                          items: group.items.map((i) => ({
+                            item_id: i.productId,
+                            item_name: i.productName,
+                            price: i.totalPrice,
+                          })),
+                        });
+                        removeBundle(bundleId);
+                      }}
                       aria-label="Ukloni paket iz košarice"
                       className="text-gray-400 hover:text-red-500 transition-colors"
                     >
@@ -544,7 +589,11 @@ export default function CartPage() {
             </div>
             <div>
               <p className="text-xs text-brand-muted">Nazovite nas!</p>
-              <a href="tel:+385952044414" className="font-bold text-brand-text hover:text-brand-primary transition-colors">
+              <a
+                href="tel:+385952044414"
+                onClick={trackPhoneClick}
+                className="font-bold text-brand-text hover:text-brand-primary transition-colors"
+              >
                 +385 95 204 4414
               </a>
             </div>

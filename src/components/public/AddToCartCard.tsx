@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Phone, ShoppingCart, Info } from "lucide-react";
 import { useCartStore } from "@/lib/cart";
+import { trackAddToCart, trackAvailabilityChecked, trackPhoneClick } from "@/lib/gtag";
 import AvailabilityCalendar from "./AvailabilityCalendar";
 
 const PHONE = "+385 95 204 4414";
@@ -25,6 +26,7 @@ interface Props {
     deposit_amount: number | null;
     deposit_note: string | null;
     stock_qty: number;
+    category?: string;
   };
   availability: AvailabilityRecord[];
 }
@@ -102,6 +104,13 @@ export default function AddToCartCard({ product, availability }: Props) {
       qty: 1,
     });
 
+    trackAddToCart({
+      id: product.id,
+      name: product.name,
+      price: totalPrice,
+      category: product.category,
+    });
+
     setAdded(true);
     setTimeout(() => {
       router.push("/upit");
@@ -116,11 +125,7 @@ export default function AddToCartCard({ product, availability }: Props) {
       <a
         href={PHONE_HREF}
         className="flex items-center gap-2 text-brand-primary font-bold hover:text-brand-dark transition-colors"
-        onClick={() => {
-          if (typeof window !== "undefined" && (window as any).gtag) {
-            (window as any).gtag("event", "phone_click", { event_category: "engagement" });
-          }
-        }}
+        onClick={trackPhoneClick}
       >
         <Phone className="h-5 w-5" />
         {PHONE}
@@ -154,6 +159,9 @@ export default function AddToCartCard({ product, availability }: Props) {
           setRentalStart(start);
           setRentalEnd(end);
           setDays(d);
+          if (start && end && d > 0) {
+            trackAvailabilityChecked(product.id, start.toISOString(), end.toISOString(), d);
+          }
         }}
       />
 

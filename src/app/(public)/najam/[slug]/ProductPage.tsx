@@ -104,7 +104,14 @@ export default function ProductPage({ product, availability, tags, relatedProduc
         />
       )}
 
-      <ViewTracker productId={product.id} />
+      <ViewTracker
+        product={{
+          id: product.id,
+          name: product.name,
+          price: product.price_per_day ?? product.price_per_7days,
+          category: product.categories?.name,
+        }}
+      />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1 text-sm text-brand-muted mb-6 flex-wrap">
@@ -263,6 +270,7 @@ export default function ProductPage({ product, availability, tags, relatedProduc
                 deposit_amount: product.deposit_amount,
                 deposit_note: product.deposit_note,
                 stock_qty: product.stock_qty,
+                category: product.categories?.name,
               }}
               availability={availability}
             />

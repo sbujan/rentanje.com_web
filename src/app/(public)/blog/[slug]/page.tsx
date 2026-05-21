@@ -5,6 +5,7 @@ import Image from "next/image";
 import DOMPurify from "isomorphic-dompurify";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import BlogReadTracker from "@/components/public/BlogReadTracker";
 import { ChevronRight, Clock, User, ChevronDown } from "lucide-react";
 
 interface FaqItem { question: string; answer: string; }
@@ -118,6 +119,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <>
+      <BlogReadTracker slug={post.slug} readingTime={post.reading_time} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}

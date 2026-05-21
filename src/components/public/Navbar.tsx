@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { ShoppingCart, Phone, Menu, X } from "lucide-react";
 import { useCartStore } from "@/lib/cart";
+import { trackPhoneClick } from "@/lib/gtag";
 
 const PHONE = "+385 95 204 4414";
 const PHONE_HREF = "tel:+385952044414";
@@ -53,11 +54,7 @@ export default function Navbar() {
           {/* Phone */}
           <a
             href={PHONE_HREF}
-            onClick={() => {
-              if (typeof window !== "undefined" && (window as any).gtag) {
-                (window as any).gtag("event", "phone_click", { event_category: "engagement" });
-              }
-            }}
+            onClick={trackPhoneClick}
             className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-brand-primary hover:text-brand-dark transition-colors"
           >
             <Phone className="h-4 w-4" />
@@ -103,6 +100,7 @@ export default function Navbar() {
           ))}
           <a
             href={PHONE_HREF}
+            onClick={trackPhoneClick}
             className="flex items-center gap-2 text-base font-semibold text-brand-primary"
           >
             <Phone className="h-4 w-4" />
