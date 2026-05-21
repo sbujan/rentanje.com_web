@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -121,11 +121,7 @@ export default async function SeoPage({ params }: Props) {
           <div
             className="prose prose-base max-w-none text-brand-text leading-relaxed"
             dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(page.content, {
-                USE_PROFILES: { html: true },
-                FORBID_TAGS: ["script", "style", "iframe", "object", "embed", "form"],
-                FORBID_ATTR: ["onerror", "onload", "onclick", "onmouseover", "onfocus", "onblur", "style"],
-              }),
+              __html: sanitizeHtml(page.content),
             }}
           />
         ) : (

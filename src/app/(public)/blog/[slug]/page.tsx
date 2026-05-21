@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import BlogReadTracker from "@/components/public/BlogReadTracker";
@@ -181,11 +181,7 @@ export default async function BlogPostPage({ params }: Props) {
           <div
             className="prose prose-base max-w-none text-brand-text leading-relaxed"
             dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(post.content, {
-                USE_PROFILES: { html: true },
-                FORBID_TAGS: ["script", "style", "iframe", "object", "embed", "form"],
-                FORBID_ATTR: ["onerror", "onload", "onclick", "onmouseover", "onfocus", "onblur", "style"],
-              }),
+              __html: sanitizeHtml(post.content),
             }}
           />
         ) : (

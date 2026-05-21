@@ -199,7 +199,7 @@ export default function SeoPageForm({ initial }: Props) {
             placeholder="<p>Sadržaj stranice u HTML formatu — naslovi, popisi, slike...</p>"
           />
           <p className="text-xs text-gray-400 mt-1">
-            HTML se renderira nakon DOMPurify sanitizacije (skripte i inline event handleri uklonjeni).
+            HTML se renderira nakon XSS sanitizacije (skripte i inline event handleri uklonjeni).
           </p>
         </div>
 
