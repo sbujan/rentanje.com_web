@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Phone, ShoppingCart, Info, Minus, Plus } from "lucide-react";
 import { useCartStore } from "@/lib/cart";
+import { calcRentalPrice } from "@/lib/pricing";
 import { expandRentalDates, maxAvailableUnits } from "@/lib/availability";
 import { trackAddToCart, trackAvailabilityChecked, trackPhoneClick } from "@/lib/gtag";
 import AvailabilityCalendar from "./AvailabilityCalendar";
@@ -55,37 +56,7 @@ export default function AddToCartCard({ product, availability }: Props) {
   }
 
   // Block-based pricing: stack 7-day, 3-day, 1-day blocks, auto-upgrade if cheaper
-  function calcPrice(d: number) {
-    if (d <= 0) return { price: 0, upgraded: false };
-
-    const p1 = product.price_per_day ?? Infinity;
-    const p3 = product.price_per_3days ?? Infinity;
-    const p7 = product.price_per_7days;
-
-    const n7 = Math.floor(d / 7);
-    const r7 = d - n7 * 7;
-    const n3 = Math.floor(r7 / 3);
-    const r3 = r7 - n3 * 3;
-
-    let price = n7 * p7 + n3 * p3 + r3 * p1;
-    let upgraded = false;
-
-    // Check: upgrade leftover days to a 3-day package if cheaper
-    if (r3 > 0 && p3 < Infinity) {
-      const alt = n7 * p7 + (n3 + 1) * p3;
-      if (alt < price) { price = alt; upgraded = true; }
-    }
-
-    // Check: upgrade all remainder to a 7-day package if cheaper
-    if (r7 > 0) {
-      const alt = (n7 + 1) * p7;
-      if (alt < price) { price = alt; upgraded = true; }
-    }
-
-    return { price, upgraded };
-  }
-
-  const { price: unitPrice, upgraded } = calcPrice(days);
+  const { price: unitPrice, upgraded } = calcRentalPrice(days, product);
 
   // Max units bookable for the selected range: the smallest free count across
   // every day in the range (calendar already blocks fully-booked days, so this

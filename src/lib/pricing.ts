@@ -21,7 +21,11 @@ export function calcRentalPrice(days: number, p: PricingTiers): { price: number;
   const n3 = Math.floor(r7 / 3);
   const r3 = r7 - n3 * 3;
 
-  let price = n7 * p7 + n3 * p3 + r3 * p1;
+  // NaN-safe: an empty block contributes 0 even when its tier price is
+  // unset (`Infinity`). Plain `0 * Infinity` would be NaN and poison the sum.
+  const block = (count: number, unit: number) => (count === 0 ? 0 : count * unit);
+
+  let price = block(n7, p7) + block(n3, p3) + block(r3, p1);
   let upgraded = false;
 
   if (r3 > 0 && p3 < Infinity) {
