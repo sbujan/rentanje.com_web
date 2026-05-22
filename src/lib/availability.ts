@@ -19,6 +19,22 @@ export interface UnavailableHit {
   dates: string[];
 }
 
+/** Min free units across the given dates; stockQty if no dates given. */
+export function maxAvailableUnits(
+  availability: { date: string; qty_booked: number }[],
+  stockQty: number,
+  dates: string[],
+): number {
+  if (dates.length === 0) return stockQty;
+  const bookedByDate = new Map<string, number>();
+  for (const a of availability) {
+    bookedByDate.set(a.date, (bookedByDate.get(a.date) ?? 0) + a.qty_booked);
+  }
+  let min = stockQty;
+  for (const d of dates) min = Math.min(min, stockQty - (bookedByDate.get(d) ?? 0));
+  return Math.max(0, min);
+}
+
 type AvailabilityCartItem = Pick<
   CartItem,
   "productId" | "productName" | "rentalStart" | "rentalEnd" | "qty"

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Phone, ShoppingCart, Info } from "lucide-react";
+import { Phone, ShoppingCart, Info, Minus, Plus } from "lucide-react";
 import { useCartStore } from "@/lib/cart";
+import { expandRentalDates, maxAvailableUnits } from "@/lib/availability";
 import { trackAddToCart, trackAvailabilityChecked, trackPhoneClick } from "@/lib/gtag";
 import AvailabilityCalendar from "./AvailabilityCalendar";
 
@@ -38,6 +39,7 @@ export default function AddToCartCard({ product, availability }: Props) {
   const [rentalStart, setRentalStart] = useState<Date | null>(null);
   const [rentalEnd, setRentalEnd] = useState<Date | null>(null);
   const [days, setDays] = useState(0);
+  const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
   const tiers = [
@@ -83,7 +85,23 @@ export default function AddToCartCard({ product, availability }: Props) {
     return { price, upgraded };
   }
 
-  const { price: totalPrice, upgraded } = calcPrice(days);
+  const { price: unitPrice, upgraded } = calcPrice(days);
+
+  // Max units bookable for the selected range: the smallest free count across
+  // every day in the range (calendar already blocks fully-booked days, so this
+  // is >= 1 once a valid range is picked). Falls back to total stock otherwise.
+  const maxQty = useMemo(() => {
+    if (!rentalStart || !rentalEnd) return product.stock_qty;
+    const dates = expandRentalDates(
+      rentalStart.toISOString(),
+      rentalEnd.toISOString()
+    );
+    return Math.max(1, maxAvailableUnits(availability, product.stock_qty, dates));
+  }, [rentalStart, rentalEnd, availability, product.stock_qty]);
+
+  const qtyClamped = Math.min(qty, maxQty);
+  const unitDeposit = product.requires_deposit ? (product.deposit_amount ?? 0) : 0;
+  const totalPrice = unitPrice * qtyClamped;
 
   function handleAddToCart() {
     if (!rentalStart || !rentalEnd || days <= 0) return;
@@ -98,10 +116,10 @@ export default function AddToCartCard({ product, availability }: Props) {
       days,
       minRentalDays: product.min_rental_days,
       priceTierLabel: `${days} dana`,
-      priceForTier: totalPrice,
+      priceForTier: unitPrice,
       totalPrice,
-      depositAmount: product.requires_deposit ? (product.deposit_amount ?? 0) : 0,
-      qty: 1,
+      depositAmount: unitDeposit * qtyClamped,
+      qty: qtyClamped,
     });
 
     trackAddToCart({
@@ -165,11 +183,46 @@ export default function AddToCartCard({ product, availability }: Props) {
         }}
       />
 
+      {/* Quantity — only relevant when more than one unit exists */}
+      {product.stock_qty > 1 && (
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-sm font-semibold text-brand-text">Količina</span>
+            <p className="text-xs text-brand-muted">Dostupno: {maxQty} kom</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setQty(Math.max(1, qtyClamped - 1))}
+              disabled={qtyClamped <= 1}
+              aria-label="Smanji količinu"
+              className="h-8 w-8 flex items-center justify-center rounded-md border border-gray-200 text-brand-text disabled:opacity-40 disabled:cursor-not-allowed hover:bg-brand-light transition-colors"
+            >
+              <Minus className="h-4 w-4" />
+            </button>
+            <span className="w-6 text-center font-bold text-brand-text tabular-nums">
+              {qtyClamped}
+            </span>
+            <button
+              type="button"
+              onClick={() => setQty(Math.min(maxQty, qtyClamped + 1))}
+              disabled={qtyClamped >= maxQty}
+              aria-label="Povećaj količinu"
+              className="h-8 w-8 flex items-center justify-center rounded-md border border-gray-200 text-brand-text disabled:opacity-40 disabled:cursor-not-allowed hover:bg-brand-light transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Price for selected days */}
       {days > 0 && (
         <div className="bg-brand-light rounded-md px-3 py-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-brand-muted">Cijena ({days} dana)</span>
+            <span className="text-brand-muted">
+              Cijena ({days} dana{qtyClamped > 1 ? ` × ${qtyClamped} kom` : ""})
+            </span>
             <span className="font-price font-bold text-brand-primary">
               {totalPrice.toFixed(0)} €
             </span>
@@ -203,7 +256,10 @@ export default function AddToCartCard({ product, availability }: Props) {
         <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
           <Info className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
           <div className="text-xs text-amber-700">
-            <span className="font-semibold">Kaucija: {product.deposit_amount} €</span>
+            <span className="font-semibold">
+              Kaucija: {(unitDeposit * qtyClamped).toFixed(0)} €
+              {qtyClamped > 1 ? ` (${qtyClamped} × ${product.deposit_amount} €)` : ""}
+            </span>
             <br />
             {product.deposit_note ?? "Kaucija se vraća po povratku opreme u ispravnom stanju."}
           </div>
