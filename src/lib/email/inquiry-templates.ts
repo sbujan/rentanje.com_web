@@ -105,7 +105,7 @@ export function buildCustomerConfirmationHtml(params: {
     .map(
       (item) => `
     <tr style="border-top:1px solid #f3f4f6">
-      <td style="padding:10px 12px;color:#111827;font-weight:500">${esc(item.productName)}</td>
+      <td style="padding:10px 12px;color:#111827;font-weight:500">${esc(item.productName)}${item.qty > 1 ? ` <span style="color:#6b7280;font-weight:400">· ${item.qty} kom</span>` : ""}</td>
       <td style="padding:10px 12px;color:#374151;font-size:13px">${formatDate(item.rentalStart)} – ${formatDate(item.rentalEnd)}</td>
       <td style="padding:10px 12px;text-align:right;color:#111827">${formatPrice(item.totalPrice)}</td>
     </tr>`

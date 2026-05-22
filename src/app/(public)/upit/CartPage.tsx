@@ -66,7 +66,9 @@ function CartItemRow({ item, onRemove }: { item: CartItem; onRemove: () => void 
             {format(start, "d. MMM", { locale: hr })} – {format(end, "d. MMM yyyy", { locale: hr })}
             {" "}· {item.days} {item.days === 1 ? "dan" : "dana"}
           </p>
-          <p>Cijena: {formatPrice(item.totalPrice)}</p>
+          <p>
+            {item.qty > 1 ? `${item.qty} kom · ` : ""}Cijena: {formatPrice(item.totalPrice)}
+          </p>
           {item.depositAmount > 0 && (
             <p className="text-amber-600">Depozit: {formatPrice(item.depositAmount)}</p>
           )}
