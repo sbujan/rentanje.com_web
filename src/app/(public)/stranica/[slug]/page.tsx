@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { ChevronRight } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const revalidate = 3600;
@@ -32,7 +32,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data: page } = await supabase
     .from("seo_pages")
     .select("title, seo_title, seo_description, seo_keywords, hero_image_url, slug")
@@ -72,7 +72,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SeoPage({ params }: Props) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data: page } = await supabase
     .from("seo_pages")
