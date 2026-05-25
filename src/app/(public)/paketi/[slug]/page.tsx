@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, Package } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { calcRentalPrice, applyBundleDiscount } from "@/lib/pricing";
 import BundleAddToCart from "./BundleAddToCart";
@@ -33,7 +33,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data: bundle } = await supabase
     .from("bundles")
     .select("name, seo_title, seo_description, hero_image_url, slug, description")
@@ -72,7 +72,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BundlePage({ params }: Props) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   // `.single()` reports "no rows" as PGRST116 — that's the notFound() path,
   // not a failure. Any other error is a real DB problem.

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { sanitizeHtml } from "@/lib/sanitize";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import BlogReadTracker from "@/components/public/BlogReadTracker";
 import { ChevronRight, Clock, User, ChevronDown } from "lucide-react";
@@ -37,7 +37,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data: post } = await supabase
     .from("blog_posts")
     .select("title, seo_title, seo_description, excerpt, hero_image_url, slug")
@@ -76,7 +76,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data: post } = await supabase
     .from("blog_posts")
