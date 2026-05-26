@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { slugify } from "@/lib/utils";
 import { Loader2, Save, Eye, Trash2 } from "lucide-react";
 import ImageUpload from "@/components/admin/ImageUpload";
 import FaqEditor, { type FaqItem } from "@/components/admin/FaqEditor";
+import { saveBlogPost, deleteBlogPost } from "./actions";
 
 interface Post {
   id?: string;
@@ -43,7 +43,6 @@ const EMPTY: Post = {
 
 export default function BlogForm({ initial }: Props) {
   const router = useRouter();
-  const supabase = createClient();
   const [form, setForm] = useState<Post>({ ...EMPTY, ...initial });
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -64,7 +63,8 @@ export default function BlogForm({ initial }: Props) {
     setSaving(true);
     setError(null);
 
-    const payload: any = {
+    const isPublished = publish !== undefined ? publish : form.is_published;
+    const payload = {
       title: form.title,
       slug: form.slug,
       excerpt: form.excerpt || null,
@@ -75,20 +75,23 @@ export default function BlogForm({ initial }: Props) {
       seo_title: form.seo_title || null,
       seo_description: form.seo_description || null,
       faq: form.faq,
-      is_published: publish !== undefined ? publish : form.is_published,
+      is_published: isPublished,
+      // On edit: only stamp published_at when promoting to published.
+      // On insert: stamp now if publishing, else null.
+      published_at: publish
+        ? new Date().toISOString()
+        : isEdit
+        ? undefined
+        : null,
     };
 
-    if (publish) payload.published_at = new Date().toISOString();
-
-    let err;
-    if (isEdit) {
-      ({ error: err } = await supabase.from("blog_posts").update(payload).eq("id", initial!.id!));
-    } else {
-      ({ error: err } = await supabase.from("blog_posts").insert({ ...payload, published_at: publish ? new Date().toISOString() : null }));
-    }
+    const result = await saveBlogPost({
+      postId: initial?.id,
+      payload,
+    });
 
     setSaving(false);
-    if (err) { setError(err.message); return; }
+    if (!result.ok) { setError(result.error); return; }
     router.push("/admin/blog");
     router.refresh();
   }
@@ -96,7 +99,9 @@ export default function BlogForm({ initial }: Props) {
   async function handleDelete() {
     if (!confirm("Obrisati ovaj članak?")) return;
     setDeleting(true);
-    await supabase.from("blog_posts").delete().eq("id", initial!.id!);
+    const result = await deleteBlogPost({ postId: initial!.id! });
+    setDeleting(false);
+    if (!result.ok) { setError(result.error); return; }
     router.push("/admin/blog");
     router.refresh();
   }
