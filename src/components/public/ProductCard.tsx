@@ -44,11 +44,6 @@ export default function ProductCard({ product }: { product: Product }) {
             <span className="text-4xl">📦</span>
           </div>
         )}
-        {/* Category dot */}
-        <span
-          className="absolute top-3 left-3 h-3 w-3 rounded-full border-2 border-white shadow"
-          style={{ backgroundColor: categoryColor }}
-        />
       </div>
 
       {/* Info */}
