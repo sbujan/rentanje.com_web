@@ -9,6 +9,7 @@ import { ShoppingCart, Phone } from "lucide-react";
 import "react-day-picker/dist/style.css";
 import { useCartStore, type CartItem } from "@/lib/cart";
 import { calcRentalPrice, applyBundleDiscount } from "@/lib/pricing";
+import { toYmd } from "@/lib/utils";
 import { gtagEvent, trackBundleViewed, trackPhoneClick } from "@/lib/gtag";
 
 interface BundleProduct {
@@ -76,8 +77,8 @@ export default function BundleAddToCart({ bundle, products }: Props) {
   function handleAdd() {
     if (!canAdd || !range?.from || !range?.to) return;
 
-    const startIso = range.from.toISOString();
-    const endIso = range.to.toISOString();
+    const startIso = toYmd(range.from);
+    const endIso = toYmd(range.to);
 
     const items: CartItem[] = products.map((p) => {
       const { price } = calcRentalPrice(days, p);

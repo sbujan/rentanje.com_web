@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Phone, ShoppingCart, Info, Minus, Plus } from "lucide-react";
 import { useCartStore } from "@/lib/cart";
 import { calcRentalPrice } from "@/lib/pricing";
+import { toYmd } from "@/lib/utils";
 import { expandRentalDates, maxAvailableUnits } from "@/lib/availability";
 import { trackAddToCart, trackAvailabilityChecked, trackPhoneClick } from "@/lib/gtag";
 import AvailabilityCalendar from "./AvailabilityCalendar";
@@ -63,10 +64,7 @@ export default function AddToCartCard({ product, availability }: Props) {
   // is >= 1 once a valid range is picked). Falls back to total stock otherwise.
   const maxQty = useMemo(() => {
     if (!rentalStart || !rentalEnd) return product.stock_qty;
-    const dates = expandRentalDates(
-      rentalStart.toISOString(),
-      rentalEnd.toISOString()
-    );
+    const dates = expandRentalDates(toYmd(rentalStart), toYmd(rentalEnd));
     return Math.max(1, maxAvailableUnits(availability, product.stock_qty, dates));
   }, [rentalStart, rentalEnd, availability, product.stock_qty]);
 
@@ -82,8 +80,8 @@ export default function AddToCartCard({ product, availability }: Props) {
       productName: product.name,
       heroImage: product.hero_image_url ?? "",
       slug: product.slug,
-      rentalStart: rentalStart.toISOString(),
-      rentalEnd: rentalEnd.toISOString(),
+      rentalStart: toYmd(rentalStart),
+      rentalEnd: toYmd(rentalEnd),
       days,
       minRentalDays: product.min_rental_days,
       priceTierLabel: `${days} dana`,
