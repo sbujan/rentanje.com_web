@@ -233,7 +233,7 @@ export async function POST(req: NextRequest) {
         subject: `Novi upit ${inquiryNumber} — ${name}`,
         html: buildAdminInquiryHtml({
           name, email, phone, delivery_address, note,
-          items: cartItems, subtotal, totalDeposit, deliveryFee,
+          items: cartItems, subtotal, discount: totalDiscount, totalDeposit, deliveryFee,
           inquiryId, inquiryNumber,
         }),
         replyTo,
@@ -242,7 +242,7 @@ export async function POST(req: NextRequest) {
         from: `rentanje.com <${fromEmail}>`,
         to: email,
         subject: `Vaš upit je zaprimljen — rentanje.com`,
-        html: buildCustomerConfirmationHtml({ name, items: cartItems, subtotal, totalDeposit }),
+        html: buildCustomerConfirmationHtml({ name, items: cartItems, subtotal, discount: totalDiscount, totalDeposit }),
       }),
     ]);
   } catch (emailErr) {
