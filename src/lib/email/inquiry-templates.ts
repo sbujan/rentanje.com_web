@@ -25,6 +25,7 @@ export function buildAdminInquiryHtml(params: {
   note?: string;
   items: CartItem[];
   subtotal: number;
+  discount?: number;
   totalDeposit: number;
   deliveryFee: number;
   inquiryId: string;
@@ -38,6 +39,7 @@ export function buildAdminInquiryHtml(params: {
     note,
     items,
     subtotal,
+    discount = 0,
     totalDeposit,
     deliveryFee,
     inquiryId,
@@ -80,7 +82,11 @@ export function buildAdminInquiryHtml(params: {
       </tr></thead>
       <tbody>${rows}</tbody>
       <tfoot>
-        <tr style="border-top:2px solid #e5e7eb"><td colspan="2" style="padding:10px 12px;font-weight:600;color:#111827">Ukupno iznajmljivanje</td><td style="padding:10px 12px;text-align:right;font-weight:700;color:#111827">${formatPrice(subtotal)}</td></tr>
+        ${discount > 0
+          ? `<tr style="border-top:2px solid #e5e7eb"><td colspan="2" style="padding:10px 12px;color:#6b7280">Međuzbroj</td><td style="padding:10px 12px;text-align:right;color:#6b7280">${formatPrice(subtotal)}</td></tr>
+        <tr><td colspan="2" style="padding:4px 12px;color:#16a34a">Popust</td><td style="padding:4px 12px;text-align:right;color:#16a34a;font-weight:600">−${formatPrice(discount)}</td></tr>
+        <tr><td colspan="2" style="padding:10px 12px;font-weight:600;color:#111827">Ukupno iznajmljivanje</td><td style="padding:10px 12px;text-align:right;font-weight:700;color:#111827">${formatPrice(subtotal - discount)}</td></tr>`
+          : `<tr style="border-top:2px solid #e5e7eb"><td colspan="2" style="padding:10px 12px;font-weight:600;color:#111827">Ukupno iznajmljivanje</td><td style="padding:10px 12px;text-align:right;font-weight:700;color:#111827">${formatPrice(subtotal)}</td></tr>`}
         ${totalDeposit > 0 ? `<tr><td colspan="2" style="padding:4px 12px;color:#d97706">Depozit (povratni)</td><td style="padding:4px 12px;text-align:right;color:#d97706;font-weight:600">${formatPrice(totalDeposit)}</td></tr>` : ""}
         ${deliveryFee > 0 ? `<tr><td colspan="2" style="padding:4px 12px;color:#2563eb;font-weight:600">Dostava</td><td style="padding:4px 12px;text-align:right;color:#2563eb;font-weight:600">${formatPrice(deliveryFee)}</td></tr>` : ""}
       </tfoot>
@@ -97,9 +103,10 @@ export function buildCustomerConfirmationHtml(params: {
   name: string;
   items: CartItem[];
   subtotal: number;
+  discount?: number;
   totalDeposit: number;
 }): string {
-  const { name, items, subtotal, totalDeposit } = params;
+  const { name, items, subtotal, discount = 0, totalDeposit } = params;
 
   const rows = items
     .map(
@@ -130,7 +137,11 @@ export function buildCustomerConfirmationHtml(params: {
       </tr></thead>
       <tbody>${rows}</tbody>
       <tfoot>
-        <tr style="border-top:2px solid #e5e7eb"><td colspan="2" style="padding:10px 12px;font-weight:600;color:#111827">Ukupno</td><td style="padding:10px 12px;text-align:right;font-weight:700;color:#111827">${formatPrice(subtotal)}</td></tr>
+        ${discount > 0
+          ? `<tr style="border-top:2px solid #e5e7eb"><td colspan="2" style="padding:10px 12px;color:#6b7280">Međuzbroj</td><td style="padding:10px 12px;text-align:right;color:#6b7280">${formatPrice(subtotal)}</td></tr>
+        <tr><td colspan="2" style="padding:4px 12px;color:#16a34a">Popust</td><td style="padding:4px 12px;text-align:right;color:#16a34a;font-weight:600">−${formatPrice(discount)}</td></tr>
+        <tr><td colspan="2" style="padding:10px 12px;font-weight:600;color:#111827">Ukupno</td><td style="padding:10px 12px;text-align:right;font-weight:700;color:#111827">${formatPrice(subtotal - discount)}</td></tr>`
+          : `<tr style="border-top:2px solid #e5e7eb"><td colspan="2" style="padding:10px 12px;font-weight:600;color:#111827">Ukupno</td><td style="padding:10px 12px;text-align:right;font-weight:700;color:#111827">${formatPrice(subtotal)}</td></tr>`}
         ${totalDeposit > 0 ? `<tr><td colspan="2" style="padding:4px 12px 10px;color:#d97706;font-size:13px">Depozit (povratni)</td><td style="padding:4px 12px 10px;text-align:right;color:#d97706">${formatPrice(totalDeposit)}</td></tr>` : ""}
       </tfoot>
     </table>
