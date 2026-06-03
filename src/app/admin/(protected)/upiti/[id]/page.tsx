@@ -20,7 +20,11 @@ function formatPrice(n: number | null) {
   return n.toLocaleString("hr-HR", { style: "currency", currency: "EUR", maximumFractionDigits: 2 });
 }
 
-function formatDate(iso: string) {
+function formatDate(value: string) {
+  // Date-only strings ("YYYY-MM-DD") parse as UTC midnight, which can roll back
+  // a day in negative-UTC timezones — anchor them at local noon. Legacy ISO
+  // datetime values (older records) pass through unchanged.
+  const iso = /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T12:00:00` : value;
   return new Date(iso).toLocaleDateString("hr-HR", { day: "numeric", month: "short", year: "numeric" });
 }
 

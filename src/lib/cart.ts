@@ -6,8 +6,8 @@ export interface CartItem {
   productName: string;
   heroImage: string;
   slug: string;
-  rentalStart: string; // ISO date string (serialisable)
-  rentalEnd: string;
+  rentalStart: string; // local calendar day, "YYYY-MM-DD" (matches DB `date` columns)
+  rentalEnd: string;   // local calendar day, "YYYY-MM-DD"
   days: number;
   minRentalDays: 1 | 3 | 7;
   priceTierLabel: string; // "1 dan" | "3 dana" | "7 dana"

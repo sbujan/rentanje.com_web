@@ -20,6 +20,14 @@ export function slugify(text: string): string {
     .replace(/-+/g, "-");
 }
 
+/** Format a Date as YYYY-MM-DD using its LOCAL calendar day (no UTC shift). */
+export function toYmd(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 /** Format a number as EUR currency */
 export function formatPrice(amount: number): string {
   return new Intl.NumberFormat("hr-HR", {
