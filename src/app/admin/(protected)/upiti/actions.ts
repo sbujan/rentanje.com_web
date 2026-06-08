@@ -94,6 +94,114 @@ export async function setInquiryStatus(
   return { ok: true, data: { status: nextStatus } };
 }
 
+const inquiryIdSchema = z.object({ inquiryId: z.string().uuid() });
+
+/**
+ * Permanently delete an inquiry and free its reserved dates.
+ * The availability FK is ON DELETE SET NULL, so we must drop the inquiry's
+ * availability rows first — otherwise the date blocks would survive the delete
+ * and keep those dates unavailable forever.
+ */
+export async function deleteInquiry(
+  input: z.infer<typeof inquiryIdSchema>
+): Promise<ActionResult> {
+  let supabase;
+  try {
+    ({ supabase } = await requireAdmin(["owner", "manager"]));
+  } catch (e) {
+    if (e instanceof NotAuthorizedError) return { ok: false, error: "Niste ovlašteni." };
+    throw e;
+  }
+
+  const parsed = inquiryIdSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Neispravni ID." };
+
+  const { inquiryId } = parsed.data;
+
+  const { data: inquiry, error: loadErr } = await supabase
+    .from("inquiries")
+    .select("id, items")
+    .eq("id", inquiryId)
+    .maybeSingle();
+  if (loadErr) return { ok: false, error: loadErr.message };
+  if (!inquiry) return { ok: false, error: "Upit ne postoji." };
+
+  // Free the dates first (FK is ON DELETE SET NULL, not CASCADE).
+  try {
+    await deleteAvailabilityRowsForInquiry(supabase, inquiryId);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Greška pri oslobađanju datuma.";
+    return { ok: false, error: msg };
+  }
+
+  const { error: delErr } = await supabase.from("inquiries").delete().eq("id", inquiryId);
+  if (delErr) return { ok: false, error: delErr.message };
+
+  revalidatePath("/admin/upiti");
+  revalidatePath("/admin/availability");
+  for (const slug of collectProductSlugs(inquiry.items)) {
+    revalidatePath(`/najam/${slug}`);
+  }
+
+  return { ok: true, data: undefined };
+}
+
+/**
+ * Re-write the availability (date-block) rows for an inquiry from its stored
+ * items. Recovery lever for bookings whose blocks silently failed to insert at
+ * submission time. Idempotent — clears this inquiry's prior rows then re-inserts.
+ */
+export async function resyncInquiryAvailability(
+  input: z.infer<typeof inquiryIdSchema>
+): Promise<ActionResult<{ count: number }>> {
+  let supabase;
+  try {
+    ({ supabase } = await requireAdmin(["owner", "manager"]));
+  } catch (e) {
+    if (e instanceof NotAuthorizedError) return { ok: false, error: "Niste ovlašteni." };
+    throw e;
+  }
+
+  const parsed = inquiryIdSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Neispravni ID." };
+
+  const { inquiryId } = parsed.data;
+
+  const { data: inquiry, error: loadErr } = await supabase
+    .from("inquiries")
+    .select("id, inquiry_number, status, items")
+    .eq("id", inquiryId)
+    .maybeSingle();
+  if (loadErr) return { ok: false, error: loadErr.message };
+  if (!inquiry) return { ok: false, error: "Upit ne postoji." };
+
+  if (inquiry.status === "cancelled") {
+    return { ok: false, error: "Upit je otkazan — termini se namjerno ne blokiraju." };
+  }
+
+  const items = parseItems(inquiry.items);
+  if (items.length === 0) return { ok: false, error: "Upit nema stavki za blokiranje." };
+
+  try {
+    await insertAvailabilityRowsForInquiry(
+      supabase,
+      inquiryId,
+      inquiry.inquiry_number,
+      items
+    );
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Greška pri rezervaciji datuma.";
+    return { ok: false, error: msg };
+  }
+
+  revalidatePath("/admin/availability");
+  for (const slug of collectProductSlugs(inquiry.items)) {
+    revalidatePath(`/najam/${slug}`);
+  }
+
+  return { ok: true, data: { count: items.length } };
+}
+
 function parseItems(raw: unknown): CartItem[] {
   if (!Array.isArray(raw)) return [];
   return raw as CartItem[];

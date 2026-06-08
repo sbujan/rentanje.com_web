@@ -6,6 +6,8 @@ import { format } from "date-fns";
 import { hr } from "date-fns/locale";
 import { ArrowLeft, Mail, Phone, MapPin } from "lucide-react";
 import StatusSelect from "./StatusSelect";
+import ResyncAvailabilityButton from "../ResyncAvailabilityButton";
+import DeleteInquiryButton from "../DeleteInquiryButton";
 
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   new: { label: "Novi", className: "bg-red-100 text-red-700" },
@@ -163,9 +165,12 @@ export default async function InquiryDetailPage({ params }: Props) {
 
         {/* Sidebar */}
         <div className="space-y-4">
-          <div className="bg-white rounded-xl p-5 border border-gray-100">
+          <div className="bg-white rounded-xl p-5 border border-gray-100 space-y-3">
             <h3 className="font-bold text-gray-900 mb-3 text-sm">Status upita</h3>
             <StatusSelect inquiryId={inquiry.id} currentStatus={inquiry.status} />
+            <div className="pt-3 border-t border-gray-100">
+              <ResyncAvailabilityButton inquiryId={inquiry.id} />
+            </div>
           </div>
 
           <div className="bg-white rounded-xl p-5 border border-gray-100 space-y-2">
@@ -186,6 +191,14 @@ export default async function InquiryDetailPage({ params }: Props) {
                 Nazovi
               </a>
             )}
+          </div>
+
+          <div className="bg-white rounded-xl p-5 border border-gray-100">
+            <DeleteInquiryButton
+              inquiryId={inquiry.id}
+              inquiryNumber={inquiry.inquiry_number}
+              redirectTo="/admin/upiti"
+            />
           </div>
         </div>
       </div>

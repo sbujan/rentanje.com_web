@@ -200,8 +200,15 @@ export async function POST(req: NextRequest) {
       revalidatePath(`/najam/${slug}`);
     }
   } catch (availErr) {
-    // Don't fail the request — inquiry is saved. Admin can recover manually.
-    console.error("Availability row insert failed:", availErr);
+    // Don't fail the request — the inquiry is saved. But surface this loudly and
+    // traceably: the dates are NOT blocked until an admin re-syncs the inquiry
+    // ("Ponovno blokiraj termine" on the detail page). Greppable marker + context.
+    console.error("AVAILABILITY_SYNC_FAILED", {
+      inquiryNumber,
+      inquiryId,
+      slugs: Array.from(new Set(cartItems.map((i) => i.slug))),
+      error: availErr instanceof Error ? availErr.message : String(availErr),
+    });
   }
 
   // Bump promotion usage_count after the inquiry is safely persisted, so we
