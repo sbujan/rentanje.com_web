@@ -131,7 +131,8 @@ export default function ProductPage({ product, availability, tags, relatedProduc
           category: product.categories?.name,
         }}
       />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      {/* pb-28 on mobile clears the fixed bottom booking bar */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-28 lg:pb-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1 text-sm text-brand-muted mb-6 flex-wrap">
           <Link href="/" className="hover:text-brand-primary">Početna</Link>
@@ -186,6 +187,22 @@ export default function ProductPage({ product, availability, tags, relatedProduc
                   ))}
                 </div>
               )}
+
+              {/* Mobile price + availability strip — booking card sits far below the fold */}
+              <div className="lg:hidden mt-4 flex items-center justify-between gap-3 bg-brand-light rounded-lg px-4 py-3">
+                <div>
+                  <span className="font-price font-bold text-brand-primary text-lg">
+                    od {effectiveDailyRate(product)} €
+                  </span>
+                  <span className="text-xs text-brand-muted">/dan</span>
+                </div>
+                <a
+                  href="#rezervacija"
+                  className="shrink-0 bg-brand-primary text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-brand-dark transition-colors"
+                >
+                  Provjeri dostupnost
+                </a>
+              </div>
             </div>
 
             {/* Hero image + gallery — single render; first on mobile, after the title on desktop */}
@@ -251,8 +268,8 @@ export default function ProductPage({ product, availability, tags, relatedProduc
             )}
           </div>
 
-          {/* RIGHT COLUMN — sticky */}
-          <div className="lg:sticky lg:top-20 lg:self-start">
+          {/* RIGHT COLUMN — sticky; scroll-mt clears the sticky navbar on #rezervacija jumps */}
+          <div id="rezervacija" className="lg:sticky lg:top-20 lg:self-start scroll-mt-20">
             <AddToCartCard
               product={{
                 id: product.id,
@@ -286,6 +303,22 @@ export default function ProductPage({ product, availability, tags, relatedProduc
           </section>
         )}
       </main>
+
+      {/* Mobile sticky booking bar */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center justify-between gap-3">
+        <div>
+          <span className="font-price font-bold text-brand-primary text-lg">
+            od {effectiveDailyRate(product)} €
+          </span>
+          <span className="text-xs text-brand-muted">/dan</span>
+        </div>
+        <a
+          href="#rezervacija"
+          className="shrink-0 bg-brand-primary text-white font-bold px-6 py-2.5 rounded-lg hover:bg-brand-dark transition-colors"
+        >
+          Rezerviraj
+        </a>
+      </div>
     </>
   );
 }

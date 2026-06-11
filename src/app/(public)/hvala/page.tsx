@@ -40,6 +40,27 @@ export default function HvalaPage() {
         </div>
       </div>
 
+      {/* What happens next */}
+      <div className="bg-white border border-gray-100 rounded-xl p-6 mb-8 text-left max-w-md mx-auto">
+        <h2 className="font-display font-bold text-brand-text mb-4 text-center">
+          Što dalje?
+        </h2>
+        <ol className="space-y-3">
+          {[
+            "Provjeravamo dostupnost opreme za vaše datume.",
+            "Šaljemo potvrdu e-mailom u roku 1–2 sata.",
+            "Dogovaramo preuzimanje ili dostavu.",
+          ].map((step, i) => (
+            <li key={step} className="flex items-start gap-3">
+              <span className="h-6 w-6 rounded-full bg-brand-primary/10 text-brand-primary text-sm font-bold flex items-center justify-center flex-shrink-0">
+                {i + 1}
+              </span>
+              <span className="text-sm text-brand-muted leading-relaxed">{step}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Link
           href="/oprema"

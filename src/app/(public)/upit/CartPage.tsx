@@ -104,6 +104,9 @@ export default function CartPage() {
   const submitLock = useRef(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [promoInput, setPromoInput] = useState("");
+  // Collapsed by default — an always-open coupon field sends users hunting
+  // for codes off-site.
+  const [promoOpen, setPromoOpen] = useState(false);
   const [promoChecking, setPromoChecking] = useState(false);
   const [promoMessage, setPromoMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
@@ -552,6 +555,14 @@ export default function CartPage() {
                     <X className="h-4 w-4" />
                   </button>
                 </div>
+              ) : !promoOpen ? (
+                <button
+                  type="button"
+                  onClick={() => setPromoOpen(true)}
+                  className="text-xs text-brand-muted underline hover:text-brand-primary transition-colors"
+                >
+                  Imate promo kod?
+                </button>
               ) : (
                 <form onSubmit={handleApplyPromo} className="space-y-2">
                   <label className="block text-xs text-brand-muted font-medium">

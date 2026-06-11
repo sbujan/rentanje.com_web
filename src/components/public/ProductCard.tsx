@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingCart } from "lucide-react";
+import { CalendarCheck } from "lucide-react";
 import type { Database } from "@/types/database";
 import { effectiveDailyRate } from "@/lib/pricing";
 
@@ -74,10 +74,10 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         </div>
 
-        {/* CTA — always visible on mobile, hover on desktop */}
-        <div className="mt-2 w-full flex items-center justify-center gap-2 bg-brand-primary text-white text-sm font-semibold py-2.5 rounded-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-          <ShoppingCart className="h-4 w-4" />
-          Dodaj u košaricu
+        {/* CTA — always visible; the whole card links to the product page */}
+        <div className="mt-2 w-full flex items-center justify-center gap-2 bg-brand-primary text-white text-sm font-semibold py-2.5 rounded-md group-hover:bg-brand-dark transition-colors">
+          <CalendarCheck className="h-4 w-4" />
+          Provjeri dostupnost
         </div>
       </div>
     </Link>

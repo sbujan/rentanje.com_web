@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Loader2, CheckCircle } from "lucide-react";
+import { trackContactForm } from "@/lib/gtag";
 
 export default function KontaktForm() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -18,6 +19,7 @@ export default function KontaktForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+      if (res.ok) trackContactForm("kontakt");
       setStatus(res.ok ? "ok" : "error");
     } catch {
       setStatus("error");

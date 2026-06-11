@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { DayPicker, DateRange, Matcher } from "react-day-picker";
-import { format, differenceInCalendarDays, eachDayOfInterval } from "date-fns";
+import { format, differenceInCalendarDays, eachDayOfInterval, startOfDay } from "date-fns";
 import { hr } from "date-fns/locale";
 import "react-day-picker/dist/style.css";
 
@@ -37,10 +37,21 @@ export default function AvailabilityCalendar({
 }: Props) {
   const [range, setRange] = useState<DateRange | undefined>();
   const [error, setError] = useState<string | null>(null);
-  const today = new Date();
+  // startOfDay: calendar days are midnight-local, so a plain `new Date()`
+  // (with time-of-day) makes `date >= today` false for *today* — today's
+  // bookings would never block.
+  const today = startOfDay(new Date());
 
   function isUnavailable(date: Date) {
     return date >= today && getStatus(date, availability, stockQty) === "unavailable";
+  }
+
+  // Skip the green "available" tint on selected days so the inline modifier
+  // style doesn't override the range-selection styling.
+  function isInSelectedRange(date: Date) {
+    if (!range?.from) return false;
+    const end = range.to ?? range.from;
+    return date >= range.from && date <= end;
   }
 
   function handleSelect(r: DateRange | undefined) {
@@ -72,6 +83,10 @@ export default function AvailabilityCalendar({
       date >= today && getStatus(date, availability, stockQty) === "unavailable",
     low: (date: Date) =>
       date >= today && getStatus(date, availability, stockQty) === "low",
+    available: (date: Date) =>
+      date >= today &&
+      !isInSelectedRange(date) &&
+      getStatus(date, availability, stockQty) === "available",
   };
 
   const modifiersStyles = {
@@ -84,6 +99,11 @@ export default function AvailabilityCalendar({
     low: {
       backgroundColor: "#fef9c3",
       color: "#ca8a04",
+    },
+    // Subtle green so the legend's "Dostupno" actually matches the calendar.
+    available: {
+      backgroundColor: "#f0fdf4",
+      color: "#15803d",
     },
   };
 

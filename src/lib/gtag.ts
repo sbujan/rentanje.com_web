@@ -134,3 +134,9 @@ export function trackBlogRead(postSlug: string, readingTime?: number | null) {
 export function trackPhoneClick() {
   gtagEvent("phone_click", { event_category: "engagement" });
 }
+
+// Simple contact-form submissions (no cart/value attached). Inquiries with a
+// cart go through trackGenerateLead instead.
+export function trackContactForm(source: "homepage" | "kontakt") {
+  gtagEvent("generate_lead", { method: "contact_form", source });
+}

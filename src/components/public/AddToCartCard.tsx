@@ -214,6 +214,12 @@ export default function AddToCartCard({ product, availability }: Props) {
         {added ? "Dodano! ✓" : "Dodaj u košaricu"}
       </button>
 
+      {!rentalStart && !rentalEnd && (
+        <p className="text-xs text-brand-muted text-center">
+          Odaberite datume u kalendaru za rezervaciju
+        </p>
+      )}
+
       {!canAdd && days > 0 && days < product.min_rental_days && (
         <p className="text-xs text-red-500 text-center">
           Minimalni period je {product.min_rental_days} dana. Odabrali ste {days}.
@@ -237,7 +243,7 @@ export default function AddToCartCard({ product, availability }: Props) {
 
       {/* Trust badges */}
       <div className="space-y-1.5 pt-1 border-t border-gray-100">
-        {["✓ Preuzimanje u Zagrebu", "✓ Dostava 10 € (Zagreb)", "✓ Brz odgovor <2h"].map((t) => (
+        {["✓ Preuzimanje u Zagrebu", "✓ Dostava 10 € (Zagreb)", "✓ Odgovor u roku 1–2 sata"].map((t) => (
           <p key={t} className="text-xs text-brand-muted">{t}</p>
         ))}
       </div>

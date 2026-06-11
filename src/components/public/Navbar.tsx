@@ -61,6 +61,16 @@ export default function Navbar() {
             {PHONE}
           </a>
 
+          {/* Phone icon — small screens only */}
+          <a
+            href={PHONE_HREF}
+            onClick={trackPhoneClick}
+            aria-label={`Nazovite ${PHONE}`}
+            className="flex sm:hidden items-center justify-center h-10 w-10 rounded-full text-brand-primary hover:bg-brand-light transition-colors"
+          >
+            <Phone className="h-5 w-5" />
+          </a>
+
           {/* Cart */}
           <Link
             href="/upit"

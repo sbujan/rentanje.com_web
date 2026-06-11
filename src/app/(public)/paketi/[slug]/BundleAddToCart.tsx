@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { DayPicker, DateRange } from "react-day-picker";
-import { differenceInCalendarDays } from "date-fns";
+import { DayPicker, DateRange, Matcher } from "react-day-picker";
+import { differenceInCalendarDays, eachDayOfInterval, format, startOfDay } from "date-fns";
 import { hr } from "date-fns/locale";
 import { ShoppingCart, Phone } from "lucide-react";
 import "react-day-picker/dist/style.css";
@@ -23,7 +23,14 @@ interface BundleProduct {
   min_rental_days: 1 | 3 | 7;
   requires_deposit: boolean;
   deposit_amount: number | null;
+  stock_qty: number;
   qty: number;
+}
+
+interface AvailabilityRecord {
+  product_id: string;
+  date: string;
+  qty_booked: number;
 }
 
 interface Bundle {
@@ -38,22 +45,65 @@ interface Bundle {
 interface Props {
   bundle: Bundle;
   products: BundleProduct[];
+  availability: AvailabilityRecord[];
 }
 
 const PHONE_HREF = "tel:+385952044414";
 
-export default function BundleAddToCart({ bundle, products }: Props) {
+export default function BundleAddToCart({ bundle, products, availability }: Props) {
   const router = useRouter();
   const addBundle = useCartStore((s) => s.addBundle);
 
   const [range, setRange] = useState<DateRange | undefined>();
   const [added, setAdded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     trackBundleViewed(bundle.id, bundle.name);
   }, [bundle.id, bundle.name]);
 
-  const today = new Date();
+  // startOfDay so today's own bookings can still block today (calendar days
+  // are midnight-local; a timestamped "now" would never match them).
+  const today = startOfDay(new Date());
+
+  // booked units per (product, day)
+  const bookedByProductDate = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const a of availability) {
+      const key = `${a.product_id}|${a.date}`;
+      map.set(key, (map.get(key) ?? 0) + a.qty_booked);
+    }
+    return map;
+  }, [availability]);
+
+  // A day is unavailable when ANY component product lacks enough free units
+  // for the bundle's required quantity of it.
+  function isUnavailable(date: Date) {
+    if (date < today) return false;
+    const key = format(date, "yyyy-MM-dd");
+    return products.some((p) => {
+      const booked = bookedByProductDate.get(`${p.id}|${key}`) ?? 0;
+      return p.stock_qty - booked < p.qty;
+    });
+  }
+
+  function handleSelect(r: DateRange | undefined) {
+    if (r?.from && r?.to) {
+      const blocked = eachDayOfInterval({ start: r.from, end: r.to }).find(isUnavailable);
+      if (blocked) {
+        setError(
+          `Odabrani period uključuje nedostupan datum (${format(blocked, "d. MMM yyyy", { locale: hr })}). Molimo odaberite drugi raspon.`
+        );
+        setRange(undefined);
+        return;
+      }
+    }
+    setError(null);
+    setRange(r);
+  }
+
+  const disabledDays: Matcher[] = [{ before: today }, isUnavailable];
+
   const days =
     range?.from && range?.to ? differenceInCalendarDays(range.to, range.from) + 1 : 0;
 
@@ -140,13 +190,27 @@ export default function BundleAddToCart({ bundle, products }: Props) {
           <DayPicker
             mode="range"
             selected={range}
-            onSelect={setRange}
-            disabled={{ before: today }}
+            onSelect={handleSelect}
+            disabled={disabledDays}
+            modifiers={{ unavailable: isUnavailable }}
+            modifiersStyles={{
+              unavailable: {
+                backgroundColor: "#fee2e2",
+                color: "#ef4444",
+                textDecoration: "line-through",
+                opacity: 1,
+              },
+            }}
             locale={hr}
             numberOfMonths={1}
             className="!m-0 p-3"
           />
         </div>
+        {error && (
+          <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-md px-3 py-2 mt-2">
+            {error}
+          </p>
+        )}
         {minRentalDays > 1 && (
           <p className="text-xs text-brand-muted mt-2">
             Minimalni period: <strong>{minRentalDays} dana</strong>.

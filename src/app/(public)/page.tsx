@@ -47,7 +47,7 @@ const localBusinessSchema = {
     { "@type": "City", name: "Zagreb" },
     { "@type": "Country", name: "Hrvatska" },
   ],
-  openingHours: "Mo-Fr 08:00-17:00",
+  openingHours: "Mo-Su 08:00-20:00",
   priceRange: "€€",
   description: "Iznajmljivanje opreme za evente, roštilj, kamp i audio/video u Hrvatskoj.",
 };
@@ -73,7 +73,7 @@ const whyUs = [
   {
     icon: <Zap className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />,
     title: "Brz odgovor",
-    desc: "Odgovarama unutar 1 radnog dana!",
+    desc: "Odgovaramo u roku 1–2 sata, svaki dan 8–20h.",
   },
   {
     icon: <Truck className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />,

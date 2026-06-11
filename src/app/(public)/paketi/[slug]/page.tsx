@@ -93,7 +93,7 @@ export default async function BundlePage({ params }: Props) {
 
   const { data: bundleProductRows, error: bundleProductsErr } = await supabase
     .from("bundle_products")
-    .select("qty, product:products(id, name, slug, hero_image_url, price_per_day, price_per_3days, price_per_7days, min_rental_days, requires_deposit, deposit_amount)")
+    .select("qty, product:products(id, name, slug, hero_image_url, price_per_day, price_per_3days, price_per_7days, min_rental_days, requires_deposit, deposit_amount, stock_qty)")
     .eq("bundle_id", bundle.id);
 
   if (bundleProductsErr) {
@@ -114,11 +114,30 @@ export default async function BundlePage({ params }: Props) {
       min_rental_days: 1 | 3 | 7;
       requires_deposit: boolean;
       deposit_amount: number | null;
+      stock_qty: number;
     } | null;
   };
 
   const bundleProducts = ((bundleProductRows ?? []) as unknown as BundleProductRow[])
     .filter((r) => r.product !== null) as Array<BundleProductRow & { product: NonNullable<BundleProductRow["product"]> }>;
+
+  // Availability for every component product, so the calendar can block dates
+  // where any product lacks the bundle's required quantity (same pattern as
+  // najam/[slug]: all rows, no date filter).
+  const productIds = bundleProducts.map((r) => r.product.id);
+  let availability: { product_id: string; date: string; qty_booked: number }[] = [];
+  if (productIds.length > 0) {
+    const { data: availRows, error: availErr } = await supabase
+      .from("availability")
+      .select("product_id, date, qty_booked")
+      .in("product_id", productIds);
+    if (availErr) {
+      // Degrade gracefully: calendar falls back to past-date blocking only.
+      console.error("Bundle availability query failed:", availErr);
+    } else {
+      availability = availRows ?? [];
+    }
+  }
 
   // Reference price: 7-day rental of the bundle
   const referenceDays = 7;
@@ -260,8 +279,10 @@ export default async function BundlePage({ params }: Props) {
               min_rental_days: row.product.min_rental_days,
               requires_deposit: row.product.requires_deposit,
               deposit_amount: row.product.deposit_amount,
+              stock_qty: row.product.stock_qty,
               qty: row.qty,
             }))}
+            availability={availability}
           />
         </div>
       </div>
