@@ -239,7 +239,7 @@ export default function AddToCartCard({ product, availability }: Props) {
 
       {/* Trust badges */}
       <div className="space-y-1.5 pt-1 border-t border-gray-100">
-        {["✓ Preuzimanje u Zagrebu", "✓ Dostava 10 € (Zagreb)", "✓ Odgovor u roku 1–2 sata"].map((t) => (
+        {["✓ Preuzimanje u Zagrebu", "✓ Dostava 10 € (Zagreb)", "✓ Odgovor u roku 1 radnog dana"].map((t) => (
           <p key={t} className="text-xs text-brand-muted">{t}</p>
         ))}
       </div>

@@ -135,7 +135,7 @@ export default async function SeoPage({ params }: Props) {
               Trebate opremu za vaš event?
             </p>
             <p className="text-brand-muted text-sm mb-4">
-              Iznajmite opremu brzo i povoljno. Odgovaramo u roku od 1–2 sata.
+              Iznajmite opremu brzo i povoljno. Odgovaramo u roku od 1 radnog dana.
             </p>
             <Link
               href="/oprema"

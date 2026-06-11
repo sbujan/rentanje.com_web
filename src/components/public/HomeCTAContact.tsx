@@ -33,7 +33,7 @@ export default function HomeCTAContact() {
           <h2 className="font-display text-2xl sm:text-3xl font-bold mb-2">
             Trebate opremu? Javite se!
           </h2>
-          <p className="text-white/80">Odgovaramo u roku 1–2 sata, svaki dan 8–20h.</p>
+          <p className="text-white/80">Odgovaramo u roku od 1 radnog dana, dostupni svaki dan 8–20h.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">

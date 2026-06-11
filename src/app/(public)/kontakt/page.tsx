@@ -8,7 +8,7 @@ import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF } from "@/lib/site";
 const TITLE = "Kontakt";
 const OG_TITLE = "Kontakt | rentanje.com";
 const DESCRIPTION =
-  "Nazovite, napišite ili svratite. Odgovaramo u roku 1–2 sata, svaki dan. Zagreb, Naserov trg 4.";
+  "Nazovite, napišite ili svratite. Odgovaramo u roku od 1 radnog dana. Zagreb, Naserov trg 4.";
 const CANONICAL = "https://rentanje.com/kontakt";
 
 export const metadata: Metadata = {
@@ -37,7 +37,7 @@ export default function KontaktPage() {
     <>
       <PageHero
         title="Kontakt"
-        subtitle="Odgovaramo u roku 1–2 sata, svaki dan."
+        subtitle="Odgovaramo u roku od 1 radnog dana."
         breadcrumbs={[{ href: "/", label: "Početna" }, { label: "Kontakt" }]}
         color="#FF8E6C"
       />

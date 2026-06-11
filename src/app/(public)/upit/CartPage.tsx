@@ -416,7 +416,7 @@ export default function CartPage() {
           </button>
 
           <p className="text-xs text-center text-brand-muted">
-            Nakon slanja kontaktirat ćemo vas u roku od 1–2 sata.
+            Nakon slanja kontaktirat ćemo vas u roku od 1 radnog dana.
           </p>
 
           <Link

@@ -113,7 +113,7 @@ export function buildCustomerConfirmationHtml(params: {
   </div>
   <div style="padding:32px">
     <p style="margin:0 0 16px;font-size:16px;color:#111827">Pozdrav, <strong>${esc(name)}</strong>!</p>
-    <p style="margin:0 0 24px;font-size:14px;color:#374151;line-height:1.6">Vaš upit je uspješno zaprimljen. Kontaktirat ćemo vas u roku od <strong>1–2 sata</strong> s potvrdom dostupnosti i detaljima.</p>
+    <p style="margin:0 0 24px;font-size:14px;color:#374151;line-height:1.6">Vaš upit je uspješno zaprimljen. Kontaktirat ćemo vas u roku od <strong>1 radnog dana</strong> s potvrdom dostupnosti i detaljima.</p>
     <h2 style="margin:0 0 16px;font-size:16px;color:#111827">Sažetak upita</h2>
     <table style="width:100%;border-collapse:collapse;font-size:14px">
       <thead><tr style="background:#f9fafb">

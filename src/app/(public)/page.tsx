@@ -74,7 +74,7 @@ const whyUs = [
   {
     icon: <Zap className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />,
     title: "Brz odgovor",
-    desc: "Odgovaramo u roku 1–2 sata, svaki dan 8–20h.",
+    desc: "Odgovaramo u roku od 1 radnog dana, dostupni svaki dan 8–20h.",
   },
   {
     icon: <Truck className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />,

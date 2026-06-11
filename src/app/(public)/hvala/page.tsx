@@ -21,7 +21,7 @@ export default function HvalaPage() {
         Upit je primljen!
       </h1>
       <p className="text-brand-muted text-base mb-2">
-        Hvala! Kontaktirat ćemo vas u roku od 1–2 sata s potvrdom dostupnosti i
+        Hvala! Kontaktirat ćemo vas u roku od 1 radnog dana s potvrdom dostupnosti i
         detaljima rezervacije.
       </p>
       <p className="text-brand-muted text-sm mb-8">
@@ -49,7 +49,7 @@ export default function HvalaPage() {
         <ol className="space-y-3">
           {[
             "Provjeravamo dostupnost opreme za vaše datume.",
-            "Šaljemo potvrdu e-mailom u roku 1–2 sata.",
+            "Šaljemo potvrdu e-mailom u roku od 1 radnog dana.",
             "Dogovaramo preuzimanje ili dostavu.",
           ].map((step, i) => (
             <li key={step} className="flex items-start gap-3">

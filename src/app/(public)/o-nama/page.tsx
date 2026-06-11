@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 const values = [
-  { title: "Brz odgovor", desc: "Odgovaramo na svaki upit u roku 1–2 sata, svaki dan 8–20h." },
+  { title: "Brz odgovor", desc: "Odgovaramo na svaki upit u roku od 1 radnog dana, dostupni svaki dan 8–20h." },
   { title: "Čista i testirana oprema", desc: "Svaki proizvod čistimo i testiramo nakon svakog iznajmljivanja." },
   { title: "Bez skrivenih troškova", desc: "Cijena je cijena. Nema naknade za rezervaciju ni iznenađenja." },
   { title: "Lokalno, iz Zagreba", desc: "Dostupni smo za dostavu i preuzimanje u Zagrebu i okolici." },
