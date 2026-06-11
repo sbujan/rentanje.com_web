@@ -6,14 +6,10 @@ import { Phone, ShoppingCart, Info, Minus, Plus } from "lucide-react";
 import { useCartStore } from "@/lib/cart";
 import { calcRentalPrice } from "@/lib/pricing";
 import { toYmd } from "@/lib/utils";
-import { expandRentalDates, maxAvailableUnits } from "@/lib/availability";
+import { expandRentalDates, maxAvailableUnits, type AvailabilityRecord } from "@/lib/availability";
 import { trackAddToCart, trackAvailabilityChecked, trackPhoneClick } from "@/lib/gtag";
+import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF } from "@/lib/site";
 import AvailabilityCalendar from "./AvailabilityCalendar";
-
-const PHONE = "+385 95 204 4414";
-const PHONE_HREF = "tel:+385952044414";
-
-interface AvailabilityRecord { date: string; qty_booked: number }
 
 interface Props {
   product: {

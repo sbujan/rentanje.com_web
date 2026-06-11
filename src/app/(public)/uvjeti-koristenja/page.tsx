@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/public/PageHero";
+import { SITE_PHONE, SITE_PHONE_HREF } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Uvjeti korištenja",
@@ -64,7 +65,7 @@ export default function UvjetiKoristenjaPage() {
 
         <section>
           <h2 className="font-display font-bold text-lg">7. Kontakt</h2>
-          <p>Za sva pitanja u vezi uvjeta korištenja možete nas kontaktirati na <a href="mailto:info@rentanje.com" className="text-brand-primary underline">info@rentanje.com</a> ili na broj <a href="tel:+385952044414" className="text-brand-primary underline">+385 95 204 4414</a>.</p>
+          <p>Za sva pitanja u vezi uvjeta korištenja možete nas kontaktirati na <a href="mailto:info@rentanje.com" className="text-brand-primary underline">info@rentanje.com</a> ili na broj <a href={SITE_PHONE_HREF} className="text-brand-primary underline">{SITE_PHONE}</a>.</p>
         </section>
       </div>
     </main>

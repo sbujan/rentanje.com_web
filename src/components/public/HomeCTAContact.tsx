@@ -3,9 +3,7 @@
 import { useState } from "react";
 import { Phone, Mail, MapPin, Clock, Loader2, CheckCircle } from "lucide-react";
 import { trackContactForm } from "@/lib/gtag";
-
-const PHONE = "+385 95 204 4414";
-const PHONE_HREF = "tel:+385952044414";
+import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF } from "@/lib/site";
 
 export default function HomeCTAContact() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });

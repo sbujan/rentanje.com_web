@@ -5,11 +5,10 @@ import ProductCard from "@/components/public/ProductCard";
 import PageHero from "@/components/public/PageHero";
 import { CATEGORY_IMAGES, getCategoryImageUrl } from "@/lib/category-images";
 import type { Database } from "@/types/database";
+import type { ProductWithCategory } from "@/types/product";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
-type Product = Database["public"]["Tables"]["products"]["Row"] & {
-  categories?: { name: string; color: string | null; slug: string } | null;
-};
+type Product = ProductWithCategory;
 
 interface Props {
   category: Category;

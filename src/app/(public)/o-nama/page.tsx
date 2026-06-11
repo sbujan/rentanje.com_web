@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Phone, Mail, MapPin, CheckCircle } from "lucide-react";
 import PageHero from "@/components/public/PageHero";
+import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF } from "@/lib/site";
 
 export const metadata: Metadata = {
   // Layout template appends "| rentanje.com".
@@ -20,9 +21,6 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary", title: "O nama | rentanje.com", images: ["/rentanje-najam-zagreb-iznajmi.jpg"] },
 };
-
-const PHONE = "+385 95 204 4414";
-const PHONE_HREF = "tel:+385952044414";
 
 const values = [
   { title: "Brz odgovor", desc: "Odgovaramo na svaki upit u roku 1–2 sata, svaki dan 8–20h." },

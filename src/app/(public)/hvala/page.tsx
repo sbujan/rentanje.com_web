@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle, Phone, ArrowLeft } from "lucide-react";
+import { SITE_PHONE, SITE_PHONE_HREF } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Upit primljen",
@@ -32,10 +33,10 @@ export default function HvalaPage() {
         <div className="text-left">
           <p className="text-xs text-brand-muted">Hitno? Nazovite direktno:</p>
           <a
-            href="tel:+385952044414"
+            href={SITE_PHONE_HREF}
             className="font-bold text-brand-text text-lg hover:text-brand-primary transition-colors"
           >
-            +385 95 204 4414
+            {SITE_PHONE}
           </a>
         </div>
       </div>

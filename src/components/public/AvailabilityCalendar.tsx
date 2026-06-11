@@ -5,11 +5,7 @@ import { DayPicker, DateRange, Matcher } from "react-day-picker";
 import { format, differenceInCalendarDays, eachDayOfInterval, startOfDay } from "date-fns";
 import { hr } from "date-fns/locale";
 import "react-day-picker/dist/style.css";
-
-interface AvailabilityRecord {
-  date: string;
-  qty_booked: number;
-}
+import type { AvailabilityRecord } from "@/lib/availability";
 
 interface Props {
   stockQty: number;

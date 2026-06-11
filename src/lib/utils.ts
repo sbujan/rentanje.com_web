@@ -28,12 +28,31 @@ export function toYmd(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-/** Format a number as EUR currency */
-export function formatPrice(amount: number): string {
+/**
+ * Format a number as EUR currency. By default renders 0–2 decimals as needed
+ * ("10 €", "10,5 €"). Pass `fractionDigits` to force a fixed number of
+ * decimals (0 → "10 €" rounded, 2 → "10,00 €").
+ */
+export function formatPrice(amount: number, fractionDigits?: number): string {
   return new Intl.NumberFormat("hr-HR", {
     style: "currency",
     currency: "EUR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: fractionDigits ?? 0,
+    maximumFractionDigits: fractionDigits ?? 2,
   }).format(amount);
+}
+
+/**
+ * Format a date string for hr-HR display ("5. lip 2026.").
+ * Date-only strings ("YYYY-MM-DD") parse as UTC midnight, which can roll back
+ * a day in negative-UTC timezones — anchor them at local noon. Legacy ISO
+ * datetime values (older records) pass through unchanged.
+ */
+export function formatDate(value: string): string {
+  const iso = /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T12:00:00` : value;
+  return new Date(iso).toLocaleDateString("hr-HR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }

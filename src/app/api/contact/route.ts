@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { z } from "zod";
+import { escapeHtml as esc } from "@/lib/escape-html";
 import { checkRateLimit, getRequestIp } from "@/lib/rate-limit";
 
 const schema = z.object({
@@ -8,10 +9,6 @@ const schema = z.object({
   email: z.string().email().max(200),
   message: z.string().min(5).max(2000),
 });
-
-function esc(s: string) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
 
 export async function POST(req: NextRequest) {
   const ip = getRequestIp(req);

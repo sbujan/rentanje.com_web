@@ -56,6 +56,16 @@ export async function checkRateLimit(
       console.error("rate-limit rpc error:", error);
       return { limited: false, priorHits: 0 };
     }
+    // Opportunistic housekeeping: on ~1% of successful checks, prune hits
+    // older than a day. Fire-and-forget — never awaited in the hot path.
+    if (Math.random() < 0.01) {
+      Promise.resolve(supabase.rpc("prune_rate_limit_hits"))
+        .then(({ error: pruneError }) => {
+          if (pruneError) console.error("rate-limit prune error:", pruneError);
+        })
+        .catch((err) => console.error("rate-limit prune error:", err));
+    }
+
     const priorHits = typeof data === "number" ? data : 0;
     return { limited: priorHits >= max, priorHits };
   } catch (err) {

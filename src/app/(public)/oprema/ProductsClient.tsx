@@ -5,25 +5,9 @@ import Link from "next/link";
 import ProductCard from "@/components/public/ProductCard";
 import { Search } from "lucide-react";
 import { effectiveDailyRate } from "@/lib/pricing";
+import type { ProductWithCategory } from "@/types/product";
 
-type Product = {
-  id: string;
-  name: string;
-  slug: string;
-  short_desc: string | null;
-  hero_image_url: string | null;
-  price_per_day: number | null;
-  price_per_3days: number | null;
-  price_per_7days: number;
-  min_rental_days: 1 | 3 | 7;
-  is_available: boolean;
-  is_featured: boolean;
-  sort_order: number;
-  category_id: string | null;
-  requires_deposit: boolean;
-  deposit_amount: number | null;
-  categories?: { name: string; color: string | null; slug: string } | null;
-};
+type Product = ProductWithCategory;
 
 type Category = { id: string; name: string; slug: string; color: string | null };
 
@@ -50,7 +34,7 @@ export default function ProductsClient({ products, categories, activeCategory }:
 
     // Category filter
     if (catFilter !== "sve") {
-      list = list.filter((p) => (p.categories as any)?.slug === catFilter);
+      list = list.filter((p) => p.categories?.slug === catFilter);
     }
 
     // Search
@@ -143,7 +127,7 @@ export default function ProductsClient({ products, categories, activeCategory }:
       {filtered.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {filtered.map((p) => (
-            <ProductCard key={p.id} product={p as any} />
+            <ProductCard key={p.id} product={p} />
           ))}
         </div>
       ) : (

@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCartStore, CartItem } from "@/lib/cart";
+import { DELIVERY_FEE, SITE_PHONE, SITE_PHONE_HREF } from "@/lib/site";
 import { formatPrice } from "@/lib/utils";
 import {
   gtagEvent,
@@ -21,8 +22,6 @@ import {
   trackPhoneClick,
 } from "@/lib/gtag";
 import { Trash2, ShoppingBag, ChevronRight, Loader2, Phone, Tag, X } from "lucide-react";
-
-const DELIVERY_FEE = 10;
 
 const schema = z
   .object({
@@ -603,11 +602,11 @@ export default function CartPage() {
             <div>
               <p className="text-xs text-brand-muted">Nazovite nas!</p>
               <a
-                href="tel:+385952044414"
+                href={SITE_PHONE_HREF}
                 onClick={trackPhoneClick}
                 className="font-bold text-brand-text hover:text-brand-primary transition-colors"
               >
-                +385 95 204 4414
+                {SITE_PHONE}
               </a>
             </div>
           </div>

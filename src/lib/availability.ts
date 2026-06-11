@@ -3,6 +3,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
 import type { CartItem } from "@/lib/cart";
 
+/** One availability row: units already booked for a product on a calendar day. */
+export interface AvailabilityRecord {
+  date: string;
+  qty_booked: number;
+}
+
 export function expandRentalDates(start: string | null, end: string | null): string[] {
   if (!start || !end) return [];
   const startDate = parseISO(start);
@@ -21,7 +27,7 @@ export interface UnavailableHit {
 
 /** Min free units across the given dates; stockQty if no dates given. */
 export function maxAvailableUnits(
-  availability: { date: string; qty_booked: number }[],
+  availability: AvailabilityRecord[],
   stockQty: number,
   dates: string[],
 ): number {

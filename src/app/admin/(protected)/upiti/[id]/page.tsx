@@ -5,29 +5,16 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { hr } from "date-fns/locale";
 import { ArrowLeft, Mail, Phone, MapPin } from "lucide-react";
+import { parseCartItems } from "@/lib/cart";
+import { INQUIRY_STATUS_META } from "@/lib/inquiry-status";
+import { formatDate, formatPrice } from "@/lib/utils";
 import StatusSelect from "./StatusSelect";
 import ResyncAvailabilityButton from "../ResyncAvailabilityButton";
 import DeleteInquiryButton from "../DeleteInquiryButton";
 
-const STATUS_LABELS: Record<string, { label: string; className: string }> = {
-  new: { label: "Novi", className: "bg-red-100 text-red-700" },
-  read: { label: "Pročitan", className: "bg-blue-100 text-blue-700" },
-  replied: { label: "Odgovoreno", className: "bg-yellow-100 text-yellow-700" },
-  confirmed: { label: "Potvrđen", className: "bg-green-100 text-green-700" },
-  cancelled: { label: "Otkazan", className: "bg-gray-100 text-gray-500" },
-};
-
-function formatPrice(n: number | null) {
+function formatNullablePrice(n: number | null) {
   if (n === null) return "–";
-  return n.toLocaleString("hr-HR", { style: "currency", currency: "EUR", maximumFractionDigits: 2 });
-}
-
-function formatDate(value: string) {
-  // Date-only strings ("YYYY-MM-DD") parse as UTC midnight, which can roll back
-  // a day in negative-UTC timezones — anchor them at local noon. Legacy ISO
-  // datetime values (older records) pass through unchanged.
-  const iso = /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T12:00:00` : value;
-  return new Date(iso).toLocaleDateString("hr-HR", { day: "numeric", month: "short", year: "numeric" });
+  return formatPrice(n, 2);
 }
 
 interface Props {
@@ -51,8 +38,8 @@ export default async function InquiryDetailPage({ params }: Props) {
     await admin.from("inquiries").update({ status: "read" }).eq("id", inquiry.id);
   }
 
-  const items = Array.isArray(inquiry.items) ? inquiry.items as any[] : [];
-  const statusInfo = STATUS_LABELS[inquiry.status] ?? STATUS_LABELS.new;
+  const items = parseCartItems(inquiry.items);
+  const statusInfo = INQUIRY_STATUS_META[inquiry.status] ?? INQUIRY_STATUS_META.new;
 
   return (
     <div className="p-8 max-w-4xl">
@@ -127,7 +114,7 @@ export default async function InquiryDetailPage({ params }: Props) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {items.map((item: any, i: number) => (
+                  {items.map((item, i) => (
                     <tr key={i}>
                       <td className="py-3 font-medium text-gray-900">
                         {item.productName}
@@ -137,7 +124,7 @@ export default async function InquiryDetailPage({ params }: Props) {
                         {formatDate(item.rentalStart)} –<br/>{formatDate(item.rentalEnd)}
                       </td>
                       <td className="py-3 font-medium text-gray-900 text-right">
-                        {formatPrice(item.totalPrice)}
+                        {formatNullablePrice(item.totalPrice)}
                       </td>
                     </tr>
                   ))}
@@ -146,14 +133,14 @@ export default async function InquiryDetailPage({ params }: Props) {
                   <tr className="border-t-2 border-gray-100">
                     <td colSpan={2} className="pt-3 font-bold text-gray-900">Ukupno</td>
                     <td className="pt-3 font-bold text-gray-900 text-right">
-                      {formatPrice(inquiry.subtotal_estimate)}
+                      {formatNullablePrice(inquiry.subtotal_estimate)}
                     </td>
                   </tr>
                   {inquiry.total_estimate && inquiry.total_estimate !== inquiry.subtotal_estimate && (
                     <tr>
                       <td colSpan={2} className="py-1 text-amber-600 text-sm">+ Depozit</td>
                       <td className="py-1 text-amber-600 text-sm text-right">
-                        {formatPrice((inquiry.total_estimate ?? 0) - (inquiry.subtotal_estimate ?? 0))}
+                        {formatNullablePrice((inquiry.total_estimate ?? 0) - (inquiry.subtotal_estimate ?? 0))}
                       </td>
                     </tr>
                   )}

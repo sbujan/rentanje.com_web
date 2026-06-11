@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { SITE_PHONE } from "@/lib/site";
 import { Loader2, Save, CheckCircle } from "lucide-react";
 
 const FIELDS = [
-  { key: "phone", label: "Telefon", placeholder: "+385 95 204 4414", type: "text" },
+  { key: "phone", label: "Telefon", placeholder: SITE_PHONE, type: "text" },
   { key: "email", label: "E-mail", placeholder: "info@rentanje.com", type: "email" },
   { key: "address", label: "Adresa", placeholder: "Zagreb, Hrvatska", type: "text" },
   { key: "working_hours", label: "Radno vrijeme", placeholder: "Svaki dan, 8–20h", type: "text" },
@@ -41,7 +42,7 @@ export default function SettingsForm({ initial }: Props) {
 
     const upserts = FIELDS.map((f) => ({
       key: f.key,
-      value: values[f.key] as any,
+      value: values[f.key],
     }));
 
     const { error: err } = await supabase

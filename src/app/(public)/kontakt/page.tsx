@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import PageHero from "@/components/public/PageHero";
 import KontaktForm from "./KontaktForm";
-
-const PHONE = "+385 95 204 4414";
-const PHONE_HREF = "tel:+385952044414";
+import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF } from "@/lib/site";
 
 // Layout template appends "| rentanje.com" to the bare title.
 const TITLE = "Kontakt";

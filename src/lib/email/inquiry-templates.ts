@@ -1,25 +1,7 @@
 import type { CartItem } from "@/lib/cart";
-import { formatPrice } from "@/lib/utils";
-
-function esc(s: string) {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-function formatDate(value: string) {
-  // Date-only strings ("YYYY-MM-DD") parse as UTC midnight, which can roll back
-  // a day in negative-UTC timezones — anchor them at local noon. Legacy ISO
-  // datetime values (older records) pass through unchanged.
-  const iso = /^\d{4}-\d{2}-\d{2}$/.test(value) ? `${value}T12:00:00` : value;
-  return new Date(iso).toLocaleDateString("hr-HR", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
+import { escapeHtml as esc } from "@/lib/escape-html";
+import { SITE_PHONE, SITE_PHONE_HREF } from "@/lib/site";
+import { formatDate, formatPrice } from "@/lib/utils";
 
 export function buildAdminInquiryHtml(params: {
   name: string;
@@ -151,7 +133,7 @@ export function buildCustomerConfirmationHtml(params: {
     </table>
     <div style="margin-top:32px;background:#fef2f2;border-radius:8px;padding:16px 20px">
       <p style="margin:0;font-size:14px;color:#374151;line-height:1.6"><strong>Hitno?</strong> Nazovite nas direktno:</p>
-      <a href="tel:+385952044414" style="font-size:20px;font-weight:700;color:#F05554;text-decoration:none">+385 95 204 4414</a>
+      <a href="${SITE_PHONE_HREF}" style="font-size:20px;font-weight:700;color:#F05554;text-decoration:none">${SITE_PHONE}</a>
     </div>
   </div>
   <div style="padding:16px 32px;background:#f9fafb;border-top:1px solid #e5e7eb;font-size:12px;color:#9ca3af;text-align:center">

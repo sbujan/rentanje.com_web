@@ -1,9 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Phone, Mail } from "lucide-react";
-
-const PHONE = "+385 95 204 4414";
-const PHONE_HREF = "tel:+385952044414";
+import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF } from "@/lib/site";
 
 export default function Footer() {
   return (

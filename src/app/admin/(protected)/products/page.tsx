@@ -70,7 +70,7 @@ export default async function ProductsPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-brand-muted">
-                      {(p.categories as any)?.name ?? "—"}
+                      {(p.categories as unknown as { name: string } | null)?.name ?? "—"}
                     </td>
                     <td className="px-4 py-3 font-price font-bold text-brand-primary">
                       {lowestPrice} €

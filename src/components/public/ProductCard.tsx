@@ -1,12 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { CalendarCheck } from "lucide-react";
-import type { Database } from "@/types/database";
+import type { ProductWithCategory } from "@/types/product";
 import { effectiveDailyRate } from "@/lib/pricing";
 
-type Product = Database["public"]["Tables"]["products"]["Row"] & {
-  categories?: { name: string; color: string | null; slug: string } | null;
-};
+type Product = ProductWithCategory;
 
 function AvailabilityDot({ isAvailable }: { isAvailable: boolean }) {
   return (

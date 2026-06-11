@@ -3,20 +3,14 @@ import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { hr } from "date-fns/locale";
 import { Mail, Phone } from "lucide-react";
-import type { CartItem } from "@/lib/cart";
+import { parseCartItems } from "@/lib/cart";
+import { INQUIRY_STATUS_META } from "@/lib/inquiry-status";
+import { formatPrice } from "@/lib/utils";
 import DeleteInquiryButton from "./DeleteInquiryButton";
 
-const STATUS_LABELS: Record<string, { label: string; className: string }> = {
-  new: { label: "Novi", className: "bg-red-100 text-red-700" },
-  read: { label: "Pročitan", className: "bg-blue-100 text-blue-700" },
-  replied: { label: "Odgovoreno", className: "bg-yellow-100 text-yellow-700" },
-  confirmed: { label: "Potvrđen", className: "bg-green-100 text-green-700" },
-  cancelled: { label: "Otkazan", className: "bg-gray-100 text-gray-500" },
-};
-
-function formatPrice(n: number | null) {
+function formatNullablePrice(n: number | null) {
   if (n === null) return "–";
-  return n.toLocaleString("hr-HR", { style: "currency", currency: "EUR", maximumFractionDigits: 2 });
+  return formatPrice(n, 2);
 }
 
 /** Short date for a "YYYY-MM-DD" string (parsed as local day, no UTC shift). */
@@ -35,8 +29,9 @@ function formatRange(start: string | null, end: string | null) {
 
 /** Compact "Naziv ×2 · Drugi naziv" summary from the items JSONB. */
 function itemsSummary(raw: unknown): string {
-  if (!Array.isArray(raw) || raw.length === 0) return "–";
-  return (raw as CartItem[])
+  const items = parseCartItems(raw);
+  if (items.length === 0) return "–";
+  return items
     .map((i) => `${i.productName}${i.qty > 1 ? ` ×${i.qty}` : ""}`)
     .join(" · ");
 }
@@ -92,7 +87,7 @@ export default async function UpitiPage() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {inquiries.map((inquiry) => {
-                const statusInfo = STATUS_LABELS[inquiry.status] ?? STATUS_LABELS.new;
+                const statusInfo = INQUIRY_STATUS_META[inquiry.status] ?? INQUIRY_STATUS_META.new;
                 return (
                   <tr key={inquiry.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3 font-mono text-xs text-gray-400">
@@ -127,7 +122,7 @@ export default async function UpitiPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3 hidden md:table-cell text-right font-medium text-gray-900">
-                      {formatPrice(inquiry.subtotal_estimate)}
+                      {formatNullablePrice(inquiry.subtotal_estimate)}
                     </td>
                     <td className="px-4 py-3 hidden lg:table-cell text-gray-400 text-xs">
                       {format(new Date(inquiry.created_at), "d. MMM yyyy · HH:mm", { locale: hr })}

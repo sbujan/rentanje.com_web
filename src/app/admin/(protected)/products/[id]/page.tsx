@@ -36,7 +36,7 @@ export default async function EditProductPage({
   if (!product) notFound();
 
   const selectedTagIds = productTags?.map((pt) => pt.tag_id) ?? [];
-  const selectedRelatedIds = (relatedRows ?? []).map((r: any) => r.related_id);
+  const selectedRelatedIds = (relatedRows ?? []).map((r) => r.related_id);
 
   return (
     <div>

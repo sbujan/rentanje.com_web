@@ -3,18 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireAdmin, NotAuthorizedError } from "@/lib/admin-auth";
-import type { CartItem } from "@/lib/cart";
+import { parseCartItems } from "@/lib/cart";
+import { INQUIRY_STATUSES, type InquiryStatus } from "@/lib/inquiry-status";
 import {
   insertAvailabilityRowsForInquiry,
   deleteAvailabilityRowsForInquiry,
 } from "@/lib/availability";
 
-const STATUS_VALUES = ["new", "read", "replied", "confirmed", "cancelled"] as const;
-type InquiryStatus = (typeof STATUS_VALUES)[number];
-
 const setStatusSchema = z.object({
   inquiryId: z.string().uuid(),
-  status: z.enum(STATUS_VALUES),
+  status: z.enum(INQUIRY_STATUSES),
 });
 
 export type ActionResult<T = void> =
@@ -61,7 +59,7 @@ export async function setInquiryStatus(
       return { ok: false, error: msg };
     }
   } else if (!willBeCancelled && wasCancelled) {
-    const items = parseItems(inquiry.items);
+    const items = parseCartItems(inquiry.items);
     if (items.length === 0) {
       return { ok: false, error: "Upit nema stavki za blokiranje." };
     }
@@ -182,7 +180,7 @@ export async function resyncInquiryAvailability(
     return { ok: false, error: "Upit je otkazan — termini se namjerno ne blokiraju." };
   }
 
-  const items = parseItems(inquiry.items);
+  const items = parseCartItems(inquiry.items);
   if (items.length === 0) return { ok: false, error: "Upit nema stavki za blokiranje." };
 
   try {
@@ -206,11 +204,6 @@ export async function resyncInquiryAvailability(
   }
 
   return { ok: true, data: { count: items.length } };
-}
-
-function parseItems(raw: unknown): CartItem[] {
-  if (!Array.isArray(raw)) return [];
-  return raw as CartItem[];
 }
 
 function collectProductSlugs(raw: unknown): string[] {

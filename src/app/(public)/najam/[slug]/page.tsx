@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import { createPublicClient } from "@/lib/supabase/server";
 import { cleanSeoTitle } from "@/lib/seo";
 import { getCategoryImageUrl } from "@/lib/category-images";
+import type { ProductWithCategory } from "@/types/product";
 import CategoryPage from "./CategoryPage";
-import ProductPage from "./ProductPage";
+import ProductPage, { type ProductTag } from "./ProductPage";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -163,7 +164,12 @@ export default async function NajamSlugPage({ params }: Props) {
       throw new Error("Failed to load category products");
     }
 
-    return <CategoryPage category={category} products={(products ?? []) as any} />;
+    return (
+      <CategoryPage
+        category={category}
+        products={(products ?? []) as unknown as ProductWithCategory[]}
+      />
+    );
   }
 
   // Check if slug is a product. Same PGRST116 nuance: no rows → notFound().
@@ -208,7 +214,7 @@ export default async function NajamSlugPage({ params }: Props) {
     throw new Error("Failed to load product details");
   }
 
-  let relatedProducts: any[] = [];
+  let relatedProducts: ProductWithCategory[] = [];
   if (relatedRows && relatedRows.length > 0) {
     const ids = relatedRows.map((r) => r.related_id);
     // Related products are supplementary — log and degrade rather than fail the page.
@@ -218,16 +224,19 @@ export default async function NajamSlugPage({ params }: Props) {
       .in("id", ids)
       .eq("is_active", true);
     if (relProdErr) console.error("Related products query failed:", relProdErr);
+    const rows = (data ?? []) as unknown as ProductWithCategory[];
     relatedProducts = ids
-      .map((id) => data?.find((p: any) => p.id === id))
-      .filter(Boolean);
+      .map((id) => rows.find((p) => p.id === id))
+      .filter((p): p is ProductWithCategory => Boolean(p));
   }
+
+  const tagRows = (tags ?? []) as unknown as { tags: ProductTag | null }[];
 
   return (
     <ProductPage
-      product={product as any}
+      product={product as unknown as ProductWithCategory}
       availability={availability ?? []}
-      tags={tags?.map((t: any) => t.tags).filter(Boolean) ?? []}
+      tags={tagRows.map((t) => t.tags).filter((t): t is ProductTag => Boolean(t))}
       relatedProducts={relatedProducts}
     />
   );

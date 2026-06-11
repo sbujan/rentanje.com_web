@@ -6,9 +6,7 @@ import { useState } from "react";
 import { ShoppingCart, Phone, Menu, X } from "lucide-react";
 import { useCartStore } from "@/lib/cart";
 import { trackPhoneClick } from "@/lib/gtag";
-
-const PHONE = "+385 95 204 4414";
-const PHONE_HREF = "tel:+385952044414";
+import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF } from "@/lib/site";
 
 const navLinks = [
   { href: "/oprema", label: "Oprema" },

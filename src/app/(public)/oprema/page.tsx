@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { createPublicClient } from "@/lib/supabase/server";
+import type { ProductWithCategory } from "@/types/product";
 import ProductsClient from "./ProductsClient";
 import PageHero from "@/components/public/PageHero";
 
@@ -62,7 +63,7 @@ export default async function OpremaPage() {
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         <ProductsClient
-          products={(products ?? []) as any}
+          products={(products ?? []) as unknown as ProductWithCategory[]}
           categories={categories ?? []}
         />
       </div>

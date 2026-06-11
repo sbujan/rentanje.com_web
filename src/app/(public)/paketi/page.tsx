@@ -4,6 +4,7 @@ import Image from "next/image";
 import { createPublicClient } from "@/lib/supabase/server";
 import { Package, Phone, ChevronRight } from "lucide-react";
 import PageHero from "@/components/public/PageHero";
+import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF } from "@/lib/site";
 
 export const revalidate = 3600;
 
@@ -24,9 +25,6 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image", title: "Paketi za iznajmljivanje | rentanje.com", images: ["/rentanje-najam-zagreb-iznajmi.jpg"] },
 };
-
-const PHONE = "+385 95 204 4414";
-const PHONE_HREF = "tel:+385952044414";
 
 export default async function PaketiPage() {
   const supabase = createPublicClient();

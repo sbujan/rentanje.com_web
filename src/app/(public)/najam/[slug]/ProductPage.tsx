@@ -7,19 +7,18 @@ import AddToCartCard from "@/components/public/AddToCartCard";
 import ProductCard from "@/components/public/ProductCard";
 import ViewTracker from "@/components/public/ViewTracker";
 import ImageLightbox from "@/components/public/ImageLightbox";
-import type { Database } from "@/types/database";
+import type { AvailabilityRecord } from "@/lib/availability";
+import type { ProductWithCategory } from "@/types/product";
 
 interface FaqItem { question: string; answer: string; }
 
-type Product = Database["public"]["Tables"]["products"]["Row"] & {
-  categories?: { name: string; color: string | null; slug: string } | null;
-};
-type Tag = { id: string; name: string; color: string | null; slug: string };
+type Product = ProductWithCategory;
+export type ProductTag = { id: string; name: string; color: string | null; slug: string };
 
 interface Props {
   product: Product;
-  availability: { date: string; qty_booked: number }[];
-  tags: Tag[];
+  availability: AvailabilityRecord[];
+  tags: ProductTag[];
   relatedProducts?: Product[];
 }
 
@@ -103,7 +102,7 @@ export default function ProductPage({ product, availability, tags, relatedProduc
     { label: "Dostupno komada", value: `${product.stock_qty} kom` },
   ].filter(Boolean) as { label: string; value: string }[];
 
-  const faq: FaqItem[] = ((product as any).faq as FaqItem[] | null) ?? [];
+  const faq: FaqItem[] = product.faq ?? [];
 
   return (
     <>

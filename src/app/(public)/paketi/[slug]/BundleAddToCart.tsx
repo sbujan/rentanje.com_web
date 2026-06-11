@@ -9,6 +9,8 @@ import { ShoppingCart, Phone } from "lucide-react";
 import "react-day-picker/dist/style.css";
 import { useCartStore, type CartItem } from "@/lib/cart";
 import { calcRentalPrice, applyBundleDiscount } from "@/lib/pricing";
+import type { AvailabilityRecord } from "@/lib/availability";
+import { SITE_PHONE, SITE_PHONE_HREF } from "@/lib/site";
 import { toYmd } from "@/lib/utils";
 import { gtagEvent, trackBundleViewed, trackPhoneClick } from "@/lib/gtag";
 
@@ -27,10 +29,9 @@ interface BundleProduct {
   qty: number;
 }
 
-interface AvailabilityRecord {
+/** Bundle calendars need per-product rows, so extend the shared record. */
+interface ProductAvailabilityRecord extends AvailabilityRecord {
   product_id: string;
-  date: string;
-  qty_booked: number;
 }
 
 interface Bundle {
@@ -45,10 +46,8 @@ interface Bundle {
 interface Props {
   bundle: Bundle;
   products: BundleProduct[];
-  availability: AvailabilityRecord[];
+  availability: ProductAvailabilityRecord[];
 }
-
-const PHONE_HREF = "tel:+385952044414";
 
 export default function BundleAddToCart({ bundle, products, availability }: Props) {
   const router = useRouter();
@@ -176,12 +175,12 @@ export default function BundleAddToCart({ bundle, products, availability }: Prop
   return (
     <div className="bg-white rounded-xl shadow-card p-5 space-y-5 border border-gray-100">
       <a
-        href={PHONE_HREF}
+        href={SITE_PHONE_HREF}
         onClick={trackPhoneClick}
         className="flex items-center gap-2 text-brand-primary font-bold hover:text-brand-dark transition-colors"
       >
         <Phone className="h-5 w-5" />
-        +385 95 204 4414
+        {SITE_PHONE}
       </a>
 
       <div>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { createPublicClient } from "@/lib/supabase/server";
 import { jsonLdSafe } from "@/lib/seo";
+import type { ProductWithCategory } from "@/types/product";
 import ProductCard from "@/components/public/ProductCard";
 import { CategoryAccordion } from "@/components/ui/interactive-image-accordion";
 import HomeCTAContact from "@/components/public/HomeCTAContact";
@@ -173,8 +174,8 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {featured.map((p) => (
-                <ProductCard key={p.id} product={p as any} />
+              {(featured as unknown as ProductWithCategory[]).map((p) => (
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
           </div>

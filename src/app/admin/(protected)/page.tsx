@@ -7,25 +7,20 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { hr } from "date-fns/locale";
+import { INQUIRY_STATUS_META } from "@/lib/inquiry-status";
+import { formatPrice, toYmd } from "@/lib/utils";
 
-const STATUS_META: Record<string, { label: string; color: string; bg: string }> = {
-  new:        { label: "Novi",        color: "text-amber-700",  bg: "bg-amber-100"  },
-  read:       { label: "Pročitan",    color: "text-blue-700",   bg: "bg-blue-100"   },
-  replied:    { label: "Odgovoreno",  color: "text-violet-700", bg: "bg-violet-100" },
-  confirmed:  { label: "Potvrđen",    color: "text-green-700",  bg: "bg-green-100"  },
-  cancelled:  { label: "Otkazan",     color: "text-gray-500",   bg: "bg-gray-100"   },
-};
-
-function fmt(n: number) {
-  return n.toLocaleString("hr-HR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
-}
+/** Whole-euro EUR amounts for the dashboard stat cards. */
+const fmt = (n: number) => formatPrice(n, 0);
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
   const adminSupabase = createAdminClient();
 
-  const today = new Date().toISOString().split("T")[0];
-  const in30 = new Date(Date.now() + 30 * 86400_000).toISOString().split("T")[0];
+  // Local calendar day (not UTC) — toISOString() would skew "today" for
+  // Zagreb early mornings.
+  const today = toYmd(new Date());
+  const in30 = toYmd(new Date(Date.now() + 30 * 86400_000));
 
   const [
     { data: inquiryData },
@@ -175,7 +170,7 @@ export default async function AdminDashboard() {
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <h2 className="text-sm font-semibold text-brand-text mb-4">Upiti po statusu</h2>
           <div className="flex flex-wrap gap-3">
-            {Object.entries(STATUS_META).map(([key, meta]) => {
+            {Object.entries(INQUIRY_STATUS_META).map(([key, meta]) => {
               const count = statusCounts[key] ?? 0;
               return (
                 <div
@@ -190,7 +185,7 @@ export default async function AdminDashboard() {
           </div>
           {/* Visual bar */}
           <div className="mt-4 flex h-2.5 rounded-full overflow-hidden gap-0.5">
-            {Object.entries(STATUS_META).map(([key, meta]) => {
+            {Object.entries(INQUIRY_STATUS_META).map(([key, meta]) => {
               const count = statusCounts[key] ?? 0;
               const pct = totalInquiries ? (count / totalInquiries) * 100 : 0;
               if (pct === 0) return null;
@@ -226,7 +221,7 @@ export default async function AdminDashboard() {
           ) : (
             <div className="space-y-1">
               {recentInquiries?.map((inq) => {
-                const meta = STATUS_META[inq.status] ?? STATUS_META.new;
+                const meta = INQUIRY_STATUS_META[inq.status] ?? INQUIRY_STATUS_META.new;
                 return (
                   <Link
                     key={inq.id}

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { z } from "zod";
 
 export interface CartItem {
   productId: string;
@@ -23,6 +24,40 @@ export interface CartItem {
   bundleDiscountAmount?: number; // amount in EUR, applied once per bundleId
 }
 
+/** Runtime validator mirroring the CartItem interface, for JSONB boundaries. */
+export const cartItemSchema = z.object({
+  productId: z.string(),
+  productName: z.string(),
+  heroImage: z.string(),
+  slug: z.string(),
+  rentalStart: z.string(),
+  rentalEnd: z.string(),
+  days: z.number(),
+  minRentalDays: z.union([z.literal(1), z.literal(3), z.literal(7)]),
+  priceTierLabel: z.string(),
+  priceForTier: z.number(),
+  totalPrice: z.number(),
+  depositAmount: z.number(),
+  qty: z.number(),
+  bundleId: z.string().nullable().optional(),
+  bundleName: z.string().nullable().optional(),
+  bundleDiscountAmount: z.number().optional(),
+});
+
+/**
+ * Parse untrusted data (e.g. the inquiries.items JSONB column) into CartItems.
+ * Invalid elements are skipped rather than failing the whole list.
+ */
+export function parseCartItems(raw: unknown): CartItem[] {
+  if (!Array.isArray(raw)) return [];
+  const items: CartItem[] = [];
+  for (const element of raw) {
+    const parsed = cartItemSchema.safeParse(element);
+    if (parsed.success) items.push(parsed.data);
+  }
+  return items;
+}
+
 interface CartStore {
   items: CartItem[];
   promoCode: string | null;
@@ -31,7 +66,6 @@ interface CartStore {
   addBundle: (items: CartItem[]) => void;
   removeItem: (productId: string) => void;
   removeBundle: (bundleId: string) => void;
-  updateQty: (productId: string, qty: number) => void;
   applyPromo: (code: string, discount: number) => void;
   clearPromo: () => void;
   clearCart: () => void;
@@ -80,13 +114,6 @@ export const useCartStore = create<CartStore>()(
 
       removeBundle: (bundleId) =>
         set((state) => ({ items: state.items.filter((i) => i.bundleId !== bundleId) })),
-
-      updateQty: (productId, qty) =>
-        set((state) => ({
-          items: state.items.map((i) =>
-            i.productId === productId && !i.bundleId ? { ...i, qty } : i
-          ),
-        })),
 
       applyPromo: (code, discount) => set({ promoCode: code, discount }),
       clearPromo: () => set({ promoCode: null, discount: 0 }),
