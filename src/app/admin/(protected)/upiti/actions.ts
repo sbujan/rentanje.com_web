@@ -66,11 +66,14 @@ export async function setInquiryStatus(
       return { ok: false, error: "Upit nema stavki za blokiranje." };
     }
     try {
+      // force: an admin re-activating an inquiry is an explicit decision —
+      // write the blocks even if the dates were taken in the meantime.
       await insertAvailabilityRowsForInquiry(
         supabase,
         inquiryId,
         inquiry.inquiry_number,
-        items
+        items,
+        { force: true }
       );
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Greška pri rezervaciji datuma.";
@@ -183,11 +186,14 @@ export async function resyncInquiryAvailability(
   if (items.length === 0) return { ok: false, error: "Upit nema stavki za blokiranje." };
 
   try {
+    // force: re-sync is a manual recovery lever — the admin decides the
+    // blocks must exist regardless of what was booked since.
     await insertAvailabilityRowsForInquiry(
       supabase,
       inquiryId,
       inquiry.inquiry_number,
-      items
+      items,
+      { force: true }
     );
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Greška pri rezervaciji datuma.";

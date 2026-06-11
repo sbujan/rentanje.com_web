@@ -3,11 +3,12 @@ import { z } from "zod";
 import { validatePromoCode, type PromoValidationItem } from "@/lib/promo";
 import { checkRateLimit, getRequestIp } from "@/lib/rate-limit";
 
+// No categoryId here: category-scoped promos resolve product → category
+// server-side in validatePromoCode; a client-supplied value is never trusted.
 const itemSchema = z.object({
   productId: z.string(),
-  totalPrice: z.number(),
+  totalPrice: z.number().min(0),
   bundleId: z.string().nullable().optional(),
-  categoryId: z.string().nullable().optional(),
 });
 
 const schema = z.object({

@@ -122,66 +122,44 @@ export async function validateCartAvailability(
 
 type InquiryItem = Pick<CartItem, "productId" | "rentalStart" | "rentalEnd" | "qty">;
 
-interface AvailabilityRow {
-  product_id: string;
-  date: string;
-  qty_booked: number;
-  note: string;
-  source_inquiry_id: string;
-}
-
-function buildInquiryAvailabilityRows(
-  inquiryId: string,
-  inquiryNumber: string,
-  items: InquiryItem[]
-): AvailabilityRow[] {
-  // Per (product, date), sum the demanded qty across all cart items so
-  // a multi-product / multi-line cart doesn't produce duplicate rows.
-  const totals = new Map<string, number>();
-  for (const item of items) {
-    if (!item?.productId) continue;
-    const dates = expandRentalDates(item.rentalStart, item.rentalEnd);
-    if (dates.length === 0) continue;
-    const qty = Number(item.qty) > 0 ? Number(item.qty) : 1;
-    for (const date of dates) {
-      const key = `${item.productId}|${date}`;
-      totals.set(key, (totals.get(key) ?? 0) + qty);
-    }
-  }
-
-  const note = `Iz upita ${inquiryNumber}`;
-  const rows: AvailabilityRow[] = [];
-  for (const [key, qtyBooked] of Array.from(totals.entries())) {
-    const [productId, date] = key.split("|");
-    rows.push({
-      product_id: productId,
-      date,
-      qty_booked: qtyBooked,
-      note,
-      source_inquiry_id: inquiryId,
-    });
-  }
-  return rows;
-}
-
+/**
+ * Reserve the (product, date) pairs of an inquiry atomically via the
+ * `reserve_inquiry_availability` RPC. In one DB transaction the function
+ * locks the affected product rows, re-checks remaining stock and inserts
+ * the availability rows — closing the race where two concurrent inquiries
+ * for the last unit both pass a separate pre-check.
+ *
+ * Returns the conflicts found (empty array = reservation succeeded).
+ * With `force: true` (admin re-sync / un-cancel) the stock check is
+ * skipped and rows are written unconditionally. Idempotent either way:
+ * prior rows from the same inquiry are replaced.
+ */
 export async function insertAvailabilityRowsForInquiry(
   supabase: SupabaseClient<Database>,
   inquiryId: string,
   inquiryNumber: string,
-  items: InquiryItem[]
-): Promise<void> {
-  const rows = buildInquiryAvailabilityRows(inquiryId, inquiryNumber, items);
-  if (rows.length === 0) return;
+  items: InquiryItem[],
+  options: { force?: boolean } = {}
+): Promise<UnavailableHit[]> {
+  const payload = items
+    .filter((item) => item?.productId && item.rentalStart && item.rentalEnd)
+    .map((item) => ({
+      productId: item.productId,
+      rentalStart: item.rentalStart,
+      rentalEnd: item.rentalEnd,
+      qty: Number(item.qty) > 0 ? Number(item.qty) : 1,
+    }));
+  if (payload.length === 0) return [];
 
-  // Idempotent: clear any prior rows from this inquiry first.
-  const { error: delErr } = await supabase
-    .from("availability")
-    .delete()
-    .eq("source_inquiry_id", inquiryId);
-  if (delErr) throw delErr;
+  const { data, error } = await supabase.rpc("reserve_inquiry_availability", {
+    p_inquiry_id: inquiryId,
+    p_inquiry_number: inquiryNumber,
+    p_items: payload,
+    p_force: options.force ?? false,
+  });
+  if (error) throw error;
 
-  const { error: insErr } = await supabase.from("availability").insert(rows);
-  if (insErr) throw insErr;
+  return Array.isArray(data) ? (data as unknown as UnavailableHit[]) : [];
 }
 
 export async function deleteAvailabilityRowsForInquiry(

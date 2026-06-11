@@ -4,12 +4,22 @@ import { createAdminClient } from "@/lib/supabase/admin";
 /**
  * Extract the caller's IP from request headers. Falls back to "unknown"
  * so rate limiting still applies (all unknown IPs share one bucket).
+ *
+ * Order matters for spoof resistance:
+ *  - `x-real-ip` is set by Vercel's edge and cannot be forged by the client.
+ *  - In `x-forwarded-for`, the LEFTMOST entry is client-supplied (trivially
+ *    spoofable to rotate rate-limit buckets); the RIGHTMOST entry is the one
+ *    appended by the closest trusted proxy, so use that as the fallback.
  */
 export function getRequestIp(req: NextRequest): string {
-  const xff = req.headers.get("x-forwarded-for");
-  if (xff) return xff.split(",")[0]!.trim();
   const realIp = req.headers.get("x-real-ip");
   if (realIp) return realIp.trim();
+  const xff = req.headers.get("x-forwarded-for");
+  if (xff) {
+    const parts = xff.split(",");
+    const rightmost = parts[parts.length - 1]?.trim();
+    if (rightmost) return rightmost;
+  }
   return "unknown";
 }
 
@@ -40,8 +50,9 @@ export async function checkRateLimit(
       p_window_s: windowSeconds,
     });
     if (error) {
-      // Fail open: if the DB is unreachable, let the request through rather
-      // than lock users out of the contact form.
+      // Deliberately fail open: if the DB is unreachable, let the request
+      // through rather than lock users out of the contact/inquiry forms.
+      // Availability of the booking flow beats rate-limit strictness here.
       console.error("rate-limit rpc error:", error);
       return { limited: false, priorHits: 0 };
     }

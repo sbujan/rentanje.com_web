@@ -29,19 +29,25 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: "Invalid" }, { status: 422 });
 
   const { name, email, message } = parsed.data;
-  const fromEmail = process.env.FROM_EMAIL ?? "mail@list360.agency";
+  const fromEmail = process.env.FROM_EMAIL;
+  if (!fromEmail) {
+    console.error("FROM_EMAIL not configured — contact email skipped");
+    return NextResponse.json({ error: "Email failed" }, { status: 500 });
+  }
   const adminEmail = process.env.ADMIN_EMAIL ?? "info@rentanje.com";
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   const safeName = esc(name);
   const safeEmail = esc(email);
   const safeMessage = esc(message).replace(/\n/g, "<br/>");
+  // Subject is a header: no newlines, no HTML escaping needed.
+  const subjectName = name.replace(/[\r\n]+/g, " ").trim();
 
   try {
     await resend.emails.send({
       from: `rentanje.com <${fromEmail}>`,
       to: adminEmail,
-      subject: `Kontakt poruka od ${safeName}`,
+      subject: `Kontakt poruka od ${subjectName}`,
       html: `<p><strong>Ime:</strong> ${safeName}</p><p><strong>E-mail:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a></p><p><strong>Poruka:</strong></p><p>${safeMessage}</p>`,
       replyTo: email.replace(/[\r\n]/g, ""),
     });

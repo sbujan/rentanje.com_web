@@ -543,6 +543,23 @@ export interface Database {
         Args: Record<string, never>;
         Returns: string | null;
       };
+      reserve_inquiry_availability: {
+        Args: {
+          p_inquiry_id: string;
+          p_inquiry_number: string;
+          p_items: Json;
+          p_force?: boolean;
+        };
+        Returns: Json;
+      };
+      increment_promo_usage: {
+        Args: { p_promotion_id: string };
+        Returns: void;
+      };
+      increment_product_view: {
+        Args: { p_product_id: string };
+        Returns: void;
+      };
     };
     Enums: { [_ in never]: never };
   };

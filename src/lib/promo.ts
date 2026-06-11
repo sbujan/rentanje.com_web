@@ -5,7 +5,6 @@ export interface PromoValidationItem {
   productId: string;
   totalPrice: number; // line subtotal (price × qty)
   bundleId?: string | null;
-  categoryId?: string | null;
 }
 
 export type PromoValidationResult =
@@ -73,7 +72,19 @@ export async function validatePromoCode(
     eligible = items.filter((i) => i.bundleId === promo.applies_to_id);
     appliesLabel = "odabrani paket";
   } else if (promo.applies_to === "category" && promo.applies_to_id) {
-    eligible = items.filter((i) => i.categoryId === promo.applies_to_id);
+    // Resolve product → category server-side. The cart never carries
+    // category ids and caller-supplied values must not be trusted anyway.
+    const productIds = Array.from(new Set(items.map((i) => i.productId)));
+    const { data: products } = await supabase
+      .from("products")
+      .select("id, category_id")
+      .in("id", productIds);
+    const categoryByProduct = new Map(
+      (products ?? []).map((p) => [p.id, p.category_id])
+    );
+    eligible = items.filter(
+      (i) => categoryByProduct.get(i.productId) === promo.applies_to_id
+    );
     appliesLabel = "odabranu kategoriju";
   }
 
@@ -106,15 +117,14 @@ export async function validatePromoCode(
 }
 
 /**
- * Convert a CartItem[] to PromoValidationItem[] (drop client-only fields,
- * categoryId left null since the cart doesn't carry it — promo for category
- * scope is enforced server-side from product → category lookup if needed).
+ * Convert a CartItem[] to PromoValidationItem[] (drop client-only fields).
+ * Category-scoped promos resolve product → category inside
+ * validatePromoCode; the caller never supplies category ids.
  */
 export function toPromoItems(items: CartItem[]): PromoValidationItem[] {
   return items.map((i) => ({
     productId: i.productId,
     totalPrice: i.totalPrice,
     bundleId: i.bundleId ?? null,
-    categoryId: null,
   }));
 }
