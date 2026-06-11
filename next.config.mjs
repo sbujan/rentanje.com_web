@@ -29,6 +29,9 @@ const nextConfig = {
               "img-src 'self' data: blob: https:",
               "font-src 'self' data:",
               "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.analytics.google.com",
+              // Google Maps embeds on / and /kontakt — without frame-src,
+              // iframes fall back to default-src 'self' and get blocked.
+              "frame-src https://maps.google.com https://www.google.com",
               "object-src 'none'",
               "frame-ancestors 'self'",
               "base-uri 'self'",
