@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { jsonLdSafe } from "@/lib/seo";
+import { effectiveDailyRate } from "@/lib/pricing";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import AddToCartCard from "@/components/public/AddToCartCard";
 import ProductCard from "@/components/public/ProductCard";
@@ -21,10 +23,25 @@ interface Props {
   relatedProducts?: Product[];
 }
 
+/** Narrow the Json `schema_json` field to a brand name, if one is present. */
+function extractBrand(schemaJson: unknown): string | undefined {
+  if (!schemaJson || typeof schemaJson !== "object" || Array.isArray(schemaJson)) {
+    return undefined;
+  }
+  const brand = (schemaJson as Record<string, unknown>).brand;
+  if (typeof brand === "string" && brand.trim()) return brand.trim();
+  if (brand && typeof brand === "object" && !Array.isArray(brand)) {
+    const name = (brand as Record<string, unknown>).name;
+    if (typeof name === "string" && name.trim()) return name.trim();
+  }
+  return undefined;
+}
+
 function buildProductSchema(product: Product) {
   const productUrl = `https://rentanje.com/najam/${product.slug}`;
   const priceValidUntil = new Date();
   priceValidUntil.setFullYear(priceValidUntil.getFullYear() + 1);
+  const brand = extractBrand(product.schema_json);
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -33,11 +50,14 @@ function buildProductSchema(product: Product) {
     image: product.hero_image_url ? [product.hero_image_url] : undefined,
     sku: product.slug,
     url: productUrl,
+    ...(brand ? { brand: { "@type": "Brand", name: brand } } : {}),
     ...(product.categories ? { category: product.categories.name } : {}),
     offers: {
       "@type": "Offer",
       priceCurrency: "EUR",
-      price: String(product.price_per_day),
+      // Lowest effective daily rate — price_per_day can be null (3/7-day-only
+      // products), which would otherwise serialize as the string "null".
+      price: String(effectiveDailyRate(product)),
       priceValidUntil: priceValidUntil.toISOString().slice(0, 10),
       itemCondition: "https://schema.org/UsedCondition",
       availability: product.is_available
@@ -83,7 +103,6 @@ export default function ProductPage({ product, availability, tags, relatedProduc
     { label: "Dostupno komada", value: `${product.stock_qty} kom` },
   ].filter(Boolean) as { label: string; value: string }[];
 
-  const seoKeywords = product.seo_keywords?.join(", ");
   const faq: FaqItem[] = ((product as any).faq as FaqItem[] | null) ?? [];
 
   return (
@@ -91,16 +110,16 @@ export default function ProductPage({ product, availability, tags, relatedProduc
       {/* JSON-LD */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildProductSchema(product)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdSafe(buildProductSchema(product)) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbSchema(product)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdSafe(buildBreadcrumbSchema(product)) }}
       />
       {faq.length > 0 && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFaqSchema(faq)) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdSafe(buildFaqSchema(faq)) }}
         />
       )}
 
@@ -130,20 +149,9 @@ export default function ProductPage({ product, availability, tags, relatedProduc
           <span className="text-brand-text font-medium">{product.name}</span>
         </nav>
 
-        {/* Hero image — mobile only (with lightbox) */}
-        {product.hero_image_url && (
-          <div className="lg:hidden">
-            <ImageLightbox
-              images={[product.hero_image_url, ...(product.images ?? [])]}
-              alts={[product.hero_image_alt, ...(product.image_alts ?? [])]}
-              alt={`${product.name} za iznajmljivanje — rentanje.com`}
-            />
-          </div>
-        )}
-
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10">
-          {/* LEFT COLUMN */}
-          <div className="space-y-8">
+          {/* LEFT COLUMN — flex so the gallery can move above the title on mobile */}
+          <div className="flex flex-col gap-8">
             <div>
               {/* Category tag */}
               {product.categories && (
@@ -180,9 +188,9 @@ export default function ProductPage({ product, availability, tags, relatedProduc
               )}
             </div>
 
-            {/* Hero image + gallery — desktop (with lightbox) */}
+            {/* Hero image + gallery — single render; first on mobile, after the title on desktop */}
             {product.hero_image_url && (
-              <div className="hidden lg:block">
+              <div className="order-first lg:order-none">
                 <ImageLightbox
                   images={[product.hero_image_url, ...(product.images ?? [])]}
                   alts={[product.hero_image_alt, ...(product.image_alts ?? [])]}
@@ -240,13 +248,6 @@ export default function ProductPage({ product, availability, tags, relatedProduc
                   ))}
                 </div>
               </div>
-            )}
-
-            {/* SEO keywords (hidden, for context) */}
-            {seoKeywords && (
-              <p className="text-xs text-brand-muted">
-                Ključne riječi: {seoKeywords}
-              </p>
             )}
           </div>
 

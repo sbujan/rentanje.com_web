@@ -6,6 +6,7 @@ import { ChevronRight, Package } from "lucide-react";
 import { createPublicClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { calcRentalPrice, applyBundleDiscount } from "@/lib/pricing";
+import { cleanSeoTitle } from "@/lib/seo";
 import BundleAddToCart from "./BundleAddToCart";
 
 export const revalidate = 3600;
@@ -43,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!bundle) return {};
 
-  const title = bundle.seo_title ?? `${bundle.name} — paket za iznajmljivanje`;
+  const title = cleanSeoTitle(bundle.seo_title ?? `${bundle.name} — paket za iznajmljivanje`);
   const description = bundle.seo_description ?? bundle.description ?? "";
   const canonical = `https://rentanje.com/paketi/${bundle.slug}`;
 

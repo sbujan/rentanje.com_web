@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import { jsonLdSafe } from "@/lib/seo";
 import ProductCard from "@/components/public/ProductCard";
 import PageHero from "@/components/public/PageHero";
 import { CATEGORY_IMAGES, getCategoryImageUrl } from "@/lib/category-images";
@@ -61,11 +62,11 @@ export default function CategoryPage({ category, products }: Props) {
     <main>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildCollectionPageSchema(category, products)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdSafe(buildCollectionPageSchema(category, products)) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbSchema(category)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdSafe(buildBreadcrumbSchema(category)) }}
       />
 
       <PageHero

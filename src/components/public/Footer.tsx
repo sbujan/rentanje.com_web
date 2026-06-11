@@ -56,6 +56,7 @@ export default function Footer() {
                 { href: "/najam/rostilj-kuhanje", label: "Roštilj i kuhanje" },
                 { href: "/najam/kamp-outdoor", label: "Kamp i outdoor" },
                 { href: "/najam/alati-ciscenje", label: "Alati i čišćenje" },
+                { href: "/najam/ostalo", label: "Ostalo" },
               ].map((l) => (
                 <li key={l.href}>
                   <Link

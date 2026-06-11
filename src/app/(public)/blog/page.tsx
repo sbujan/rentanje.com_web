@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/server";
 import { Clock } from "lucide-react";
 import PageHero from "@/components/public/PageHero";
 import { format } from "date-fns";
@@ -10,12 +10,13 @@ import { hr } from "date-fns/locale";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Blog — rentanje.com",
+  // Layout template appends "| rentanje.com".
+  title: "Blog",
   description:
     "Savjeti, ideje i vodiči za iznajmljivanje opreme, outdoor evente i roštilj u Zagrebu.",
   alternates: { canonical: "https://rentanje.com/blog" },
   openGraph: {
-    title: "Blog — rentanje.com",
+    title: "Blog | rentanje.com",
     description:
       "Savjeti, ideje i vodiči za iznajmljivanje opreme, outdoor evente i roštilj u Zagrebu.",
     url: "https://rentanje.com/blog",
@@ -26,14 +27,14 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Blog — rentanje.com",
+    title: "Blog | rentanje.com",
     description: "Savjeti, ideje i vodiči za iznajmljivanje opreme u Zagrebu.",
     images: ["/rentanje-najam-zagreb-iznajmi.jpg"],
   },
 };
 
 export default async function BlogPage() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data: posts, error: postsErr } = await supabase
     .from("blog_posts")

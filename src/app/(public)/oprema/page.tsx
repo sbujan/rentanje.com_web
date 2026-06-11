@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/server";
 import ProductsClient from "./ProductsClient";
 import PageHero from "@/components/public/PageHero";
 
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 };
 
 export default async function OpremaPage() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const [
     { data: products, error: productsErr },

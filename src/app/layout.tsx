@@ -10,13 +10,14 @@ const openSans = Open_Sans({
   subsets: ["latin", "latin-ext"],
   variable: "--font-open-sans",
   display: "swap",
-  weight: ["300", "400", "500", "600", "700", "800"],
+  // Only weights actually used in src/ (font-normal/medium/semibold/bold).
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
   title: {
     default: "rentanje.com — Iznajmljivanje opreme",
-    template: "%s – Iznajmljivanje | rentanje.com",
+    template: "%s | rentanje.com",
   },
   description:
     "Iznajmite opremu za evente, roštilj, kamp, audio i video — brzo i povoljno. List 360 d.o.o. | rentanje.com",

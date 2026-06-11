@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createPublicClient } from "@/lib/supabase/server";
+import { cleanSeoTitle } from "@/lib/seo";
 import { getCategoryImageUrl } from "@/lib/category-images";
 import CategoryPage from "./CategoryPage";
 import ProductPage from "./ProductPage";
@@ -21,7 +21,9 @@ const FALLBACK_CATEGORY_SLUGS = [
 
 export async function generateStaticParams() {
   try {
-    const supabase = createAdminClient();
+    // Cookie-free anon client: RLS public-read policies cover both reads
+    // (categories: USING(true); products: USING(is_active = true)).
+    const supabase = createPublicClient();
 
     const [{ data: categories }, { data: products }] = await Promise.all([
       supabase.from("categories").select("slug"),
@@ -48,7 +50,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   // Try category first
   const { data: cat } = await supabase
@@ -58,7 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .single();
 
   if (cat) {
-    const title = cat.seo_title ?? `${cat.name} za iznajmljivanje`;
+    const title = cleanSeoTitle(cat.seo_title ?? `${cat.name} za iznajmljivanje`);
     const description =
       cat.seo_description ??
       `Iznajmite ${cat.name.toLowerCase()} u Zagrebu. Povoljne cijene, brz odgovor. | rentanje.com`;
@@ -98,7 +100,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .single();
 
   if (product) {
-    const title = product.seo_title ?? `${product.name} – Iznajmljivanje`;
+    const title = cleanSeoTitle(product.seo_title ?? `${product.name} – Iznajmljivanje`);
     const description =
       product.seo_description ??
       product.short_desc ??
@@ -133,7 +135,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function NajamSlugPage({ params }: Props) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   // Check if slug is a category. `.single()` reports "no rows" as PGRST116 —
   // that's the expected "not a category, try product" path, not a failure.

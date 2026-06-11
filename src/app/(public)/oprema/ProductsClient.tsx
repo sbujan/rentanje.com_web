@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import ProductCard from "@/components/public/ProductCard";
 import { Search } from "lucide-react";
 import { effectiveDailyRate } from "@/lib/pricing";
@@ -116,10 +117,11 @@ export default function ProductsClient({ products, categories, activeCategory }:
         >
           Sve
         </button>
+        {/* Crawlable links to the canonical category pages (/najam/<slug>) */}
         {categories.map((cat) => (
-          <button
+          <Link
             key={cat.id}
-            onClick={() => setCatFilter(cat.slug)}
+            href={`/najam/${cat.slug}`}
             className="px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-colors"
             style={
               catFilter === cat.slug
@@ -128,7 +130,7 @@ export default function ProductsClient({ products, categories, activeCategory }:
             }
           >
             {cat.name}
-          </button>
+          </Link>
         ))}
       </div>
 

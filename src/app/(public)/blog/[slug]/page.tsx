@@ -5,6 +5,7 @@ import Image from "next/image";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { createPublicClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { cleanSeoTitle, jsonLdSafe } from "@/lib/seo";
 import BlogReadTracker from "@/components/public/BlogReadTracker";
 import { ChevronRight, Clock, User, ChevronDown } from "lucide-react";
 
@@ -47,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!post) return {};
 
-  const title = post.seo_title ?? post.title;
+  const title = cleanSeoTitle(post.seo_title ?? post.title);
   const description = post.seo_description ?? post.excerpt ?? "";
   const canonical = `https://rentanje.com/blog/${post.slug}`;
 
@@ -122,12 +123,12 @@ export default async function BlogPostPage({ params }: Props) {
       <BlogReadTracker slug={post.slug} readingTime={post.reading_time} />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdSafe(articleSchema) }}
       />
       {faqSchema && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdSafe(faqSchema) }}
         />
       )}
 

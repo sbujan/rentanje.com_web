@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import PageHero from "@/components/public/PageHero";
 
 export const metadata: Metadata = {
-  title: "Politika privatnosti — rentanje.com",
+  title: "Politika privatnosti",
   robots: { index: false },
 };
 

@@ -1,8 +1,8 @@
+// /upit and /hvala are intentionally NOT disallowed: they carry
+// robots noindex metadata, which crawlers can only see if allowed to fetch.
 const BODY = `User-agent: *
 Allow: /
 Disallow: /admin/
-Disallow: /upit
-Disallow: /hvala
 Disallow: /api/
 Content-Signal: ai-train=yes, search=yes, ai-input=yes
 

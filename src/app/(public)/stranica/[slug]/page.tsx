@@ -6,6 +6,7 @@ import { sanitizeHtml } from "@/lib/sanitize";
 import { ChevronRight } from "lucide-react";
 import { createPublicClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { cleanSeoTitle, jsonLdSafe } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -42,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!page) return {};
 
-  const title = page.seo_title ?? page.title;
+  const title = cleanSeoTitle(page.seo_title ?? page.title);
   const description = page.seo_description ?? "";
   const canonical = `https://rentanje.com/stranica/${page.slug}`;
 
@@ -88,7 +89,7 @@ export default async function SeoPage({ params }: Props) {
       {page.schema_json && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(page.schema_json) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdSafe(page.schema_json) }}
         />
       )}
 

@@ -6,7 +6,9 @@ import KontaktForm from "./KontaktForm";
 const PHONE = "+385 95 204 4414";
 const PHONE_HREF = "tel:+385952044414";
 
-const TITLE = "Kontakt — rentanje.com";
+// Layout template appends "| rentanje.com" to the bare title.
+const TITLE = "Kontakt";
+const OG_TITLE = "Kontakt | rentanje.com";
 const DESCRIPTION =
   "Nazovite, napišite ili svratite. Odgovaramo u roku 1–2 sata, svaki dan. Zagreb, Naserov trg 4.";
 const CANONICAL = "https://rentanje.com/kontakt";
@@ -16,7 +18,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: CANONICAL },
   openGraph: {
-    title: TITLE,
+    title: OG_TITLE,
     description: DESCRIPTION,
     url: CANONICAL,
     siteName: "rentanje.com",
@@ -26,7 +28,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    title: TITLE,
+    title: OG_TITLE,
     description: DESCRIPTION,
     images: ["/rentanje-najam-zagreb-iznajmi.jpg"],
   },

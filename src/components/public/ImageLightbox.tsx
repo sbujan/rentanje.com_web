@@ -54,22 +54,9 @@ export default function ImageLightbox({ images, alt, alts }: Props) {
 
   return (
     <>
-      {/* Hero image — mobile */}
+      {/* Hero image — single render, responsive sizes */}
       <div
-        className="relative aspect-video rounded-lg overflow-hidden mb-6 lg:hidden cursor-pointer"
-        onClick={() => openAt(0)}
-      >
-        <Image src={heroUrl} alt={altFor(0)} fill className="object-cover" priority />
-        {images.length > 1 && (
-          <span className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-            1/{images.length}
-          </span>
-        )}
-      </div>
-
-      {/* Hero image — desktop */}
-      <div
-        className="relative aspect-video rounded-lg overflow-hidden hidden lg:block cursor-pointer"
+        className="relative aspect-video rounded-lg overflow-hidden mb-6 lg:mb-0 cursor-pointer"
         onClick={() => openAt(0)}
       >
         <Image
@@ -80,6 +67,11 @@ export default function ImageLightbox({ images, alt, alts }: Props) {
           priority
           sizes="(min-width: 1024px) 60vw, 100vw"
         />
+        {images.length > 1 && (
+          <span className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full lg:hidden">
+            1/{images.length}
+          </span>
+        )}
       </div>
 
       {/* Thumbnails */}
@@ -95,6 +87,7 @@ export default function ImageLightbox({ images, alt, alts }: Props) {
                 src={img}
                 alt={altFor(i + 1)}
                 fill
+                sizes="(min-width: 1024px) 12vw, 22vw"
                 className="object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>

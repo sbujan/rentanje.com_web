@@ -1,11 +1,13 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/server";
 
 export const revalidate = 3600;
 
 const BASE = "https://rentanje.com";
 
 export async function GET() {
-  const supabase = await createClient();
+  // Cookie-free anon client so `revalidate` actually applies (cookies() would
+  // force this route dynamic). Categories have a public read RLS policy.
+  const supabase = createPublicClient();
   const { data: categories } = await supabase
     .from("categories")
     .select("slug, name, seo_description")

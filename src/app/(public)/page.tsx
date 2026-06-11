@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/server";
+import { jsonLdSafe } from "@/lib/seo";
 import ProductCard from "@/components/public/ProductCard";
 import { CategoryAccordion } from "@/components/ui/interactive-image-accordion";
 import HomeCTAContact from "@/components/public/HomeCTAContact";
@@ -57,7 +58,7 @@ const organizationSchema = {
   name: "rentanje.com",
   legalName: "List 360 d.o.o.",
   url: "https://rentanje.com",
-  logo: "https://rentanje.com/favicon.svg",
+  logo: "https://rentanje.com/logo.png",
   telephone: "+385952044414",
   email: "info@rentanje.com",
   address: {
@@ -87,7 +88,7 @@ const whyUs = [
 ];
 
 export default async function HomePage() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const [
     { data: featured, error: featuredErr },
@@ -117,11 +118,11 @@ export default async function HomePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdSafe(organizationSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdSafe(localBusinessSchema) }}
       />
 
       {/* HERO */}

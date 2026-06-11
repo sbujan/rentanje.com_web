@@ -3,7 +3,7 @@ import Link from "next/link";
 import { CheckCircle, Phone, ArrowLeft } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Upit primljen — rentanje.com",
+  title: "Upit primljen",
   robots: { index: false },
 };
 

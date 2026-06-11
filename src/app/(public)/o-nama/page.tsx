@@ -4,12 +4,13 @@ import { Phone, Mail, MapPin, CheckCircle } from "lucide-react";
 import PageHero from "@/components/public/PageHero";
 
 export const metadata: Metadata = {
-  title: "O nama — rentanje.com",
+  // Layout template appends "| rentanje.com".
+  title: "O nama",
   description:
     "Saznajte više o rentanje.com — Zagreb. Iznajmljujemo audio/video, event, roštilj, kamp i outdoor opremu. List 360 d.o.o.",
   alternates: { canonical: "https://rentanje.com/o-nama" },
   openGraph: {
-    title: "O nama — rentanje.com",
+    title: "O nama | rentanje.com",
     description: "Saznajte više o rentanje.com — iznajmljivanje opreme iz Zagreba. List 360 d.o.o.",
     url: "https://rentanje.com/o-nama",
     siteName: "rentanje.com",
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     locale: "hr_HR",
     images: [{ url: "/rentanje-najam-zagreb-iznajmi.jpg", width: 1254, height: 1254, alt: "RENTANJE.COM — Ne kupuj, iznajmi." }],
   },
-  twitter: { card: "summary", title: "O nama — rentanje.com", images: ["/rentanje-najam-zagreb-iznajmi.jpg"] },
+  twitter: { card: "summary", title: "O nama | rentanje.com", images: ["/rentanje-najam-zagreb-iznajmi.jpg"] },
 };
 
 const PHONE = "+385 95 204 4414";

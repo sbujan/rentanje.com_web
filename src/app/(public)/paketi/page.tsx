@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/server";
 import { Package, Phone, ChevronRight } from "lucide-react";
 import PageHero from "@/components/public/PageHero";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Paketi za iznajmljivanje — rentanje.com",
+  // Layout template appends "| rentanje.com".
+  title: "Paketi za iznajmljivanje",
   description:
     "Iznajmite gotove pakete opreme za evente, roštilj, kamp i zabavu. Sve u jednom, uz popust. | rentanje.com",
   alternates: { canonical: "https://rentanje.com/paketi" },
   openGraph: {
-    title: "Paketi za iznajmljivanje — rentanje.com",
+    title: "Paketi za iznajmljivanje | rentanje.com",
     description: "Gotove kombinacije opreme za vaš event, roštilj ili kamp izlet — sve u jednom, uz popust.",
     url: "https://rentanje.com/paketi",
     siteName: "rentanje.com",
@@ -21,14 +22,14 @@ export const metadata: Metadata = {
     locale: "hr_HR",
     images: [{ url: "/rentanje-najam-zagreb-iznajmi.jpg", width: 1254, height: 1254, alt: "RENTANJE.COM — Ne kupuj, iznajmi." }],
   },
-  twitter: { card: "summary_large_image", title: "Paketi za iznajmljivanje — rentanje.com", images: ["/rentanje-najam-zagreb-iznajmi.jpg"] },
+  twitter: { card: "summary_large_image", title: "Paketi za iznajmljivanje | rentanje.com", images: ["/rentanje-najam-zagreb-iznajmi.jpg"] },
 };
 
 const PHONE = "+385 95 204 4414";
 const PHONE_HREF = "tel:+385952044414";
 
 export default async function PaketiPage() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data: bundles, error: bundlesErr } = await supabase
     .from("bundles")
