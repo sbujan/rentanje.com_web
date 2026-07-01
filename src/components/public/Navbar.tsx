@@ -72,6 +72,7 @@ export default function Navbar() {
           {/* Cart */}
           <Link
             href="/upit"
+            aria-label={itemCount > 0 ? `Košarica (${itemCount})` : "Košarica"}
             className="relative flex items-center justify-center h-10 w-10 rounded-full hover:bg-brand-light transition-colors"
           >
             <ShoppingCart className="h-5 w-5 text-brand-text" />
