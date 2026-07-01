@@ -21,7 +21,10 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          # Match package.json engines (24.x), the Vercel runtime, and the
+          # npm version the lockfile was generated with. Node 20 (npm 10)
+          # resolves the @emnapi optional deps differently and breaks npm ci.
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
