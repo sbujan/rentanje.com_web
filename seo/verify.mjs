@@ -14,19 +14,39 @@ const no = (m) => { fail++; console.log(`  ✗ ${m}`); };
 
 const path = (loc) => { try { return new URL(loc, BASE).pathname; } catch { return loc?.split("?")[0]; } };
 
-// One-hop redirect: expect a 301/308 whose Location path matches `dest` (path
-// compared without query; if `dest` carries a query, assert it's present).
+// Follow the full redirect chain manually (max ~6 hops). Assert: every hop is a
+// permanent redirect (301/308), the chain ends 200 at `dest`'s path. Pass on
+// ≤2 hops; fail on 3+ so the report flags avoidable extra hops. Trailing-slash
+// legacy URLs are inherently 2-hop — Next strips the slash before our redirect.
 async function redirect(from, dest) {
   try {
-    const res = await fetch(BASE + from, { redirect: "manual", headers: { "user-agent": "rentanje-seo-verify" } });
-    const loc = res.headers.get("location") ?? "";
-    const is3xx = res.status === 301 || res.status === 308 || res.status === 307 || res.status === 302;
-    const destPath = dest.split("?")[0];
-    const destQuery = dest.includes("?") ? dest.split("?")[1] : null;
-    const pathOk = path(loc) === destPath;
-    const queryOk = !destQuery || loc.includes(destQuery);
-    if (is3xx && pathOk && queryOk) ok(`${from} → ${loc} [${res.status}]`);
-    else no(`${from} → got ${res.status} ${loc || "(no Location)"}, expected → ${dest}`);
+    let url = BASE + from, hops = 0, permanent = true;
+    const seen = [];
+    while (hops < 6) {
+      const res = await fetch(url, { redirect: "manual", headers: { "user-agent": "rentanje-seo-verify" } });
+      if (res.status >= 300 && res.status < 400) {
+        if (res.status !== 301 && res.status !== 308) permanent = false;
+        const loc = res.headers.get("location") ?? "";
+        seen.push(`${res.status}→${loc}`);
+        url = new URL(loc, url).toString();
+        hops++;
+        continue;
+      }
+      const finalPathOk = path(url) === dest.split("?")[0];
+      if (res.status === 200 && finalPathOk && permanent && hops <= 2) {
+        ok(`${from} → ${path(url)} [${hops} hop${hops === 1 ? "" : "s"}]`);
+      } else if (!finalPathOk) {
+        no(`${from} → ended at ${path(url)} (HTTP ${res.status}), expected ${dest.split("?")[0]}`);
+      } else if (!permanent) {
+        no(`${from} → reached ${path(url)} via a non-permanent redirect: ${seen.join("  ")}`);
+      } else if (hops > 2) {
+        no(`${from} → reaches ${path(url)} but in ${hops} hops (>2): ${seen.join("  ")}`);
+      } else {
+        no(`${from} → HTTP ${res.status} at ${path(url)}`);
+      }
+      return;
+    }
+    no(`${from} → too many redirects: ${seen.join("  ")}`);
   } catch (e) { no(`${from} → error ${e.message}`); }
 }
 
@@ -49,22 +69,25 @@ async function page(p, { titleIncludes, canonical } = {}) {
     if (titleIncludes && !title.includes(titleIncludes)) { good = false; no(`${p} title "${title}" missing "${titleIncludes}"`); }
     const brandCount = (title.match(/rentanje\.com/gi) || []).length;
     if (brandCount > 1) { good = false; no(`${p} title has brand ${brandCount}× (double-suffix): "${title}"`); }
-    if (canonical && canon !== canonical) { good = false; no(`${p} canonical "${canon}" ≠ "${canonical}"`); }
+    // Compare canonicals ignoring a trailing slash — Next renders the homepage
+    // canonical as https://rentanje.com (no slash), which Google treats as "/".
+    const norm = (u) => u.replace(/\/$/, "");
+    if (canonical && norm(canon) !== norm(canonical)) { good = false; no(`${p} canonical "${canon}" ≠ "${canonical}"`); }
     if (good) ok(`${p} · title "${title}" · canonical ${canon || "(none)"}`);
   } catch (e) { no(`${p} → error ${e.message}`); }
 }
 
-console.log(`\nBASE = ${BASE}\n\n== Redirects (one hop) ==`);
+console.log(`\nBASE = ${BASE}\n\n== Redirects (full chain, ≤2 hops) ==`);
 await redirect("/proizvod/gopro-hero-10", "/najam/gopro-hero-10-black-kamera-najam");
 await redirect("/product/gopro-hero-10/", "/najam/gopro-hero-10-black-kamera-najam");
 await redirect("/?product=plinska-pec-za-pizzu-ooni-16", "/najam/ooni-koda-16-plinska-pec-pizza-najam");
 await redirect("/?product=paviljon-sator-3x3m", "/najam/paviljon-sator-3x3m-najam");
 await redirect("/proizvod/jbl-partybox-310", "/najam/jbl-partybox-stage-320-prijenosni-party-zvucnik-s-kotacima");
-await redirect("/product/stalak-za-kolace/", "/oprema?cat=oprema-za-evente");
+await redirect("/product/stalak-za-kolace/", "/najam/oprema-za-evente");
 await redirect("/proizvod/ledomat/", "/najam/ledomat-aparat-za-led-najam");
 await redirect("/proizvod/dji-mavic-mini-2-fly-more", "/najam/dji-mini-2-dron-fly-more-najam");
-await redirect("/proizvod/cornhole", "/oprema?cat=oprema-za-evente");
-await redirect("/product-category/kamere/", "/oprema?cat=audio-video-oprema");
+await redirect("/proizvod/cornhole", "/najam/oprema-za-evente");
+await redirect("/product-category/kamere/", "/najam/audio-video-oprema");
 await redirect("/oprema?cat=rostilj-kuhanje", "/najam/rostilj-kuhanje");
 await redirect("/basket", "/upit");
 await redirect("/home-2", "/");
