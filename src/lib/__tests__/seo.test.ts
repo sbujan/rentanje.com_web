@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { cleanSeoTitle, jsonLdSafe } from "@/lib/seo";
+import { cleanSeoTitle, jsonLdSafe, productTitleField } from "@/lib/seo";
+
+const BRAND = /rentanje\.com/i;
 
 describe("jsonLdSafe", () => {
   it("escapes </script> so strings cannot break out of the script tag", () => {
@@ -39,5 +41,27 @@ describe("cleanSeoTitle", () => {
 
   it("does not strip the brand when it appears mid-title", () => {
     expect(cleanSeoTitle("rentanje.com vodič za najam")).toBe("rentanje.com vodič za najam");
+  });
+});
+
+describe("productTitleField", () => {
+  // Invariant: the returned value never carries the brand, because the root
+  // layout template ("%s | rentanje.com") appends it exactly once.
+  it("falls back to a brand-free, price-bearing title when seo_title is empty", () => {
+    const t = productTitleField(null, "GoPro Hero 10", 20);
+    expect(t).toBe("Najam GoPro Hero 10 — od 20 €/dan");
+    expect(t).not.toMatch(BRAND);
+    expect(t).toContain("20 €/dan");
+  });
+
+  it("strips a brand suffix off a DB seo_title so the template doesn't double it", () => {
+    expect(productTitleField("Najam JBL Charge 3 | Bluetooth zvučnik | Rentanje.com", "JBL Charge 3", 7))
+      .toBe("Najam JBL Charge 3 | Bluetooth zvučnik");
+    expect(productTitleField("Najam Ledomata | rentanje.com", "Ledomat", 15)).not.toMatch(/\|\s*rentanje\.com\s*$/i);
+  });
+
+  it("leaves a brand-free DB seo_title untouched", () => {
+    expect(productTitleField("Najam DJI Mini 2 drona — 4K video", "DJI Mini 2", 20))
+      .toBe("Najam DJI Mini 2 drona — 4K video");
   });
 });

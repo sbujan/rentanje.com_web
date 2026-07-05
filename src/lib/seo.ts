@@ -24,3 +24,17 @@ export function jsonLdSafe(obj: unknown): string {
 export function cleanSeoTitle(t: string): string {
   return t.replace(/\s*[|\-–—]\s*rentanje\.com\s*$/i, "").trim();
 }
+
+/**
+ * Build the `title` field for a product page. The root layout template appends
+ * " | rentanje.com", so the returned value must never carry its own brand
+ * suffix (or the SERP shows it twice). DB `seo_title` values often include the
+ * brand, so we strip it; the price-bearing fallback is brand-free by design.
+ */
+export function productTitleField(
+  seoTitle: string | null | undefined,
+  name: string,
+  dailyRate: number
+): string {
+  return cleanSeoTitle(seoTitle ?? `Najam ${name} — od ${dailyRate} €/dan`);
+}

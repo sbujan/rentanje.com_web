@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createPublicClient } from "@/lib/supabase/server";
-import { cleanSeoTitle } from "@/lib/seo";
+import { cleanSeoTitle, productTitleField } from "@/lib/seo";
+import { effectiveDailyRate } from "@/lib/pricing";
 import { getCategoryImageUrl } from "@/lib/category-images";
 import type { ProductWithCategory } from "@/types/product";
 import CategoryPage from "./CategoryPage";
@@ -95,17 +96,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Try product
   const { data: product } = await supabase
     .from("products")
-    .select("name, seo_title, seo_description, slug, hero_image_url, hero_image_alt, short_desc")
+    .select("name, seo_title, seo_description, slug, hero_image_url, hero_image_alt, short_desc, price_per_day, price_per_3days, price_per_7days")
     .eq("slug", params.slug)
     .eq("is_active", true)
     .single();
 
   if (product) {
-    const title = cleanSeoTitle(product.seo_title ?? `${product.name} – Iznajmljivanje`);
+    // Default title/description carry the live daily rate for CTR. The root
+    // layout template appends " | rentanje.com", so fallbacks must NOT include
+    // the brand; cleanSeoTitle strips it from any DB seo_title that still does.
+    const rate = effectiveDailyRate(product);
+    const title = productTitleField(product.seo_title, product.name, rate);
     const description =
       product.seo_description ??
       product.short_desc ??
-      `Iznajmite ${product.name} u Zagrebu. Pošaljite upit danas! | rentanje.com`;
+      `Iznajmite ${product.name} u Zagrebu od ${rate} €/dan. Dostava na području Zagreba, brza rezervacija online — odgovor u roku od 1 radnog dana.`;
     const canonical = `https://rentanje.com/najam/${product.slug}`;
     const ogImages = product.hero_image_url
       ? [{ url: product.hero_image_url, width: 1200, height: 630, alt: product.hero_image_alt?.trim() || product.name }]
@@ -228,6 +233,28 @@ export default async function NajamSlugPage({ params }: Props) {
     relatedProducts = ids
       .map((id) => rows.find((p) => p.id === id))
       .filter((p): p is ProductWithCategory => Boolean(p));
+  }
+
+  // Fallback: many products have no manually-curated "connected" relations, so
+  // their page would render zero related items and become an orphan. Top up from
+  // the same category (excluding self and anything already linked) so every
+  // product page links out to siblings for crawl depth + user discovery.
+  const RELATED_TARGET = 4;
+  if (relatedProducts.length < RELATED_TARGET && product.category_id) {
+    const excludeIds = [product.id, ...relatedProducts.map((p) => p.id)];
+    const { data: sameCat, error: sameCatErr } = await supabase
+      .from("products")
+      .select("*, categories(name, color, slug)")
+      .eq("is_active", true)
+      .eq("category_id", product.category_id)
+      .not("id", "in", `(${excludeIds.join(",")})`)
+      .order("sort_order")
+      .limit(RELATED_TARGET - relatedProducts.length);
+    if (sameCatErr) console.error("Same-category related fallback failed:", sameCatErr);
+    relatedProducts = [
+      ...relatedProducts,
+      ...((sameCat ?? []) as unknown as ProductWithCategory[]),
+    ];
   }
 
   const tagRows = (tags ?? []) as unknown as { tags: ProductTag | null }[];

@@ -10,12 +10,12 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   // Layout template appends "| rentanje.com".
-  title: "Paketi za iznajmljivanje",
+  title: "Paketi opreme za najam — event, roštilj, kamp",
   description:
     "Iznajmite gotove pakete opreme za evente, roštilj, kamp i zabavu. Sve u jednom, uz popust. | rentanje.com",
   alternates: { canonical: "https://rentanje.com/paketi" },
   openGraph: {
-    title: "Paketi za iznajmljivanje | rentanje.com",
+    title: "Paketi opreme za najam — event, roštilj, kamp | rentanje.com",
     description: "Gotove kombinacije opreme za vaš event, roštilj ili kamp izlet — sve u jednom, uz popust.",
     url: "https://rentanje.com/paketi",
     siteName: "rentanje.com",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     locale: "hr_HR",
     images: [{ url: "/rentanje-najam-zagreb-iznajmi.jpg", width: 1254, height: 1254, alt: "RENTANJE.COM — Ne kupuj, iznajmi." }],
   },
-  twitter: { card: "summary_large_image", title: "Paketi za iznajmljivanje | rentanje.com", images: ["/rentanje-najam-zagreb-iznajmi.jpg"] },
+  twitter: { card: "summary_large_image", title: "Paketi opreme za najam — event, roštilj, kamp | rentanje.com", images: ["/rentanje-najam-zagreb-iznajmi.jpg"] },
 };
 
 export default async function PaketiPage() {
