@@ -148,6 +148,25 @@ export default function ImageUpload({
     if (file) handleFile(file);
   }
 
+  const actions = (
+    <>
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        className="bg-white text-brand-text px-3 py-1.5 rounded-md text-sm font-medium border border-gray-200 hover:bg-gray-50 md:border-transparent"
+      >
+        Zamijeni
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange("")}
+        className="bg-red-500 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-red-600"
+      >
+        Ukloni
+      </button>
+    </>
+  );
+
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-brand-text">{label}</label>
@@ -163,21 +182,14 @@ export default function ImageUpload({
               className="object-cover"
             />
           </div>
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => inputRef.current?.click()}
-              className="bg-white text-brand-text px-3 py-1.5 rounded-md text-sm font-medium hover:bg-gray-50"
-            >
-              Zamijeni
-            </button>
-            <button
-              type="button"
-              onClick={() => onChange("")}
-              className="bg-red-500 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-red-600"
-            >
-              Ukloni
-            </button>
+          {/* Hover overlay — pointer devices only. */}
+          <div className="absolute inset-0 hidden bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg md:flex items-center justify-center gap-3">
+            {actions}
+          </div>
+          {/* Touch devices have no hover, so the same actions ride below the
+              image instead — otherwise an image can't be replaced on a phone. */}
+          <div className="mt-2 flex items-center justify-center gap-3 md:hidden">
+            {actions}
           </div>
         </div>
       ) : (

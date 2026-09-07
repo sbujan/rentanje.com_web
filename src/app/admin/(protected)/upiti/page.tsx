@@ -54,7 +54,7 @@ export default async function UpitiPage() {
 
   return (
     <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-white">Upiti</h1>
           {newCount > 0 && (
@@ -71,82 +71,84 @@ export default async function UpitiPage() {
         </div>
       ) : (
         <div className="bg-white rounded-xl overflow-hidden border border-gray-100">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-gray-50 text-left">
-                <th className="px-4 py-3 font-medium text-gray-500">Broj</th>
-                <th className="px-4 py-3 font-medium text-gray-500">Status</th>
-                <th className="px-4 py-3 font-medium text-gray-500">Kupac</th>
-                <th className="px-4 py-3 font-medium text-gray-500 hidden md:table-cell">Termin</th>
-                <th className="px-4 py-3 font-medium text-gray-500 hidden lg:table-cell">Stavke</th>
-                <th className="px-4 py-3 font-medium text-gray-500 hidden sm:table-cell">Kontakt</th>
-                <th className="px-4 py-3 font-medium text-gray-500 hidden md:table-cell text-right">Iznos</th>
-                <th className="px-4 py-3 font-medium text-gray-500 hidden lg:table-cell">Datum</th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {inquiries.map((inquiry) => {
-                const statusInfo = INQUIRY_STATUS_META[inquiry.status] ?? INQUIRY_STATUS_META.new;
-                return (
-                  <tr key={inquiry.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 font-mono text-xs text-gray-400">
-                      {inquiry.inquiry_number}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${statusInfo.className}`}>
-                        {statusInfo.label}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-medium text-gray-900">
-                      {inquiry.customer_name}
-                    </td>
-                    <td className="px-4 py-3 hidden md:table-cell text-gray-600 text-xs whitespace-nowrap">
-                      {formatRange(inquiry.rental_start, inquiry.rental_end)}
-                    </td>
-                    <td className="px-4 py-3 hidden lg:table-cell text-gray-600 text-xs max-w-[16rem]">
-                      <span className="line-clamp-2">{itemsSummary(inquiry.items)}</span>
-                    </td>
-                    <td className="px-4 py-3 hidden sm:table-cell">
-                      <div className="flex flex-col gap-0.5">
-                        <a href={`mailto:${inquiry.customer_email}`} className="flex items-center gap-1 text-gray-500 hover:text-brand-primary text-xs">
-                          <Mail className="h-3 w-3" />
-                          {inquiry.customer_email}
-                        </a>
-                        {inquiry.customer_phone && (
-                          <a href={`tel:${inquiry.customer_phone}`} className="flex items-center gap-1 text-gray-500 hover:text-brand-primary text-xs">
-                            <Phone className="h-3 w-3" />
-                            {inquiry.customer_phone}
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[56rem] text-sm">
+              <thead>
+                <tr className="bg-gray-50 text-left">
+                  <th className="px-4 py-3 font-medium text-gray-500">Broj</th>
+                  <th className="px-4 py-3 font-medium text-gray-500">Status</th>
+                  <th className="px-4 py-3 font-medium text-gray-500">Kupac</th>
+                  <th className="px-4 py-3 font-medium text-gray-500 hidden md:table-cell">Termin</th>
+                  <th className="px-4 py-3 font-medium text-gray-500 hidden lg:table-cell">Stavke</th>
+                  <th className="px-4 py-3 font-medium text-gray-500 hidden sm:table-cell">Kontakt</th>
+                  <th className="px-4 py-3 font-medium text-gray-500 hidden md:table-cell text-right">Iznos</th>
+                  <th className="px-4 py-3 font-medium text-gray-500 hidden lg:table-cell">Datum</th>
+                  <th className="px-4 py-3" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {inquiries.map((inquiry) => {
+                  const statusInfo = INQUIRY_STATUS_META[inquiry.status] ?? INQUIRY_STATUS_META.new;
+                  return (
+                    <tr key={inquiry.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-4 py-3 font-mono text-xs text-gray-400">
+                        {inquiry.inquiry_number}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${statusInfo.className}`}>
+                          {statusInfo.label}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-medium text-gray-900">
+                        {inquiry.customer_name}
+                      </td>
+                      <td className="px-4 py-3 hidden md:table-cell text-gray-600 text-xs whitespace-nowrap">
+                        {formatRange(inquiry.rental_start, inquiry.rental_end)}
+                      </td>
+                      <td className="px-4 py-3 hidden lg:table-cell text-gray-600 text-xs max-w-[16rem]">
+                        <span className="line-clamp-2">{itemsSummary(inquiry.items)}</span>
+                      </td>
+                      <td className="px-4 py-3 hidden sm:table-cell">
+                        <div className="flex flex-col gap-0.5">
+                          <a href={`mailto:${inquiry.customer_email}`} className="flex items-center gap-1 text-gray-500 hover:text-brand-primary text-xs">
+                            <Mail className="h-3 w-3" />
+                            {inquiry.customer_email}
                           </a>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 hidden md:table-cell text-right font-medium text-gray-900">
-                      {formatNullablePrice(inquiry.subtotal_estimate)}
-                    </td>
-                    <td className="px-4 py-3 hidden lg:table-cell text-gray-400 text-xs">
-                      {format(new Date(inquiry.created_at), "d. MMM yyyy · HH:mm", { locale: hr })}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-3">
-                        <Link
-                          href={`/admin/upiti/${inquiry.id}`}
-                          className="text-brand-primary text-xs font-medium hover:underline"
-                        >
-                          Otvori
-                        </Link>
-                        <DeleteInquiryButton
-                          inquiryId={inquiry.id}
-                          inquiryNumber={inquiry.inquiry_number}
-                          iconOnly
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                          {inquiry.customer_phone && (
+                            <a href={`tel:${inquiry.customer_phone}`} className="flex items-center gap-1 text-gray-500 hover:text-brand-primary text-xs">
+                              <Phone className="h-3 w-3" />
+                              {inquiry.customer_phone}
+                            </a>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 hidden md:table-cell text-right font-medium text-gray-900">
+                        {formatNullablePrice(inquiry.subtotal_estimate)}
+                      </td>
+                      <td className="px-4 py-3 hidden lg:table-cell text-gray-400 text-xs">
+                        {format(new Date(inquiry.created_at), "d. MMM yyyy · HH:mm", { locale: hr })}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-3">
+                          <Link
+                            href={`/admin/upiti/${inquiry.id}`}
+                            className="text-brand-primary text-xs font-medium hover:underline"
+                          >
+                            Otvori
+                          </Link>
+                          <DeleteInquiryButton
+                            inquiryId={inquiry.id}
+                            inquiryNumber={inquiry.inquiry_number}
+                            iconOnly
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

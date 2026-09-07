@@ -13,7 +13,7 @@ export default async function TestimonialsPage() {
 
   return (
     <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold text-white">Recenzije</h1>
         <Link
           href="/admin/testimonials/new"

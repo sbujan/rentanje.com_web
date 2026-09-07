@@ -228,10 +228,12 @@ export default async function AdminDashboard() {
                     href={`/admin/upiti/${inq.id}`}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
                   >
-                    <span className="text-xs font-mono text-brand-muted w-24 flex-shrink-0 truncate">
+                    {/* Number and date are the first to go on narrow screens —
+                        name, status and amount are what you scan for. */}
+                    <span className="hidden text-xs font-mono text-brand-muted w-24 flex-shrink-0 truncate sm:inline">
                       {inq.inquiry_number}
                     </span>
-                    <span className="text-sm text-brand-text font-medium flex-1 truncate">
+                    <span className="text-sm text-brand-text font-medium flex-1 min-w-0 truncate">
                       {inq.customer_name}
                     </span>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${meta.bg} ${meta.color}`}>
@@ -240,7 +242,7 @@ export default async function AdminDashboard() {
                     <span className="text-sm font-semibold text-brand-text flex-shrink-0 w-20 text-right">
                       {inq.total_estimate ? fmt(inq.total_estimate) : "—"}
                     </span>
-                    <span className="text-xs text-brand-muted flex-shrink-0 w-20 text-right">
+                    <span className="hidden text-xs text-brand-muted flex-shrink-0 w-20 text-right sm:inline">
                       {format(new Date(inq.created_at), "d. MMM", { locale: hr })}
                     </span>
                   </Link>

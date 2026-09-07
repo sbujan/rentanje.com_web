@@ -29,14 +29,16 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    // Below `lg` this is a plain block: AdminSidebar renders its own sticky top
+    // bar and an off-canvas drawer, and <main> gets the full width.
+    <div className="min-h-dvh bg-gray-50 lg:flex">
       <AdminSidebar
         userEmail={user.email ?? ""}
         userName={adminUser.full_name ?? "Admin"}
         userRole={adminUser.role ?? "editor"}
       />
-      <main className="flex-1 min-w-0 overflow-auto">
-        <div className="p-6 max-w-7xl mx-auto">{children}</div>
+      <main className="flex-1 min-w-0">
+        <div className="mx-auto max-w-7xl p-4 sm:p-6">{children}</div>
       </main>
     </div>
   );

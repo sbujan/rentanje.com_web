@@ -189,7 +189,7 @@ export default function BlogForm({ initial }: Props) {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className="block text-sm font-medium text-brand-text mb-1">Autor</label>
             <input

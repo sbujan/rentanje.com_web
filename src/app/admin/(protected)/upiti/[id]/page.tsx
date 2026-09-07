@@ -105,47 +105,49 @@ export default async function InquiryDetailPage({ params }: Props) {
             {items.length === 0 ? (
               <p className="text-sm text-gray-400">Nema stavki.</p>
             ) : (
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left border-b border-gray-100">
-                    <th className="pb-2 font-medium text-gray-400">Proizvod</th>
-                    <th className="pb-2 font-medium text-gray-400">Datum</th>
-                    <th className="pb-2 font-medium text-gray-400 text-right">Cijena</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {items.map((item, i) => (
-                    <tr key={i}>
-                      <td className="py-3 font-medium text-gray-900">
-                        {item.productName}
-                        <div className="text-xs text-gray-400 font-normal">{item.days} dana · kom: {item.qty}</div>
-                      </td>
-                      <td className="py-3 text-gray-500 text-xs">
-                        {formatDate(item.rentalStart)} –<br/>{formatDate(item.rentalEnd)}
-                      </td>
-                      <td className="py-3 font-medium text-gray-900 text-right">
-                        {formatNullablePrice(item.totalPrice)}
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[30rem] text-sm">
+                  <thead>
+                    <tr className="text-left border-b border-gray-100">
+                      <th className="pb-2 font-medium text-gray-400">Proizvod</th>
+                      <th className="pb-2 font-medium text-gray-400">Datum</th>
+                      <th className="pb-2 font-medium text-gray-400 text-right">Cijena</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {items.map((item, i) => (
+                      <tr key={i}>
+                        <td className="py-3 font-medium text-gray-900">
+                          {item.productName}
+                          <div className="text-xs text-gray-400 font-normal">{item.days} dana · kom: {item.qty}</div>
+                        </td>
+                        <td className="py-3 text-gray-500 text-xs">
+                          {formatDate(item.rentalStart)} –<br/>{formatDate(item.rentalEnd)}
+                        </td>
+                        <td className="py-3 font-medium text-gray-900 text-right">
+                          {formatNullablePrice(item.totalPrice)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t-2 border-gray-100">
+                      <td colSpan={2} className="pt-3 font-bold text-gray-900">Ukupno</td>
+                      <td className="pt-3 font-bold text-gray-900 text-right">
+                        {formatNullablePrice(inquiry.subtotal_estimate)}
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="border-t-2 border-gray-100">
-                    <td colSpan={2} className="pt-3 font-bold text-gray-900">Ukupno</td>
-                    <td className="pt-3 font-bold text-gray-900 text-right">
-                      {formatNullablePrice(inquiry.subtotal_estimate)}
-                    </td>
-                  </tr>
-                  {inquiry.total_estimate && inquiry.total_estimate !== inquiry.subtotal_estimate && (
-                    <tr>
-                      <td colSpan={2} className="py-1 text-amber-600 text-sm">+ Depozit</td>
-                      <td className="py-1 text-amber-600 text-sm text-right">
-                        {formatNullablePrice((inquiry.total_estimate ?? 0) - (inquiry.subtotal_estimate ?? 0))}
-                      </td>
-                    </tr>
-                  )}
-                </tfoot>
-              </table>
+                    {inquiry.total_estimate && inquiry.total_estimate !== inquiry.subtotal_estimate && (
+                      <tr>
+                        <td colSpan={2} className="py-1 text-amber-600 text-sm">+ Depozit</td>
+                        <td className="py-1 text-amber-600 text-sm text-right">
+                          {formatNullablePrice((inquiry.total_estimate ?? 0) - (inquiry.subtotal_estimate ?? 0))}
+                        </td>
+                      </tr>
+                    )}
+                  </tfoot>
+                </table>
+              </div>
             )}
           </div>
         </div>

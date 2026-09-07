@@ -35,31 +35,33 @@ export default async function UsersPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden mb-6">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-gray-50 text-left">
-              <th className="px-4 py-3 font-medium text-gray-500">Korisnik</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Uloga</th>
-              <th className="px-4 py-3 font-medium text-gray-500 hidden md:table-cell">Dodano</th>
-              <th className="px-4 py-3 font-medium text-gray-500">Status</th>
-              <th className="px-4 py-3" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {(adminUsers ?? []).map((user) => {
-              const roleInfo = ROLE_LABELS[user.role];
-              return (
-                <UserRow
-                  key={user.id}
-                  user={user}
-                  email={emailMap[user.id] ?? "–"}
-                  roleInfo={roleInfo}
-                  createdAt={format(new Date(user.created_at), "d. MMM yyyy", { locale: hr })}
-                />
-              );
-            })}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[44rem] text-sm">
+            <thead>
+              <tr className="bg-gray-50 text-left">
+                <th className="px-4 py-3 font-medium text-gray-500">Korisnik</th>
+                <th className="px-4 py-3 font-medium text-gray-500">Uloga</th>
+                <th className="px-4 py-3 font-medium text-gray-500 hidden md:table-cell">Dodano</th>
+                <th className="px-4 py-3 font-medium text-gray-500">Status</th>
+                <th className="px-4 py-3" />
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {(adminUsers ?? []).map((user) => {
+                const roleInfo = ROLE_LABELS[user.role];
+                return (
+                  <UserRow
+                    key={user.id}
+                    user={user}
+                    email={emailMap[user.id] ?? "–"}
+                    roleInfo={roleInfo}
+                    createdAt={format(new Date(user.created_at), "d. MMM yyyy", { locale: hr })}
+                  />
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 p-6">

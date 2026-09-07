@@ -15,7 +15,7 @@ export default async function ProductsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-bold text-brand-text">
           Proizvodi
         </h1>
@@ -33,74 +33,76 @@ export default async function ProductsPage() {
             Nema proizvoda. Dodajte prvi!
           </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                <th className="px-4 py-3 text-left font-medium text-brand-muted">
-                  Naziv
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-brand-muted">
-                  Kategorija
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-brand-muted">
-                  Cijena od
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-brand-muted">
-                  Status
-                </th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {products.map((p) => {
-                const lowestPrice = p.price_per_day ?? p.price_per_7days;
-                return (
-                  <tr
-                    key={p.id}
-                    className={`transition-colors ${
-                      p.is_active
-                        ? "bg-green-50/60 hover:bg-green-50"
-                        : "bg-red-50/60 hover:bg-red-50"
-                    }`}
-                  >
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-brand-text">{p.name}</div>
-                      <div className="text-xs text-brand-muted font-mono">
-                        /najam/{p.slug}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-brand-muted">
-                      {(p.categories as unknown as { name: string } | null)?.name ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 font-price font-bold text-brand-primary">
-                      {lowestPrice} €
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-1.5 flex-wrap">
-                        <Badge variant={p.is_active ? "success" : "secondary"}>
-                          {p.is_active ? "Aktivno" : "Neaktivno"}
-                        </Badge>
-                        {p.is_featured && (
-                          <Badge variant="default">Istaknuto</Badge>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2 justify-end">
-                        <Link href={`/admin/products/${p.id}`}>
-                          <Button variant="outline" size="sm">
-                            <Pencil className="h-3 w-3" />
-                            Uredi
-                          </Button>
-                        </Link>
-                        <DeleteProductButton id={p.id} name={p.name} />
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[44rem] text-sm">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  <th className="px-4 py-3 text-left font-medium text-brand-muted">
+                    Naziv
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-brand-muted">
+                    Kategorija
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-brand-muted">
+                    Cijena od
+                  </th>
+                  <th className="px-4 py-3 text-left font-medium text-brand-muted">
+                    Status
+                  </th>
+                  <th className="px-4 py-3" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {products.map((p) => {
+                  const lowestPrice = p.price_per_day ?? p.price_per_7days;
+                  return (
+                    <tr
+                      key={p.id}
+                      className={`transition-colors ${
+                        p.is_active
+                          ? "bg-green-50/60 hover:bg-green-50"
+                          : "bg-red-50/60 hover:bg-red-50"
+                      }`}
+                    >
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-brand-text">{p.name}</div>
+                        <div className="text-xs text-brand-muted font-mono">
+                          /najam/{p.slug}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-brand-muted">
+                        {(p.categories as unknown as { name: string } | null)?.name ?? "—"}
+                      </td>
+                      <td className="px-4 py-3 font-price font-bold text-brand-primary">
+                        {lowestPrice} €
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex gap-1.5 flex-wrap">
+                          <Badge variant={p.is_active ? "success" : "secondary"}>
+                            {p.is_active ? "Aktivno" : "Neaktivno"}
+                          </Badge>
+                          {p.is_featured && (
+                            <Badge variant="default">Istaknuto</Badge>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2 justify-end">
+                          <Link href={`/admin/products/${p.id}`}>
+                            <Button variant="outline" size="sm">
+                              <Pencil className="h-3 w-3" />
+                              Uredi
+                            </Button>
+                          </Link>
+                          <DeleteProductButton id={p.id} name={p.name} />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

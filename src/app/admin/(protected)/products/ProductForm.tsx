@@ -371,7 +371,9 @@ export default function ProductForm({
                           image_alts: f.image_alts.filter((_, idx) => idx !== i),
                         }))
                       }
-                      className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-red-500 text-white text-sm font-bold flex items-center justify-center hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                      // Always visible on touch (no hover to reveal it there);
+                      // fades in on hover from `md` up.
+                      className="absolute top-1.5 right-1.5 h-7 w-7 rounded-full bg-red-500 text-white text-sm font-bold flex items-center justify-center hover:bg-red-600 transition-opacity md:h-6 md:w-6 md:opacity-0 md:group-hover:opacity-100"
                       aria-label="Ukloni sliku"
                     >
                       ×
@@ -447,7 +449,7 @@ export default function ProductForm({
           </Select>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="space-y-1.5">
             <Label htmlFor="price_per_day">
               Cijena 1 dan (€){" "}
@@ -526,7 +528,7 @@ export default function ProductForm({
           </div>
 
           {form.requires_deposit && (
-            <div className="grid grid-cols-2 gap-4 pl-6">
+            <div className="grid grid-cols-1 gap-4 pl-4 sm:grid-cols-2 sm:pl-6">
               <div className="space-y-1.5">
                 <Label htmlFor="deposit_amount">Iznos kaucije (€)</Label>
                 <Input
@@ -563,7 +565,7 @@ export default function ProductForm({
           Zaliha i tehnički podaci
         </h2>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="space-y-1.5">
             <Label htmlFor="stock_qty">Ukupna količina</Label>
             <Input
