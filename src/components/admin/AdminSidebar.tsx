@@ -17,6 +17,7 @@ import {
   Search,
   Star,
   Calendar,
+  CalendarClock,
   Settings,
   Users,
   LogOut,
@@ -67,6 +68,11 @@ const navItems: NavItem[] = [
     href: "/admin/upiti",
     label: "Upiti",
     icon: <MessageSquare className="h-4 w-4" />,
+  },
+  {
+    href: "/admin/termini",
+    label: "Termini najma",
+    icon: <CalendarClock className="h-4 w-4" />,
   },
   {
     href: "/admin/blog",

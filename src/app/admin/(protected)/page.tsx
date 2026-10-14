@@ -127,7 +127,7 @@ export default async function AdminDashboard() {
       value: upcomingAvail ?? 0,
       sub: "Nadolazeći unosi",
       icon: <CalendarCheck className="h-5 w-5" />,
-      href: "/admin/availability",
+      href: "/admin/termini",
       color: "text-teal-600",
       bg: "bg-teal-50",
       border: "border-gray-100",

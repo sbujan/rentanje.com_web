@@ -148,24 +148,47 @@ export default function AvailabilityCalendar({
         </p>
       )}
 
-      {/* Selected range info */}
-      {range?.from && (
+      {/* Selection guidance. A range needs two clicks and users who want a
+          single day often stop after the first one, so the half-selected
+          state gets an explicit "click again" prompt (aria-live so screen
+          readers hear it too). */}
+      {!range?.from && !error && (
+        <p className="text-xs text-brand-muted">
+          Kliknite datum početka, a zatim datum kraja najma. Za najam od jednog
+          dana kliknite isti datum dva puta.
+        </p>
+      )}
+
+      {range?.from && !range.to && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
+        >
+          <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500 text-xs font-bold text-white">
+            2
+          </span>
+          <div>
+            <div>
+              Početak: <strong>{format(range.from, "d. MMM yyyy", { locale: hr })}</strong>
+            </div>
+            <div className="mt-0.5 text-xs text-amber-800">
+              Kliknite još jednom na datum kraja najma. Za jedan dan kliknite
+              ponovno isti datum.
+            </div>
+          </div>
+        </div>
+      )}
+
+      {range?.from && range.to && (
         <div className="text-sm text-brand-muted bg-brand-light rounded-md px-3 py-2">
-          {range.from && range.to ? (
-            <>
-              <span className="font-semibold text-brand-text">
-                {format(range.from, "d. MMM", { locale: hr })} –{" "}
-                {format(range.to, "d. MMM yyyy", { locale: hr })}
-              </span>
-              <span className="ml-2">
-                ({days} {days === 1 ? "dan" : days < 5 ? "dana" : "dana"})
-              </span>
-            </>
-          ) : (
-            <span>
-              Početak: {format(range.from, "d. MMM yyyy", { locale: hr })}
-            </span>
-          )}
+          <span className="font-semibold text-brand-text">
+            {format(range.from, "d. MMM", { locale: hr })} –{" "}
+            {format(range.to, "d. MMM yyyy", { locale: hr })}
+          </span>
+          <span className="ml-2">
+            ({days} {days === 1 ? "dan" : "dana"})
+          </span>
         </div>
       )}
 
