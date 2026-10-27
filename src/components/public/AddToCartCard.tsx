@@ -24,6 +24,8 @@ interface Props {
     requires_deposit: boolean;
     deposit_amount: number | null;
     deposit_note: string | null;
+    delivery_available: boolean;
+    delivery_fee: number;
     stock_qty: number;
     category?: string;
   };
@@ -85,6 +87,8 @@ export default function AddToCartCard({ product, availability }: Props) {
       totalPrice,
       depositAmount: unitDeposit * qtyClamped,
       qty: qtyClamped,
+      deliveryAvailable: product.delivery_available,
+      deliveryFee: product.delivery_fee,
     });
 
     trackAddToCart({

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { jsonLdSafe } from "@/lib/seo";
 import { effectiveDailyRate } from "@/lib/pricing";
+import { deliverySpecValue } from "@/lib/delivery";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import AddToCartCard from "@/components/public/AddToCartCard";
 import ProductCard from "@/components/public/ProductCard";
@@ -100,6 +101,9 @@ export default function ProductPage({ product, availability, tags, relatedProduc
     product.dimensions_cm ? { label: "Dimenzije", value: `${product.dimensions_cm} cm` } : null,
     { label: "Min. iznajmljivanje", value: `${product.min_rental_days} ${product.min_rental_days === 1 ? "dan" : "dana"}` },
     { label: "Dostupno komada", value: `${product.stock_qty} kom` },
+    // Surfaces pickup-only products before the cart does, so nobody plans a
+    // delivery the checkout will refuse.
+    { label: "Dostava", value: deliverySpecValue(product.delivery_available, product.delivery_fee) },
   ].filter(Boolean) as { label: string; value: string }[];
 
   const faq: FaqItem[] = product.faq ?? [];
@@ -282,6 +286,8 @@ export default function ProductPage({ product, availability, tags, relatedProduc
                 requires_deposit: product.requires_deposit,
                 deposit_amount: product.deposit_amount,
                 deposit_note: product.deposit_note,
+                delivery_available: product.delivery_available,
+                delivery_fee: product.delivery_fee,
                 stock_qty: product.stock_qty,
                 category: product.categories?.name,
               }}

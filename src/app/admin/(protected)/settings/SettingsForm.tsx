@@ -12,7 +12,6 @@ const FIELDS = [
   { key: "working_hours", label: "Radno vrijeme", placeholder: "Svaki dan, 8–20h", type: "text" },
   { key: "oib", label: "OIB", placeholder: "30800965664", type: "text" },
   { key: "company_name", label: "Naziv tvrtke", placeholder: "List 360 d.o.o.", type: "text" },
-  { key: "delivery_fee", label: "Naknada za dostavu (€)", placeholder: "0", type: "number" },
   { key: "min_order_value", label: "Minimalna vrijednost narudžbe (€)", placeholder: "0", type: "number" },
   { key: "meta_title_suffix", label: "Sufiks naslova stranica", placeholder: "| rentanje.com", type: "text" },
   { key: "facebook_url", label: "Facebook URL", placeholder: "https://facebook.com/...", type: "url" },

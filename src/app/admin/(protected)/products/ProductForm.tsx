@@ -58,6 +58,8 @@ export default function ProductForm({
     requires_deposit: product?.requires_deposit ?? false,
     deposit_amount: product?.deposit_amount?.toString() ?? "",
     deposit_note: product?.deposit_note ?? "",
+    delivery_available: product?.delivery_available ?? true,
+    delivery_fee: product?.delivery_fee?.toString() ?? "20",
     stock_qty: product?.stock_qty?.toString() ?? "1",
     weight_kg: product?.weight_kg?.toString() ?? "",
     dimensions_cm: product?.dimensions_cm ?? "",
@@ -100,6 +102,11 @@ export default function ProductForm({
     if (minDays <= 3 && !form.price_per_3days)
       return "Cijena za 3 dana je obavezna.";
     if (!form.price_per_7days) return "Cijena za 7 dana je obavezna.";
+    if (form.delivery_available) {
+      const fee = parseFloat(form.delivery_fee);
+      if (form.delivery_fee.trim() === "" || Number.isNaN(fee) || fee < 0)
+        return "Unesite cijenu dostave (0 za besplatnu dostavu).";
+    }
     return null;
   }
 
@@ -131,6 +138,8 @@ export default function ProductForm({
         ? parseFloat(form.deposit_amount)
         : null,
       deposit_note: form.deposit_note || null,
+      delivery_available: form.delivery_available,
+      delivery_fee: Math.max(0, parseFloat(form.delivery_fee) || 0),
       stock_qty: parseInt(form.stock_qty) || 1,
       weight_kg: form.weight_kg ? parseFloat(form.weight_kg) : null,
       hero_image_url: form.hero_image_url || null,
@@ -555,6 +564,50 @@ export default function ProductForm({
                 />
               </div>
             </div>
+          )}
+        </div>
+
+        {/* Delivery */}
+        <div className="space-y-3 pt-2 border-t border-gray-100">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="delivery_available"
+              checked={form.delivery_available}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, delivery_available: e.target.checked }))
+              }
+              className="h-4 w-4 rounded border-gray-300 text-brand-primary focus:ring-brand-primary"
+            />
+            <Label htmlFor="delivery_available">Dostava moguća</Label>
+          </div>
+
+          {form.delivery_available ? (
+            <div className="grid grid-cols-1 gap-4 pl-4 sm:grid-cols-2 sm:pl-6">
+              <div className="space-y-1.5">
+                <Label htmlFor="delivery_fee">Cijena dostave (€)</Label>
+                <Input
+                  id="delivery_fee"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={form.delivery_fee}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, delivery_fee: e.target.value }))
+                  }
+                  placeholder="20.00"
+                />
+                <p className="text-xs text-brand-muted">
+                  0 znači besplatna dostava. Kad je u košarici više proizvoda,
+                  naplaćuje se samo najviša cijena dostave među njima.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <p className="pl-4 text-xs text-brand-muted sm:pl-6">
+              Kupac može odabrati samo osobno preuzimanje. Ako je ovaj proizvod
+              u košarici, dostava nije moguća ni za ostale stavke u istom upitu.
+            </p>
           )}
         </div>
       </div>

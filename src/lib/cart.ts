@@ -22,6 +22,11 @@ export interface CartItem {
   bundleId?: string | null;
   bundleName?: string | null;
   bundleDiscountAmount?: number; // amount in EUR, applied once per bundleId
+  // Per-product delivery, snapshotted when the item was added. Optional so
+  // carts persisted before this existed still parse; the cart page refreshes
+  // it from the DB and /api/inquiry recomputes it, so a stale value is harmless.
+  deliveryAvailable?: boolean;
+  deliveryFee?: number;
 }
 
 /** Runtime validator mirroring the CartItem interface, for JSONB boundaries. */
@@ -42,6 +47,8 @@ export const cartItemSchema = z.object({
   bundleId: z.string().nullable().optional(),
   bundleName: z.string().nullable().optional(),
   bundleDiscountAmount: z.number().optional(),
+  deliveryAvailable: z.boolean().optional(),
+  deliveryFee: z.number().min(0).optional(),
 });
 
 /**

@@ -25,6 +25,8 @@ interface BundleProduct {
   min_rental_days: 1 | 3 | 7;
   requires_deposit: boolean;
   deposit_amount: number | null;
+  delivery_available: boolean;
+  delivery_fee: number;
   stock_qty: number;
   qty: number;
 }
@@ -148,6 +150,8 @@ export default function BundleAddToCart({ bundle, products, availability }: Prop
         bundleId: bundle.id,
         bundleName: bundle.name,
         bundleDiscountAmount: 0,
+        deliveryAvailable: p.delivery_available,
+        deliveryFee: p.delivery_fee,
       };
     });
 

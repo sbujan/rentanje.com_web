@@ -13,6 +13,7 @@ export function buildAdminInquiryHtml(params: {
   subtotal: number;
   discount?: number;
   totalDeposit: number;
+  deliveryType?: "pickup" | "delivery";
   deliveryFee: number;
   inquiryId: string;
   inquiryNumber: string;
@@ -27,10 +28,12 @@ export function buildAdminInquiryHtml(params: {
     subtotal,
     discount = 0,
     totalDeposit,
+    deliveryType = "pickup",
     deliveryFee,
     inquiryId,
     inquiryNumber,
   } = params;
+  const isDelivery = deliveryType === "delivery";
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rentanje.com";
 
   const rows = items
@@ -56,6 +59,7 @@ export function buildAdminInquiryHtml(params: {
       <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280;width:140px">Ime</td><td style="padding:8px 0;color:#111827;font-weight:500">${esc(name)}</td></tr>
       <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280">E-mail</td><td style="padding:8px 0;color:#111827;font-weight:500"><a href="mailto:${esc(email)}">${esc(email)}</a></td></tr>
       <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280">Telefon</td><td style="padding:8px 0;color:#111827;font-weight:500"><a href="tel:${esc(phone)}">${esc(phone)}</a></td></tr>
+      <tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280">Preuzimanje</td><td style="padding:8px 0;color:#111827;font-weight:500">${isDelivery ? "Dostava" : "Osobno preuzimanje"}</td></tr>
       ${delivery_address ? `<tr style="border-bottom:1px solid #f3f4f6"><td style="padding:8px 0;color:#6b7280">Adresa dostave</td><td style="padding:8px 0;color:#111827;font-weight:500">${esc(delivery_address)}</td></tr>` : ""}
       ${note ? `<tr><td style="padding:8px 0;color:#6b7280">Napomena</td><td style="padding:8px 0;color:#111827;font-weight:500">${esc(note)}</td></tr>` : ""}
     </table>
@@ -74,7 +78,7 @@ export function buildAdminInquiryHtml(params: {
         <tr><td colspan="2" style="padding:10px 12px;font-weight:600;color:#111827">Ukupno iznajmljivanje</td><td style="padding:10px 12px;text-align:right;font-weight:700;color:#111827">${formatPrice(subtotal - discount)}</td></tr>`
           : `<tr style="border-top:2px solid #e5e7eb"><td colspan="2" style="padding:10px 12px;font-weight:600;color:#111827">Ukupno iznajmljivanje</td><td style="padding:10px 12px;text-align:right;font-weight:700;color:#111827">${formatPrice(subtotal)}</td></tr>`}
         ${totalDeposit > 0 ? `<tr><td colspan="2" style="padding:4px 12px;color:#d97706">Depozit (povratni)</td><td style="padding:4px 12px;text-align:right;color:#d97706;font-weight:600">${formatPrice(totalDeposit)}</td></tr>` : ""}
-        ${deliveryFee > 0 ? `<tr><td colspan="2" style="padding:4px 12px;color:#2563eb;font-weight:600">Dostava</td><td style="padding:4px 12px;text-align:right;color:#2563eb;font-weight:600">${formatPrice(deliveryFee)}</td></tr>` : ""}
+        ${isDelivery ? `<tr><td colspan="2" style="padding:4px 12px;color:#2563eb;font-weight:600">Dostava</td><td style="padding:4px 12px;text-align:right;color:#2563eb;font-weight:600">${deliveryFee > 0 ? formatPrice(deliveryFee) : "Besplatno"}</td></tr>` : ""}
       </tfoot>
     </table>
     <div style="margin-top:32px;text-align:center">
@@ -91,8 +95,19 @@ export function buildCustomerConfirmationHtml(params: {
   subtotal: number;
   discount?: number;
   totalDeposit: number;
+  deliveryType?: "pickup" | "delivery";
+  deliveryFee?: number;
 }): string {
-  const { name, items, subtotal, discount = 0, totalDeposit } = params;
+  const {
+    name,
+    items,
+    subtotal,
+    discount = 0,
+    totalDeposit,
+    deliveryType = "pickup",
+    deliveryFee = 0,
+  } = params;
+  const isDelivery = deliveryType === "delivery";
 
   const rows = items
     .map(
@@ -129,6 +144,7 @@ export function buildCustomerConfirmationHtml(params: {
         <tr><td colspan="2" style="padding:10px 12px;font-weight:600;color:#111827">Ukupno</td><td style="padding:10px 12px;text-align:right;font-weight:700;color:#111827">${formatPrice(subtotal - discount)}</td></tr>`
           : `<tr style="border-top:2px solid #e5e7eb"><td colspan="2" style="padding:10px 12px;font-weight:600;color:#111827">Ukupno</td><td style="padding:10px 12px;text-align:right;font-weight:700;color:#111827">${formatPrice(subtotal)}</td></tr>`}
         ${totalDeposit > 0 ? `<tr><td colspan="2" style="padding:4px 12px 10px;color:#d97706;font-size:13px">Depozit (povratni)</td><td style="padding:4px 12px 10px;text-align:right;color:#d97706">${formatPrice(totalDeposit)}</td></tr>` : ""}
+        ${isDelivery ? `<tr><td colspan="2" style="padding:4px 12px 10px;color:#2563eb;font-size:13px">Dostava (Zagreb i okolica)</td><td style="padding:4px 12px 10px;text-align:right;color:#2563eb">${deliveryFee > 0 ? formatPrice(deliveryFee) : "Besplatno"}</td></tr>` : ""}
       </tfoot>
     </table>
     <div style="margin-top:32px;background:#fef2f2;border-radius:8px;padding:16px 20px">

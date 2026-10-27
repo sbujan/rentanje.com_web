@@ -93,7 +93,7 @@ export default async function BundlePage({ params }: Props) {
 
   const { data: bundleProductRows, error: bundleProductsErr } = await supabase
     .from("bundle_products")
-    .select("qty, product:products(id, name, slug, hero_image_url, price_per_day, price_per_3days, price_per_7days, min_rental_days, requires_deposit, deposit_amount, stock_qty)")
+    .select("qty, product:products(id, name, slug, hero_image_url, price_per_day, price_per_3days, price_per_7days, min_rental_days, requires_deposit, deposit_amount, delivery_available, delivery_fee, stock_qty)")
     .eq("bundle_id", bundle.id);
 
   if (bundleProductsErr) {
@@ -114,6 +114,8 @@ export default async function BundlePage({ params }: Props) {
       min_rental_days: 1 | 3 | 7;
       requires_deposit: boolean;
       deposit_amount: number | null;
+      delivery_available: boolean;
+      delivery_fee: number;
       stock_qty: number;
     } | null;
   };
@@ -279,6 +281,8 @@ export default async function BundlePage({ params }: Props) {
               min_rental_days: row.product.min_rental_days,
               requires_deposit: row.product.requires_deposit,
               deposit_amount: row.product.deposit_amount,
+              delivery_available: row.product.delivery_available,
+              delivery_fee: row.product.delivery_fee,
               stock_qty: row.product.stock_qty,
               qty: row.qty,
             }))}

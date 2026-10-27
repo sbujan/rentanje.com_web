@@ -7,7 +7,7 @@ import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF } from "@/lib/site";
 
 export default function HomeCTAContact() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "ok" | "invalid" | "error">("idle");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -20,7 +20,9 @@ export default function HomeCTAContact() {
         body: JSON.stringify(form),
       });
       if (res.ok) trackContactForm("homepage");
-      setStatus(res.ok ? "ok" : "error");
+      // 422 = the server rejected a field (name is letters-only, e-mail must
+      // be valid). Distinguish it from a send failure so the fix is obvious.
+      setStatus(res.ok ? "ok" : res.status === 422 ? "invalid" : "error");
     } catch {
       setStatus("error");
     }
@@ -90,6 +92,11 @@ export default function HomeCTAContact() {
                 </label>
                 {status === "error" && (
                   <p className="text-xs text-red-200">Greška pri slanju. Pokušajte ponovo ili nas nazovite.</p>
+                )}
+                {status === "invalid" && (
+                  <p className="text-xs text-red-200">
+                    Provjerite podatke: ime smije sadržavati samo slova, a e-mail mora biti ispravan.
+                  </p>
                 )}
                 <button
                   type="submit"

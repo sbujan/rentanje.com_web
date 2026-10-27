@@ -107,6 +107,8 @@ export interface Database {
           requires_deposit: boolean;
           deposit_amount: number | null;
           deposit_note: string | null;
+          delivery_available: boolean;
+          delivery_fee: number;
           is_available: boolean;
           is_featured: boolean;
           is_active: boolean;
@@ -142,6 +144,8 @@ export interface Database {
           requires_deposit?: boolean;
           deposit_amount?: number | null;
           deposit_note?: string | null;
+          delivery_available?: boolean;
+          delivery_fee?: number;
           is_available?: boolean;
           is_featured?: boolean;
           is_active?: boolean;
@@ -172,6 +176,8 @@ export interface Database {
           requires_deposit?: boolean;
           deposit_amount?: number | null;
           deposit_note?: string | null;
+          delivery_available?: boolean;
+          delivery_fee?: number;
           is_available?: boolean;
           is_featured?: boolean;
           is_active?: boolean;

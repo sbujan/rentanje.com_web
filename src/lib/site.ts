@@ -1,11 +1,8 @@
 /**
- * Site-wide business constants shared by client UI and server-side
- * recomputation. The server NEVER trusts client-submitted money values;
- * it recomputes them from these constants + DB prices.
+ * Site-wide business constants shared by client UI and server-side code.
+ * Money is never taken from the client: prices come from the DB and the
+ * delivery fee is per product (see src/lib/delivery.ts).
  */
-
-/** Flat delivery fee (EUR) for "delivery" orders within Zagreb. */
-export const DELIVERY_FEE = 10;
 
 /** Display form of the business phone number. */
 export const SITE_PHONE = "+385 95 204 4414";

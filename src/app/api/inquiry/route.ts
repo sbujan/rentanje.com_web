@@ -8,7 +8,8 @@ import { checkRateLimit, getRequestIp } from "@/lib/rate-limit";
 import { validatePromoCode, toPromoItems } from "@/lib/promo";
 import { calcRentalPrice, applyBundleDiscount } from "@/lib/pricing";
 import { toYmd } from "@/lib/utils";
-import { DELIVERY_FEE } from "@/lib/site";
+import { resolveDelivery } from "@/lib/delivery";
+import { nameSchema, phoneSchema } from "@/lib/contact-fields";
 import {
   expandRentalDates,
   validateCartAvailability,
@@ -45,19 +46,27 @@ const cartItemSchema = z.object({
   bundleDiscountAmount: z.number().min(0).optional(),
 });
 
-const schema = z.object({
-  name: z.string().min(2).max(120),
-  email: z.string().email().max(200),
-  phone: z.string().min(8).max(40),
-  wants_delivery: z.boolean().optional(),
-  delivery_type: z.enum(["pickup", "delivery"]).optional(),
-  delivery_fee: z.number().min(0).optional(), // ignored — recomputed server-side
-  delivery_address: z.string().max(300).optional(),
-  note: z.string().max(2000).optional(),
-  agree: z.literal(true),
-  items: z.array(cartItemSchema).min(1).max(30),
-  promo_code: z.string().max(50).optional(),
-});
+const schema = z
+  .object({
+    // Name and phone are reflected into outbound e-mail (the customer copy
+    // goes to whatever address was submitted), so they are restricted to
+    // name-like / phone-like characters rather than free text.
+    name: nameSchema,
+    email: z.string().email().max(200),
+    phone: phoneSchema,
+    wants_delivery: z.boolean().optional(),
+    delivery_type: z.enum(["pickup", "delivery"]).optional(),
+    delivery_fee: z.number().min(0).optional(), // ignored — recomputed server-side
+    delivery_address: z.string().max(300).optional(),
+    note: z.string().max(2000).optional(),
+    agree: z.literal(true),
+    items: z.array(cartItemSchema).min(1).max(30),
+    promo_code: z.string().max(50).optional(),
+  })
+  .refine(
+    (d) => d.delivery_type !== "delivery" || (d.delivery_address ?? "").trim().length >= 5,
+    { message: "Unesite adresu dostave.", path: ["delivery_address"] }
+  );
 
 /** Reject malformed/abusive date ranges before touching the DB. */
 function validateDateRange(start: string, end: string): string | null {
@@ -123,7 +132,7 @@ export async function POST(req: NextRequest) {
   const { data: products, error: prodErr } = await supabase
     .from("products")
     .select(
-      "id, name, slug, hero_image_url, price_per_day, price_per_3days, price_per_7days, min_rental_days, requires_deposit, deposit_amount, stock_qty, is_active"
+      "id, name, slug, hero_image_url, price_per_day, price_per_3days, price_per_7days, min_rental_days, requires_deposit, deposit_amount, delivery_available, delivery_fee, stock_qty, is_active"
     )
     .in("id", productIds);
   if (prodErr) {
@@ -180,6 +189,8 @@ export async function POST(req: NextRequest) {
       bundleId: item.bundleId ?? null,
       bundleName: item.bundleName ?? null,
       bundleDiscountAmount: 0,
+      deliveryAvailable: product.delivery_available,
+      deliveryFee: product.delivery_fee,
     });
   }
 
@@ -220,8 +231,27 @@ export async function POST(req: NextRequest) {
     0
   );
   const totalDeposit = cartItems.reduce((sum, i) => sum + i.depositAmount, 0);
+  // Delivery is per product: offered only if every line allows it, charged
+  // at the highest single-product fee. Resolved from the DB rows above, never
+  // from the client's snapshot.
   const deliveryType = delivery_type ?? "pickup";
-  const deliveryFee = deliveryType === "delivery" ? DELIVERY_FEE : 0;
+  const deliveryQuote = resolveDelivery(
+    cartItems.map((i) => ({
+      productName: i.productName,
+      deliveryAvailable: i.deliveryAvailable,
+      deliveryFee: i.deliveryFee,
+    }))
+  );
+  if (deliveryType === "delivery" && !deliveryQuote.available) {
+    return NextResponse.json(
+      {
+        error: `Dostava nije moguća za: ${deliveryQuote.blockedBy.join(", ")}. Odaberite preuzimanje ili uklonite proizvod iz košarice.`,
+      },
+      { status: 422 }
+    );
+  }
+  const deliveryFee =
+    deliveryType === "delivery" && deliveryQuote.available ? deliveryQuote.fee : 0;
 
   // Re-validate the promo code server-side against the RECOMPUTED prices.
   let promoDiscount = 0;
@@ -394,7 +424,8 @@ export async function POST(req: NextRequest) {
           subject: `Novi upit ${inquiryNumber} — ${safeSubjectName}`,
           html: buildAdminInquiryHtml({
             name, email, phone, delivery_address, note,
-            items: cartItems, subtotal, discount: totalDiscount, totalDeposit, deliveryFee,
+            items: cartItems, subtotal, discount: totalDiscount, totalDeposit,
+            deliveryType, deliveryFee,
             inquiryId, inquiryNumber,
           }),
           replyTo,
@@ -403,7 +434,10 @@ export async function POST(req: NextRequest) {
           from: `rentanje.com <${fromEmail}>`,
           to: email,
           subject: `Vaš upit je zaprimljen — rentanje.com`,
-          html: buildCustomerConfirmationHtml({ name, items: cartItems, subtotal, discount: totalDiscount, totalDeposit }),
+          html: buildCustomerConfirmationHtml({
+            name, items: cartItems, subtotal, discount: totalDiscount, totalDeposit,
+            deliveryType, deliveryFee,
+          }),
         }),
       ]);
     } catch (emailErr) {

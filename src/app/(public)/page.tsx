@@ -79,7 +79,7 @@ const whyUs = [
   {
     icon: <Truck className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />,
     title: "Dostava u Zagreb",
-    desc: "Dostavljamo opremu na vašu adresu u Zagrebu za samo 10 €.",
+    desc: "Dostavljamo opremu na vašu adresu u Zagrebu i okolici. Cijena dostave je navedena uz svaki proizvod.",
   },
   {
     icon: <BadgeCent className="h-8 w-8 text-brand-primary" strokeWidth={1.5} />,

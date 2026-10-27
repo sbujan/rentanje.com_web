@@ -4,7 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 import { format } from "date-fns";
 import { hr } from "date-fns/locale";
-import { ArrowLeft, Mail, Phone, MapPin } from "lucide-react";
+import { ArrowLeft, Mail, Phone, MapPin, Truck, Store } from "lucide-react";
 import { parseCartItems } from "@/lib/cart";
 import { INQUIRY_STATUS_META } from "@/lib/inquiry-status";
 import { formatDate, formatPrice } from "@/lib/utils";
@@ -40,6 +40,15 @@ export default async function InquiryDetailPage({ params }: Props) {
 
   const items = parseCartItems(inquiry.items);
   const statusInfo = INQUIRY_STATUS_META[inquiry.status] ?? INQUIRY_STATUS_META.new;
+
+  // total_estimate = discounted rental + deposit + delivery. Split the two
+  // add-ons back out so the admin sees what the customer saw.
+  const isDelivery = inquiry.delivery_type === "delivery";
+  const deliveryFee = isDelivery ? inquiry.delivery_fee ?? 0 : 0;
+  const depositTotal = Math.max(
+    0,
+    (inquiry.total_estimate ?? 0) - (inquiry.subtotal_estimate ?? 0) - deliveryFee
+  );
 
   return (
     <div className="p-8 max-w-4xl">
@@ -83,6 +92,16 @@ export default async function InquiryDetailPage({ params }: Props) {
                   </a>
                 </div>
               )}
+              <div className="flex items-center gap-2">
+                {isDelivery ? (
+                  <Truck className="h-4 w-4 text-gray-400" />
+                ) : (
+                  <Store className="h-4 w-4 text-gray-400" />
+                )}
+                <span className="text-sm text-gray-700">
+                  {isDelivery ? "Dostava" : "Osobno preuzimanje"}
+                </span>
+              </div>
               {inquiry.delivery_address && (
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-gray-400" />
@@ -137,11 +156,27 @@ export default async function InquiryDetailPage({ params }: Props) {
                         {formatNullablePrice(inquiry.subtotal_estimate)}
                       </td>
                     </tr>
-                    {inquiry.total_estimate && inquiry.total_estimate !== inquiry.subtotal_estimate && (
+                    {depositTotal > 0 && (
                       <tr>
-                        <td colSpan={2} className="py-1 text-amber-600 text-sm">+ Depozit</td>
+                        <td colSpan={2} className="py-1 text-amber-600 text-sm">+ Depozit (povratni)</td>
                         <td className="py-1 text-amber-600 text-sm text-right">
-                          {formatNullablePrice((inquiry.total_estimate ?? 0) - (inquiry.subtotal_estimate ?? 0))}
+                          {formatPrice(depositTotal, 2)}
+                        </td>
+                      </tr>
+                    )}
+                    {isDelivery && (
+                      <tr>
+                        <td colSpan={2} className="py-1 text-blue-600 text-sm">+ Dostava</td>
+                        <td className="py-1 text-blue-600 text-sm text-right">
+                          {deliveryFee > 0 ? formatPrice(deliveryFee, 2) : "Besplatno"}
+                        </td>
+                      </tr>
+                    )}
+                    {(depositTotal > 0 || isDelivery) && (
+                      <tr className="border-t border-gray-100">
+                        <td colSpan={2} className="pt-2 font-bold text-gray-900">Sveukupno</td>
+                        <td className="pt-2 font-bold text-gray-900 text-right">
+                          {formatNullablePrice(inquiry.total_estimate)}
                         </td>
                       </tr>
                     )}

@@ -10,7 +10,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCartStore, CartItem } from "@/lib/cart";
-import { DELIVERY_FEE, SITE_PHONE, SITE_PHONE_HREF } from "@/lib/site";
+import { SITE_PHONE, SITE_PHONE_HREF } from "@/lib/site";
+import { resolveDelivery, DELIVERY_AREA_NOTE } from "@/lib/delivery";
+import { nameSchema, phoneSchema } from "@/lib/contact-fields";
+import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/utils";
 import {
   gtagEvent,
@@ -25,9 +28,11 @@ import { Trash2, ShoppingBag, ChevronRight, Loader2, Phone, Tag, X } from "lucid
 
 const schema = z
   .object({
-    name: z.string().min(2, "Unesite ime i prezime"),
+    // Same rules as the server (src/lib/contact-fields.ts) so the user sees
+    // the reason inline instead of a generic 422.
+    name: nameSchema,
     email: z.string().email("Unesite ispravnu e-mail adresu"),
-    phone: z.string().min(8, "Unesite ispravan broj telefona"),
+    phone: phoneSchema,
     wants_delivery: z.boolean().optional(),
     delivery_address: z.string().optional(),
     note: z.string().optional(),
@@ -113,10 +118,62 @@ export default function CartPage() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   const wantsDelivery = watch("wants_delivery") ?? false;
+
+  // Per-product delivery. Cart items carry a snapshot from when they were
+  // added, but fees can change in admin and carts persisted before this
+  // feature have none, so re-read the live values once per cart composition.
+  // The server recomputes everything anyway; this only drives the UI.
+  const [freshDelivery, setFreshDelivery] = useState<Record<
+    string,
+    { available: boolean; fee: number }
+  > | null>(null);
+  const productIdsKey = Array.from(new Set(items.map((i) => i.productId))).sort().join(",");
+  useEffect(() => {
+    if (!productIdsKey) return;
+    let cancelled = false;
+    const supabase = createClient();
+    supabase
+      .from("products")
+      .select("id, delivery_available, delivery_fee")
+      .in("id", productIdsKey.split(","))
+      .then(({ data, error }) => {
+        if (cancelled || error || !data) return;
+        setFreshDelivery(
+          Object.fromEntries(
+            data.map((p) => [
+              p.id,
+              { available: p.delivery_available, fee: Number(p.delivery_fee ?? 0) },
+            ])
+          )
+        );
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [productIdsKey]);
+
+  const deliveryQuote = resolveDelivery(
+    items.map((i) => ({
+      productName: i.productName,
+      deliveryAvailable: freshDelivery?.[i.productId]?.available ?? i.deliveryAvailable,
+      deliveryFee: freshDelivery?.[i.productId]?.fee ?? i.deliveryFee,
+    }))
+  );
+  // Only quote a number once we have real data for every line, so a legacy
+  // cart never flashes "(besplatno)" before the fetch lands.
+  const deliveryFeeKnown =
+    freshDelivery !== null || items.every((i) => typeof i.deliveryFee === "number");
+
+  // The cart may change into one that can't be delivered (pickup-only item
+  // added in another tab, admin flipped a flag). Drop the stale tick.
+  useEffect(() => {
+    if (wantsDelivery && !deliveryQuote.available) setValue("wants_delivery", false);
+  }, [wantsDelivery, deliveryQuote.available, setValue]);
 
   // Group items: standalone items + items per bundleId
   const standaloneItems = items.filter((i) => !i.bundleId);
@@ -134,7 +191,7 @@ export default function CartPage() {
   const subtotal = items.reduce((sum, i) => sum + i.totalPrice, 0);
   const bundleDiscountTotal = bundleEntries.reduce((sum, [, g]) => sum + g.discount, 0);
   const totalDeposit = items.reduce((sum, i) => sum + i.depositAmount, 0);
-  const deliveryFee = wantsDelivery ? DELIVERY_FEE : 0;
+  const deliveryFee = wantsDelivery && deliveryQuote.available ? deliveryQuote.fee : 0;
   const promoDiscount = promoCode ? discount : 0;
   const grandTotal =
     Math.max(0, subtotal - bundleDiscountTotal - promoDiscount) + totalDeposit + deliveryFee;
@@ -209,7 +266,6 @@ export default function CartPage() {
           ...data,
           items,
           delivery_type: data.wants_delivery ? "delivery" : "pickup",
-          delivery_fee: data.wants_delivery ? DELIVERY_FEE : 0,
           promo_code: promoCode ?? undefined,
         }),
       });
@@ -332,20 +388,37 @@ export default function CartPage() {
             </div>
 
             <div className="bg-brand-light/50 rounded-lg p-4 space-y-3">
-              <label className="flex items-start gap-2.5 cursor-pointer">
+              <label
+                className={`flex items-start gap-2.5 ${
+                  deliveryQuote.available ? "cursor-pointer" : "cursor-not-allowed opacity-60"
+                }`}
+              >
                 <input
                   {...register("wants_delivery")}
                   type="checkbox"
-                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-brand-primary accent-brand-primary"
+                  disabled={!deliveryQuote.available}
+                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-brand-primary accent-brand-primary disabled:cursor-not-allowed"
                 />
                 <span className="text-sm text-brand-text">
                   <span className="font-semibold">Želim dostavu</span>
-                  <span className="text-brand-muted font-normal"> (+{DELIVERY_FEE} €)</span>
-                  <p className="text-xs text-brand-muted mt-0.5">Dostavljamo na području grada Zagreba i okolice.</p>
+                  {deliveryQuote.available && deliveryFeeKnown && (
+                    <span className="text-brand-muted font-normal">
+                      {" "}
+                      {deliveryQuote.fee > 0 ? `(+${formatPrice(deliveryQuote.fee)})` : "(besplatno)"}
+                    </span>
+                  )}
+                  <p className="text-xs text-brand-muted mt-0.5">{DELIVERY_AREA_NOTE}</p>
                 </span>
               </label>
 
-              {wantsDelivery && (
+              {!deliveryQuote.available && (
+                <p className="text-xs text-amber-900 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+                  Dostava nije moguća za: <strong>{deliveryQuote.blockedBy.join(", ")}</strong>.
+                  Tu opremu preuzimate osobno, pa je za cijeli upit dostupno samo preuzimanje.
+                </p>
+              )}
+
+              {wantsDelivery && deliveryQuote.available && (
                 <div>
                   <label className="block text-sm font-medium text-brand-text mb-1">
                     Adresa dostave *
@@ -523,10 +596,12 @@ export default function CartPage() {
                   <span className="font-medium text-amber-700">{formatPrice(totalDeposit)}</span>
                 </div>
               )}
-              {deliveryFee > 0 && (
+              {wantsDelivery && deliveryQuote.available && (
                 <div className="flex justify-between text-sm">
                   <span className="text-brand-muted">Dostava</span>
-                  <span className="font-medium text-brand-text">{formatPrice(deliveryFee)}</span>
+                  <span className="font-medium text-brand-text">
+                    {deliveryFee > 0 ? formatPrice(deliveryFee) : "Besplatno"}
+                  </span>
                 </div>
               )}
               <div className="flex justify-between pt-2 border-t border-gray-100">

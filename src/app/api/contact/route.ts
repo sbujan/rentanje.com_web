@@ -3,9 +3,12 @@ import { Resend } from "resend";
 import { z } from "zod";
 import { escapeHtml as esc } from "@/lib/escape-html";
 import { checkRateLimit, getRequestIp } from "@/lib/rate-limit";
+import { nameSchema } from "@/lib/contact-fields";
 
 const schema = z.object({
-  name: z.string().min(2).max(100),
+  // Letters/spaces/hyphens/apostrophes only: the name lands in an outbound
+  // e-mail, so free text here would make the form a relay for arbitrary copy.
+  name: nameSchema,
   email: z.string().email().max(200),
   message: z.string().min(5).max(2000),
 });

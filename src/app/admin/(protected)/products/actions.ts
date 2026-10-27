@@ -23,6 +23,8 @@ const productPayloadSchema = z.object({
   requires_deposit: z.boolean(),
   deposit_amount: z.number().nullable(),
   deposit_note: z.string().nullable(),
+  delivery_available: z.boolean(),
+  delivery_fee: z.number().min(0),
   stock_qty: z.number().int().min(0),
   weight_kg: z.number().nullable(),
   hero_image_url: z.string().nullable(),
