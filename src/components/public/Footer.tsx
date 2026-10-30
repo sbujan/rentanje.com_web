@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Phone, Mail } from "lucide-react";
 import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF } from "@/lib/site";
+import { LANDING_PAGES } from "@/lib/landing-pages";
 
 export default function Footer() {
   return (
@@ -49,12 +50,15 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2">
               {[
+                ...LANDING_PAGES.map((l) => ({ href: `/najam/${l.slug}`, label: l.navLabel })),
+                { href: "/najam/kamere-i-dronovi", label: "Kamere i dronovi" },
                 { href: "/najam/audio-video-oprema", label: "Audio i video" },
-                { href: "/najam/oprema-za-evente", label: "Evente i zabava" },
+                { href: "/najam/igre-na-otvorenom", label: "Igre na otvorenom" },
+                { href: "/najam/aparati-za-hranu-i-pice", label: "Aparati za hranu i piće" },
+                { href: "/najam/oprema-za-evente", label: "Oprema za evente" },
                 { href: "/najam/rostilj-kuhanje", label: "Roštilj i kuhanje" },
                 { href: "/najam/kamp-outdoor", label: "Kamp i outdoor" },
                 { href: "/najam/alati-ciscenje", label: "Alati i čišćenje" },
-                { href: "/najam/ostalo", label: "Ostalo" },
               ].map((l) => (
                 <li key={l.href}>
                   <Link

@@ -26,6 +26,19 @@ export function cleanSeoTitle(t: string): string {
 }
 
 /**
+ * Token that SEO copy (product seo_title / seo_description, brand-hub copy)
+ * may contain instead of a hard-coded number. It is replaced with the live
+ * daily rate at render time, so a price change in admin can never leave a
+ * stale "od 20 €/dan" in the SERP.
+ */
+export const PRICE_PLACEHOLDER = "{cijena}";
+
+/** Replace every PRICE_PLACEHOLDER in `text` with the given daily rate. */
+export function fillPrice(text: string, dailyRate: number): string {
+  return text.split(PRICE_PLACEHOLDER).join(String(dailyRate));
+}
+
+/**
  * Build the `title` field for a product page. The root layout template appends
  * " | rentanje.com", so the returned value must never carry its own brand
  * suffix (or the SERP shows it twice). DB `seo_title` values often include the
@@ -36,5 +49,5 @@ export function productTitleField(
   name: string,
   dailyRate: number
 ): string {
-  return cleanSeoTitle(seoTitle ?? `Najam ${name} — od ${dailyRate} €/dan`);
+  return cleanSeoTitle(fillPrice(seoTitle ?? `Najam ${name} od ${dailyRate} €/dan`, dailyRate));
 }

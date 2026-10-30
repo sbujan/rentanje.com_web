@@ -1,4 +1,7 @@
 export const CATEGORY_IMAGES: Record<string, string> = {
+  "kamere-i-dronovi": "/GoPro-paket-iznajmljivanje.png",
+  "igre-na-otvorenom": "/Jenga.jpg",
+  "aparati-za-hranu-i-pice": "/Kokicar.jpg",
   "audio-video-oprema": "/Projektor-s-platnom.jpg",
   "oprema-za-evente": "/Druzenje-na-otvorenom.jpg",
   "rostilj-kuhanje": "/Kulinarski-dozivljaj.jpg",

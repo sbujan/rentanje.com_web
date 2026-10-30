@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { jsonLdSafe } from "@/lib/seo";
+import { sanitizeHtml } from "@/lib/sanitize";
 import ProductCard from "@/components/public/ProductCard";
 import PageHero from "@/components/public/PageHero";
+import FaqAccordion, { normalizeFaq } from "@/components/public/FaqAccordion";
 import { CATEGORY_IMAGES, getCategoryImageUrl } from "@/lib/category-images";
+import type { LandingPageConfig } from "@/lib/landing-pages";
 import type { Database } from "@/types/database";
 import type { ProductWithCategory } from "@/types/product";
 
@@ -13,6 +16,8 @@ type Product = ProductWithCategory;
 interface Props {
   category: Category;
   products: Product[];
+  /** Brand hubs whose breadcrumb parent is this category. */
+  landings?: LandingPageConfig[];
 }
 
 function buildCollectionPageSchema(category: Category, products: Product[]) {
@@ -53,9 +58,11 @@ function buildBreadcrumbSchema(category: Category) {
   };
 }
 
-export default function CategoryPage({ category, products }: Props) {
+export default function CategoryPage({ category, products, landings = [] }: Props) {
   const imageUrl = CATEGORY_IMAGES[category.slug];
   const color = category.color ?? "#6B7280";
+  const faq = normalizeFaq(category.faq);
+  const seoText = category.seo_text?.trim();
 
   return (
     <main>
@@ -81,9 +88,27 @@ export default function CategoryPage({ category, products }: Props) {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-        <p className="text-sm text-brand-muted mb-6">
-          {products.length} {products.length === 1 ? "proizvod" : "proizvoda"} dostupno
-        </p>
+        <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <p className="text-sm text-brand-muted">
+            {products.length} {products.length === 1 ? "proizvod" : "proizvoda"} dostupno
+          </p>
+          {/* Brand hubs: the only internal links into them besides the footer,
+              with the exact anchor the hub targets. */}
+          {landings.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm text-brand-muted">Popularno:</span>
+              {landings.map((l) => (
+                <Link
+                  key={l.slug}
+                  href={`/najam/${l.slug}`}
+                  className="rounded-full border border-gray-200 bg-white px-3 py-1 text-sm font-medium text-brand-text hover:border-brand-primary hover:text-brand-primary transition-colors"
+                >
+                  {l.navLabel}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
 
         {products.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -97,6 +122,18 @@ export default function CategoryPage({ category, products }: Props) {
             <Link href="/oprema" className="text-brand-primary underline">
               Pregledaj svu opremu
             </Link>
+          </div>
+        )}
+
+        {(seoText || faq.length > 0) && (
+          <div className="mt-14 max-w-3xl space-y-10">
+            {seoText && (
+              <div
+                className="prose prose-sm sm:prose-base max-w-none text-brand-text leading-relaxed prose-a:text-brand-primary prose-headings:font-display"
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(seoText) }}
+              />
+            )}
+            <FaqAccordion items={faq} />
           </div>
         )}
 

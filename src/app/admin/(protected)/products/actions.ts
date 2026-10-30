@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireAdmin, NotAuthorizedError } from "@/lib/admin-auth";
+import { getLandingPage } from "@/lib/landing-pages";
 import type { FaqItem } from "@/components/admin/FaqEditor";
 
 const faqItemSchema = z.object({
@@ -59,6 +60,9 @@ function revalidateProductPaths(slug?: string | null) {
   revalidatePath("/oprema");
   revalidatePath("/admin/products");
   if (slug) revalidatePath(`/najam/${slug}`);
+  // Every /najam page (categories and brand hubs) renders product cards, so
+  // a product edit must refresh them too, not just the product's own page.
+  revalidatePath("/najam/[slug]", "page");
 }
 
 export async function saveProduct(
@@ -78,6 +82,11 @@ export async function saveProduct(
   }
 
   const { productId, payload, tagIds, relatedIds } = parsed.data;
+  // /najam/<slug> resolves brand hubs before products, so a product with a
+  // hub's slug would be unreachable.
+  if (getLandingPage(payload.slug)) {
+    return { ok: false, error: `Slug "${payload.slug}" je rezerviran za brand stranicu. Odaberite drugi.` };
+  }
   const isEdit = !!productId;
 
   let id: string;

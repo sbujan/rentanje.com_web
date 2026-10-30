@@ -1,8 +1,9 @@
 // Old WooCommerce product slug → new destination. Single source of truth for
 // every legacy product URL shape (see productRedirects below). Destinations
-// verified against the live production DB; active products map to /najam/:slug,
-// inactive/removed ones fall back to their category listing or /paketi so they
-// never 404 on /najam/[inactive-slug] (that page calls notFound()).
+// verified against the live production DB (2026-10-30). Active products map to
+// /najam/:slug so the old URL's equity lands on the product, not a listing;
+// removed ones fall back to their category or /paketi. A product deactivated
+// later is still safe: /najam/[inactive-slug] 308s to its category.
 const PRODUCT_REDIRECTS = [
   ["gopro-hero-10", "/najam/gopro-hero-10-black-kamera-najam"],
   ["plinska-pec-za-pizzu-ooni-16", "/najam/ooni-koda-16-plinska-pec-pizza-najam"],
@@ -12,16 +13,16 @@ const PRODUCT_REDIRECTS = [
   ["kotao-od-lijevanog-zeljeza-10-l-sa-stalkom", "/najam/kotao-lijevani-zeljezo-10l-stalak-najam"],
   ["kotao-od-lijevanog-zeljeza-10-l-sa-stalkom-2", "/najam/kotao-lijevani-zeljezo-10l-stalak-najam"],
   ["baklja-za-rostilj", "/najam/rostilj-kuhanje"],
-  ["peka-sac", "/najam/rostilj-kuhanje"],
+  ["peka-sac", "/najam/peka-tradicionalna-najam"],
   ["razanj-s-motorom", "/najam/razanj-s-motorom-najam"],
   ["tocionik-za-pivo-6l", "/najam/tocionik-za-pivu-5l-najam"],
   ["firepit-bonfire-2-0", "/najam/solo-stove-bonfire-firepit-najam"],
-  ["velika-jenga", "/najam/oprema-za-evente"],
-  ["cornhole", "/najam/oprema-za-evente"],
+  ["velika-jenga", "/najam/velika-jenga-giant-jenga-igra-najam"],
+  ["cornhole", "/najam/cornhole-igra-najam"],
   ["projektor-sa-platnom", "/najam/projektor-s-platnom-najam"],
   ["paviljon-sator-3x3m", "/najam/paviljon-sator-3x3m-najam"],
-  ["prenosivi-stol-i-2-klupe-za-8-osoba", "/najam/oprema-za-evente"],
-  ["beerpong-stol", "/najam/oprema-za-evente"],
+  ["prenosivi-stol-i-2-klupe-za-8-osoba", "/najam/prijenosni-ratan-stol-klupe-8-osoba-najam"],
+  ["beerpong-stol", "/najam/beer-pong-stol-case-najam"],
   ["blumfeldt-dark-wave-infrared-grijalica", "/najam/blumfeldt-dark-wave-infracrvena-grijalica-najam"],
   ["jbl-partybox-310", "/najam/jbl-partybox-stage-320-prijenosni-party-zvucnik-s-kotacima"],
   ["kulinarski-dozivljaj", "/paketi"],
@@ -29,10 +30,10 @@ const PRODUCT_REDIRECTS = [
   ["pizza-party-ooni-pizza-oven", "/paketi"],
   ["sportski-spektakl", "/paketi"],
   ["sator-za-kampiranje-najam", "/najam/sator-za-kampiranje-za-4-osobe-madraci-pumpa-najam"],
-  ["jbl-bezicni-mikrofoni", "/najam/audio-video-oprema"],
-  ["dji-neo-dron", "/najam/audio-video-oprema"],
+  ["jbl-bezicni-mikrofoni", "/najam/jbl-bezicni-mikrofoni-par-najam"],
+  ["dji-neo-dron", "/najam/dji-neo-motion-fly-more-combo-najam"],
   ["stalak-za-kolace", "/najam/oprema-za-evente"],
-  ["fujifilm-instax-mini-evo", "/najam/audio-video-oprema"],
+  ["fujifilm-instax-mini-evo", "/najam/fujifilm-instax-mini-evo-najam"],
 ];
 
 // Expand each mapping into every legacy URL shape that still appears in GSC:
@@ -122,13 +123,13 @@ const nextConfig = {
       { source: "/rent-grid/",   destination: "/oprema",   permanent: true },
 
       // Old WP categories — semantic mapping to new structure
-      { source: "/product-category/kamere/",                destination: "/najam/audio-video-oprema", permanent: true },
+      { source: "/product-category/kamere/",                destination: "/najam/kamere-i-dronovi", permanent: true },
       { source: "/product-category/dozivljaji/",            destination: "/paketi",                         permanent: true },
       { source: "/product-category/kamping/",               destination: "/najam/kamp-outdoor",        permanent: true },
       { source: "/product-category/proizvodi/",             destination: "/oprema",                         permanent: true },
       { source: "/product-category/proizvodi/page/:n",      destination: "/oprema",                         permanent: true },
       { source: "/product-category/proizvodi/page/:n/",     destination: "/oprema",                         permanent: true },
-      { source: "/product-category/kamere",                 destination: "/najam/audio-video-oprema", permanent: true },
+      { source: "/product-category/kamere",                 destination: "/najam/kamere-i-dronovi", permanent: true },
       { source: "/product-category/dozivljaji",             destination: "/paketi",                         permanent: true },
       { source: "/product-category/kamping",                destination: "/najam/kamp-outdoor",        permanent: true },
       { source: "/product-category/proizvodi",              destination: "/oprema",                         permanent: true },

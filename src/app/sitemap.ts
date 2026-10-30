@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { createPublicClient } from "@/lib/supabase/server";
+import { LANDING_PAGES } from "@/lib/landing-pages";
 
 const BASE = "https://rentanje.com";
 
@@ -58,6 +59,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
+  // Brand hubs live in code config; no meaningful lastmod.
+  const landingPages: MetadataRoute.Sitemap = LANDING_PAGES.map((l) => ({
+    url: `${BASE}/najam/${l.slug}`,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
+
   const productPages: MetadataRoute.Sitemap = (products ?? []).map((p) => ({
     url: `${BASE}/najam/${p.slug}`,
     lastModified: new Date(p.updated_at),
@@ -86,5 +94,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...categoryPages, ...productPages, ...bundlePages, ...blogPages, ...seoPagesEntries];
+  return [...staticPages, ...landingPages, ...categoryPages, ...productPages, ...bundlePages, ...blogPages, ...seoPagesEntries];
 }
