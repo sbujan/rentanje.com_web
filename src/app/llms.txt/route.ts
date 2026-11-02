@@ -1,4 +1,5 @@
 import { createPublicClient } from "@/lib/supabase/server";
+import { LANDING_PAGES } from "@/lib/landing-pages";
 
 export const revalidate = 3600;
 
@@ -23,15 +24,24 @@ export async function GET() {
     })
     .join("\n");
 
+  // Brand hubs use their intro, which carries no price placeholder.
+  const hubLines = LANDING_PAGES.map(
+    (l) => `- [${l.h1}](${BASE}/najam/${l.slug}): ${l.intro}`
+  ).join("\n");
+
   const body = `# Rentanje
 
-> Croatian equipment rental — drones, cameras, sound systems, grills, camping gear, event equipment. Pickup or delivery across Croatia.
+> Croatian equipment rental — drones, cameras, sound systems, grills, camping gear, event equipment. Pickup in Zagreb or delivery across Zagreb and surroundings.
 
 ## Browse
 
 - [Sva oprema](${BASE}/oprema): Complete rental catalog
 - [Paketi](${BASE}/paketi): Curated experience bundles
 - [Blog](${BASE}/blog): Rental guides and articles
+
+## Popular
+
+${hubLines}
 
 ## Categories
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cleanSeoTitle, jsonLdSafe, productTitleField } from "@/lib/seo";
+import { cleanSeoTitle, fillPrice, jsonLdSafe, productTitleField } from "@/lib/seo";
 
 const BRAND = /rentanje\.com/i;
 
@@ -49,7 +49,8 @@ describe("productTitleField", () => {
   // layout template ("%s | rentanje.com") appends it exactly once.
   it("falls back to a brand-free, price-bearing title when seo_title is empty", () => {
     const t = productTitleField(null, "GoPro Hero 10", 20);
-    expect(t).toBe("Najam GoPro Hero 10 — od 20 €/dan");
+    expect(t).toBe("Najam GoPro Hero 10 od 20 €/dan");
+    expect(t).not.toMatch(/[—–]/);
     expect(t).not.toMatch(BRAND);
     expect(t).toContain("20 €/dan");
   });
@@ -63,5 +64,22 @@ describe("productTitleField", () => {
   it("leaves a brand-free DB seo_title untouched", () => {
     expect(productTitleField("Najam DJI Mini 2 drona — 4K video", "DJI Mini 2", 20))
       .toBe("Najam DJI Mini 2 drona — 4K video");
+  });
+});
+
+describe("price placeholder", () => {
+  it("fills {cijena} in a DB seo_title with the live rate", () => {
+    expect(productTitleField("Najam ledomata u Zagrebu od {cijena} €/dan", "Ledomat", 15))
+      .toBe("Najam ledomata u Zagrebu od 15 €/dan");
+  });
+
+  it("fills every occurrence and leaves text without the token alone", () => {
+    expect(fillPrice("od {cijena} €, tj. {cijena} €/dan", 7)).toBe("od 7 €, tj. 7 €/dan");
+    expect(fillPrice("Najam bez cijene", 7)).toBe("Najam bez cijene");
+  });
+
+  it("still strips a brand suffix after filling", () => {
+    expect(productTitleField("Najam peke od {cijena} €/dan | rentanje.com", "Peka", 7))
+      .toBe("Najam peke od 7 €/dan");
   });
 });

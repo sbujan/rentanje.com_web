@@ -86,8 +86,10 @@ await redirect("/proizvod/jbl-partybox-310", "/najam/jbl-partybox-stage-320-prij
 await redirect("/product/stalak-za-kolace/", "/najam/oprema-za-evente");
 await redirect("/proizvod/ledomat/", "/najam/ledomat-aparat-za-led-najam");
 await redirect("/proizvod/dji-mavic-mini-2-fly-more", "/najam/dji-mini-2-dron-fly-more-najam");
-await redirect("/proizvod/cornhole", "/najam/oprema-za-evente");
-await redirect("/product-category/kamere/", "/najam/audio-video-oprema");
+await redirect("/proizvod/cornhole", "/najam/cornhole-igra-najam");
+await redirect("/product/jbl-bezicni-mikrofoni/", "/najam/jbl-bezicni-mikrofoni-par-najam");
+await redirect("/proizvod/beerpong-stol", "/najam/beer-pong-stol-case-najam");
+await redirect("/product-category/kamere/", "/najam/kamere-i-dronovi");
 await redirect("/oprema?cat=rostilj-kuhanje", "/najam/rostilj-kuhanje");
 await redirect("/basket", "/upit");
 await redirect("/home-2", "/");

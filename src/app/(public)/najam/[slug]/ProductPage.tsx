@@ -1,17 +1,17 @@
 import Link from "next/link";
 import { sanitizeHtml } from "@/lib/sanitize";
-import { jsonLdSafe } from "@/lib/seo";
+import { fillPrice, jsonLdSafe } from "@/lib/seo";
 import { effectiveDailyRate } from "@/lib/pricing";
 import { deliverySpecValue } from "@/lib/delivery";
-import { ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import AddToCartCard from "@/components/public/AddToCartCard";
 import ProductCard from "@/components/public/ProductCard";
 import ViewTracker from "@/components/public/ViewTracker";
 import ImageLightbox from "@/components/public/ImageLightbox";
+import FaqAccordion, { normalizeFaq } from "@/components/public/FaqAccordion";
+import { descriptionToHtml } from "@/lib/description-html";
 import type { AvailabilityRecord } from "@/lib/availability";
 import type { ProductWithCategory } from "@/types/product";
-
-interface FaqItem { question: string; answer: string; }
 
 type Product = ProductWithCategory;
 export type ProductTag = { id: string; name: string; color: string | null; slug: string };
@@ -21,6 +21,8 @@ interface Props {
   availability: AvailabilityRecord[];
   tags: ProductTag[];
   relatedProducts?: Product[];
+  /** Brand hubs this product belongs to (e.g. "Sve GoPro kamere"). */
+  hubLinks?: { href: string; label: string }[];
 }
 
 /** Narrow the Json `schema_json` field to a brand name, if one is present. */
@@ -68,18 +70,6 @@ function buildProductSchema(product: Product) {
   };
 }
 
-function buildFaqSchema(faqs: FaqItem[]) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((f) => ({
-      "@type": "Question",
-      name: f.question,
-      acceptedAnswer: { "@type": "Answer", text: f.answer },
-    })),
-  };
-}
-
 function buildBreadcrumbSchema(product: Product) {
   return {
     "@context": "https://schema.org",
@@ -95,7 +85,7 @@ function buildBreadcrumbSchema(product: Product) {
   };
 }
 
-export default function ProductPage({ product, availability, tags, relatedProducts = [] }: Props) {
+export default function ProductPage({ product, availability, tags, relatedProducts = [], hubLinks = [] }: Props) {
   const specs = [
     product.weight_kg ? { label: "Težina", value: `${product.weight_kg} kg` } : null,
     product.dimensions_cm ? { label: "Dimenzije", value: `${product.dimensions_cm} cm` } : null,
@@ -106,7 +96,10 @@ export default function ProductPage({ product, availability, tags, relatedProduc
     { label: "Dostava", value: deliverySpecValue(product.delivery_available, product.delivery_fee) },
   ].filter(Boolean) as { label: string; value: string }[];
 
-  const faq: FaqItem[] = product.faq ?? [];
+  // FAQ answers may quote the price as {cijena}; fill it with the live rate.
+  const rate = effectiveDailyRate(product);
+  const faq = normalizeFaq(product.faq).map((f) => ({ ...f, answer: fillPrice(f.answer, rate) }));
+  const descriptionHtml = descriptionToHtml(product.description);
 
   return (
     <>
@@ -119,12 +112,6 @@ export default function ProductPage({ product, availability, tags, relatedProduc
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdSafe(buildBreadcrumbSchema(product)) }}
       />
-      {faq.length > 0 && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: jsonLdSafe(buildFaqSchema(faq)) }}
-        />
-      )}
 
       <ViewTracker
         product={{
@@ -171,6 +158,15 @@ export default function ProductPage({ product, availability, tags, relatedProduc
                   {product.categories.name}
                 </Link>
               )}
+              {hubLinks.map((h) => (
+                <Link
+                  key={h.href}
+                  href={h.href}
+                  className="ml-3 inline-flex items-center text-sm font-semibold text-brand-primary mb-3 hover:underline"
+                >
+                  {h.label}
+                </Link>
+              ))}
 
               <h1 className="font-display text-3xl sm:text-4xl font-bold text-brand-text leading-tight">
                 {product.name}
@@ -214,19 +210,19 @@ export default function ProductPage({ product, availability, tags, relatedProduc
                 <ImageLightbox
                   images={[product.hero_image_url, ...(product.images ?? [])]}
                   alts={[product.hero_image_alt, ...(product.image_alts ?? [])]}
-                  alt={`${product.name} za iznajmljivanje — rentanje.com`}
+                  alt={`${product.name}, najam u Zagrebu`}
                 />
               </div>
             )}
 
             {/* Description */}
-            {product.description && (
+            {descriptionHtml && (
               <div className="space-y-2">
                 <h2 className="font-display font-bold text-lg text-brand-text">Opis</h2>
                 <div
-                  className="prose prose-sm max-w-none text-brand-text leading-relaxed"
+                  className="prose prose-sm max-w-none text-brand-text leading-relaxed prose-a:text-brand-primary"
                   dangerouslySetInnerHTML={{
-                    __html: sanitizeHtml(product.description),
+                    __html: sanitizeHtml(descriptionHtml),
                   }}
                 />
               </div>
@@ -250,25 +246,8 @@ export default function ProductPage({ product, availability, tags, relatedProduc
               </div>
             )}
 
-            {/* FAQ accordion */}
-            {faq.length > 0 && (
-              <div className="space-y-2">
-                <h2 className="font-display font-bold text-lg text-brand-text">Često postavljena pitanja</h2>
-                <div className="divide-y divide-gray-100 border border-gray-100 rounded-lg overflow-hidden">
-                  {faq.map((item, i) => (
-                    <details key={i} className="group bg-white">
-                      <summary className="flex items-center justify-between px-4 py-3 cursor-pointer list-none font-medium text-brand-text text-sm hover:bg-gray-50 transition-colors">
-                        {item.question}
-                        <ChevronDown className="h-4 w-4 text-brand-muted flex-shrink-0 ml-2 transition-transform group-open:rotate-180" />
-                      </summary>
-                      <div className="px-4 pb-4 text-sm text-brand-muted leading-relaxed">
-                        {item.answer}
-                      </div>
-                    </details>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* FAQ accordion + FAQPage JSON-LD */}
+            <FaqAccordion items={faq} />
           </div>
 
           {/* RIGHT COLUMN — sticky; scroll-mt clears the sticky navbar on #rezervacija jumps */}

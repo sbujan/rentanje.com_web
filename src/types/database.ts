@@ -43,6 +43,10 @@ export interface Database {
           sort_order: number;
           seo_title: string | null;
           seo_description: string | null;
+          /** HTML intro rendered under the product grid (sanitized). */
+          seo_text: string | null;
+          /** [{question, answer}] rendered as accordion + FAQPage JSON-LD. */
+          faq: Array<{ question: string; answer: string }> | null;
           created_at: string;
         };
         Insert: {
@@ -55,6 +59,8 @@ export interface Database {
           sort_order?: number;
           seo_title?: string | null;
           seo_description?: string | null;
+          seo_text?: string | null;
+          faq?: Array<{ question: string; answer: string }> | null;
         };
         Update: {
           name?: string;
@@ -65,6 +71,8 @@ export interface Database {
           sort_order?: number;
           seo_title?: string | null;
           seo_description?: string | null;
+          seo_text?: string | null;
+          faq?: Array<{ question: string; answer: string }> | null;
         };
         Relationships: [];
       };
