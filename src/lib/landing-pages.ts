@@ -6,7 +6,7 @@
  * then own the model queries ("najam gopro 13") and categories stop
  * competing with both.
  *
- * Kept as config in code rather than a DB table: there are two of them, all
+ * Kept as config in code rather than a DB table: there are only a few, all
  * SEO copy already ships through git, and a table would have to deploy ahead
  * of the code that reads it. If the owner ever needs to edit hubs in admin,
  * move this into a `landing_pages` table (migration first).
@@ -60,6 +60,10 @@ const JBL_PARTYBOX = "8bf63234-375e-41f5-8f7d-d9421620fe5c"; // jbl-partybox-sta
 const JBL_CHARGE_3 = "6e6de470-74be-423f-b720-9208930102b3"; // jbl-charge-3-bluetooth-zvucnik-najam
 const JBL_MICS = "f6abe189-594a-4836-8a9f-b057dbd31c85"; // jbl-bezicni-mikrofoni-par-najam
 const SPEAKER_STAND = "b0c794b4-bc26-4fa8-aa07-01adfbf907db"; // stalak-za-zvucnik-tripod-najam
+const DJI_POCKET_3 = "176566e9-c50c-43d7-891c-ed1779b591ad"; // dji-osmo-pocket-3-najam
+const DJI_MINI_2 = "34eae4aa-b521-4b8c-a701-7d825219c01f"; // dji-mini-2-dron-fly-more-najam
+const DJI_NEO = "f188072d-4881-4396-88b6-a9927602921d"; // dji-neo-motion-fly-more-combo-najam
+const DJI_POWER_1000 = "5cb9619b-bca7-4037-b2f5-f3e15cb55555"; // dji-power-1000-mini-stanica-napajanje-powerbank-najam
 
 const DELIVERY_ANSWER =
   "Da. Dostavljamo na području Zagreba i okolice, a cijena dostave navedena je uz svaki proizvod. Izvan Zagreba cijena dostave je na upit. Opremu možete i osobno preuzeti u Zagrebu.";
@@ -218,6 +222,79 @@ export const LANDING_PAGES: LandingPageConfig[] = [
         question: "Koliki je minimalni najam?",
         answer:
           "JBL PartyBox Stage 320 i stalak iznajmljuju se već od jednog dana. JBL Charge 3 i JBL bežični mikrofoni iznajmljuju se na minimalno 3 dana.",
+      },
+      { question: "Mogu li dobiti dostavu?", answer: DELIVERY_ANSWER },
+    ],
+  },
+  {
+    slug: "dji",
+    h1: "Najam DJI opreme u Zagrebu",
+    seoTitle: "Najam DJI u Zagrebu od {cijena} €/dan",
+    seoDescription:
+      "Najam i iznajmljivanje DJI opreme u Zagrebu od {cijena} €/dan: Osmo Action 5 Pro, Osmo Pocket 3, dronovi Mini 2 i Neo te stanica Power 1000 Mini.",
+    intro:
+      "Iznajmljivanje DJI kamera, dronova i prijenosne stanice za napajanje. Usporedite modele, odaberite datume i rezervirajte online.",
+    productIds: [DJI_ACTION_5, DJI_POCKET_3, DJI_MINI_2, DJI_NEO, DJI_POWER_1000],
+    brandProductIds: [DJI_ACTION_5, DJI_POCKET_3, DJI_MINI_2, DJI_NEO, DJI_POWER_1000],
+    parentCategorySlug: "kamere-i-dronovi",
+    navLabel: "Najam DJI",
+    productLinkLabel: "Sva DJI oprema",
+    heroImage: "/najam-dji-neo.jpg",
+    bodyHtml: `<h2>Koji DJI model odabrati?</h2>
+<p>U ponudi imamo dvije DJI kamere, dva drona i prijenosnu stanicu za napajanje. Svi se iznajmljuju već od jednog dana.</p>
+<table>
+<thead><tr><th>Model</th><th>Vrsta</th><th>Ključno</th><th>Najbolje za</th></tr></thead>
+<tbody>
+<tr><td>DJI Osmo Action 5 Pro</td><td>Akcijska kamera</td><td>Senzor 1/1.3 inča, 4K pri 120 fps, baterija do 4 h, vodootporna do 20 m</td><td>More, sport i putovanja</td></tr>
+<tr><td>DJI Osmo Pocket 3</td><td>Gimbal kamera</td><td>Senzor od 1 inča, 4K pri 120 fps, 3-osni gimbal, rotirajući ekran</td><td>Vlogovi, evente i vertikalni video</td></tr>
+<tr><td>DJI Mini 2 Fly More</td><td>Dron</td><td>249 g, 4K video, 3 baterije za do 93 minute leta, domet do 10 km</td><td>Snimke iz zraka, putovanja, nekretnine i vjenčanja</td></tr>
+<tr><td>DJI Neo Motion Fly More</td><td>Selfie dron</td><td>135 g, polijeće s dlana, naočale Goggles N3, 3 baterije za oko 54 minute leta</td><td>Vlogovi i kreativne snimke</td></tr>
+<tr><td>DJI Power 1000 Mini</td><td>Stanica za napajanje</td><td>1024 Wh, izlaz do 2200 W, AC, USB-C i USB-A priključci</td><td>Evente, kamp i snimanja bez struje</td></tr>
+</tbody>
+</table>
+<h2>DJI kamere</h2>
+<p><a href="/najam/dji-osmo-action-5-pro-najam">DJI Osmo Action 5 Pro</a> je akcijska kamera za vodu i sport. Vodootporna je do 20 metara bez kućišta, baterija traje do 4 sata, a ima i 64 GB ugrađene memorije. <a href="/najam/dji-osmo-pocket-3-najam">DJI Osmo Pocket 3</a> ima mehanički 3-osni gimbal za mirnu sliku iz ruke i rotirajući ekran koji brzo prebacuje na vertikalni video za TikTok i Reels. Pocket 3 nije vodootporan, pa za more i kišu odaberite Action 5 Pro.</p>
+<h2>DJI dronovi</h2>
+<p><a href="/najam/dji-mini-2-dron-fly-more-najam">DJI Mini 2 Fly More</a> teži 249 g, snima 4K video i dolazi s tri baterije za do 93 minute leta, punjačem, zaštitom za propelere i torbom. <a href="/najam/dji-neo-motion-fly-more-combo-najam">DJI Neo Motion Fly More</a> teži samo 135 g i polijeće s dlana, a u kompletu su naočale DJI Goggles N3, kontroler RC Motion 3 i tri baterije. Propeleri su mu potpuno zatvoreni, pa je siguran i za letenje u zatvorenom. Prije leta provjerite važeća pravila za letenje dronom.</p>
+<h2>Struja bilo gdje</h2>
+<p><a href="/najam/dji-power-1000-mini-stanica-napajanje-powerbank-najam">DJI Power 1000 Mini</a> ima kapacitet 1024 Wh i izlaz do 2200 W, pa napaja laptope, kamere, dronove, projektore i zvučnike na lokacijama bez struje. Od 0 do 80 % puni se za oko 50 minuta.</p>
+<h2>Kako funkcionira iznajmljivanje DJI opreme</h2>
+<p>Odaberite datume u kalendaru na stranici proizvoda, dodajte ga u košaricu i pošaljite upit. Odgovaramo u roku od jednog radnog dana. Opremu preuzimate osobno u Zagrebu ili je dostavljamo na adresu u Zagrebu i okolici. Ostale modele pogledajte u kategoriji <a href="/najam/kamere-i-dronovi">kamere i dronovi</a>, a akcijske kamere drugog brenda na stranici <a href="/najam/gopro-kamere">najam GoPro kamere</a>.</p>`,
+    faq: [
+      {
+        question: "Koliko košta najam DJI opreme?",
+        answer:
+          "Najam DJI opreme u Zagrebu kreće od {cijena} eura dnevno. Najam na 3 ili 7 dana povoljniji je po danu, a točnu cijenu za odabrane datume vidite u kalendaru na stranici proizvoda.",
+      },
+      {
+        question: "Mogu li iznajmiti DJI dron?",
+        answer:
+          "Da. Iznajmljujemo DJI Mini 2 Fly More s tri baterije za do 93 minute leta i selfie dron DJI Neo Motion Fly More s naočalama DJI Goggles N3 i kontrolerom RC Motion 3.",
+      },
+      {
+        question: "Koju DJI kameru odabrati za more?",
+        answer:
+          "Odaberite DJI Osmo Action 5 Pro, koja je vodootporna do 20 metara bez kućišta. DJI Osmo Pocket 3 nije vodootporan, pa ga treba držati podalje od kiše, mora i bazena.",
+      },
+      {
+        question: "Koja je razlika između DJI Osmo Action 5 Pro i Osmo Pocket 3?",
+        answer:
+          "Osmo Action 5 Pro je izdržljiva akcijska kamera za vodu i sport s baterijom do 4 sata. Osmo Pocket 3 ima veći senzor od 1 inča i mehanički gimbal, pa je bolji izbor za vlogove, evente i snimanje iz ruke.",
+      },
+      {
+        question: "Što dobivam uz DJI dron u najmu?",
+        answer:
+          "Uz DJI Mini 2 Fly More dobivate 3 baterije, punjač, zaštitu za propelere, rezervne propelere i torbu. Uz DJI Neo Motion Fly More dobivate naočale DJI Goggles N3, kontroler RC Motion 3 i 3 baterije.",
+      },
+      {
+        question: "Trebam li dozvolu za letenje dronom?",
+        answer:
+          "Pravila ovise o dronu i mjestu letenja. Prije leta provjerite važeće propise na stranicama Hrvatske agencije za civilno zrakoplovstvo.",
+      },
+      {
+        question: "Koliki je minimalni najam DJI opreme?",
+        answer:
+          "Svi DJI modeli iznajmljuju se već od jednog dana. Za vikend ili putovanje isplativiji je najam na 3 ili 7 dana.",
       },
       { question: "Mogu li dobiti dostavu?", answer: DELIVERY_ANSWER },
     ],

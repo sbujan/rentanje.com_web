@@ -56,6 +56,16 @@ describe("LANDING_PAGES", () => {
     );
   });
 
+  it("spans categories on the DJI hub: every DJI product links back to it", () => {
+    const dji = getLandingPage("dji")!;
+    expect(dji.productIds).toHaveLength(5);
+    for (const id of dji.productIds) {
+      expect(landingPagesForProduct(id).map((l) => l.slug)).toContain("dji");
+    }
+    expect(dji.seoTitle.startsWith("Najam DJI")).toBe(true);
+    expect(dji.seoDescription).toContain("iznajmljivanje DJI");
+  });
+
   it("has a complete FAQ", () => {
     for (const l of LANDING_PAGES) {
       expect(l.faq.length, l.slug).toBeGreaterThanOrEqual(6);
@@ -72,10 +82,10 @@ describe("lookups", () => {
     const gopro = getLandingPage("gopro-kamere")!;
     expect(gopro).toBeDefined();
     expect(getLandingPage("nepostoji")).toBeUndefined();
-    expect(landingPagesForCategory("kamere-i-dronovi").map((l) => l.slug)).toEqual(["gopro-kamere"]);
+    expect(landingPagesForCategory("kamere-i-dronovi").map((l) => l.slug)).toEqual(["gopro-kamere", "dji"]);
     expect(landingPagesForProduct(gopro.brandProductIds[0]).map((l) => l.slug)).toEqual(["gopro-kamere"]);
     // Alternatives shown on the GoPro hub (e.g. DJI) do not get a "Sve GoPro kamere" backlink.
     const alternative = gopro.productIds.find((id) => !gopro.brandProductIds.includes(id))!;
-    expect(landingPagesForProduct(alternative)).toEqual([]);
+    expect(landingPagesForProduct(alternative).map((l) => l.slug)).not.toContain("gopro-kamere");
   });
 });
