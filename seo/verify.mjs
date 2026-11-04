@@ -93,6 +93,7 @@ await redirect("/product-category/kamere/", "/najam/kamere-i-dronovi");
 await redirect("/oprema?cat=rostilj-kuhanje", "/najam/rostilj-kuhanje");
 await redirect("/basket", "/upit");
 await redirect("/home-2", "/");
+await redirect("/home", "/");
 await redirect("/product/nepostojeci-slug-xyz", "/oprema");   // catch-all
 await redirect("/?product=nepostojeci-slug-xyz", "/oprema");  // catch-all
 
@@ -100,6 +101,14 @@ console.log("\n== 410 Gone (spam) ==");
 await gone("/shop/brands/ricardo?id=40107");
 await gone("/Troy-Bilt-Tiller-Parts-Troybilt-Tiller-Parts-946-04626-Forward-1048298");
 await gone("/Ramp-Kalolary-Litter-Box-Ramp-Cat-Steps-Stair-For-Litter-Box-1262321");
+await gone("/8-quot-Drop-Rise-12-500-Lbs-Capacity-With-Double-Ball-2-quot-1394655");
+await gone("/s/sports-fan-shop");
+await gone("/p/credit-service/benefits?acquisitionOrigin=GlbNavFooterBenefits");
+await gone("/wishlist/home");
+await gone("/account/giftcardbalance");
+await gone("/purchases/lookup");
+await gone("/feed");
+await gone("/proizvod/ledomat/feed");
 
 console.log("\n== Sitemap ==");
 try {

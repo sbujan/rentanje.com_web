@@ -102,6 +102,15 @@ const nextConfig = {
   // SEO 301 redirects — old WordPress/WooCommerce URLs → new site
   async redirects() {
     return [
+      // One host only. www served a full copy of the site with a 200, so Google
+      // could crawl and report every URL twice.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.rentanje.com" }],
+        destination: "https://rentanje.com/:path*",
+        permanent: true,
+      },
+
       // Category canonical migration: /oprema?cat=<slug> → /najam/<slug>
       // Captures the cat query string into :slug. Fires before the page function,
       // so it bypasses ISR caching that would otherwise eat in-page redirects.
@@ -141,6 +150,7 @@ const nextConfig = {
       { source: "/checkout",                                        destination: "/upit",                                                             permanent: true },
       { source: "/my-account",                                      destination: "/",                                                                 permanent: true },
       { source: "/home-2",                                          destination: "/",                                                                 permanent: true },
+      { source: "/home",                                            destination: "/",                                                                 permanent: true },
       { source: "/iskusi",                                          destination: "/",                                                                 permanent: true },
       { source: "/isprobaj-2",                                      destination: "/oprema",                                                           permanent: true },
       { source: "/rent-list",                                       destination: "/oprema",                                                           permanent: true },

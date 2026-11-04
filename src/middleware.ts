@@ -1,16 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-
-// Legacy WooCommerce/WordPress spam URLs still indexed in GSC (uppercase-leading,
-// long, digit-suffixed slugs such as /Troy-Bilt-...-1048298) plus the old /shop/*
-// tree. They currently 404; returning 410 Gone tells Google the resources are
-// permanently removed and speeds up deindexing. Live routes are lowercase and
-// live under /najam, /oprema, /blog etc., so this never matches a real page.
-const SPAM_SLUG = /^\/[A-Z][A-Za-z0-9-]*-\d{5,}$/;
-
-function isGone(pathname: string): boolean {
-  return pathname.startsWith("/shop/") || pathname === "/shop" || SPAM_SLUG.test(pathname);
-}
+import { isGone } from "@/lib/gone-urls";
 
 export async function middleware(request: NextRequest) {
   // Early-return BEFORE creating the Supabase client so no auth/cookie work
@@ -80,10 +70,19 @@ function copyCookies(from: NextResponse, to: NextResponse) {
 export const config = {
   matcher: [
     "/admin/:path*",
+    // Spam paths answered with 410 by isGone() in src/lib/gone-urls.ts. Keep in
+    // sync with that module: Next requires this list to be a literal.
     "/shop/:path*",
-    // Uppercase-leading slug ending in 5+ digits (spam). Uses explicit \d\d\d\d\d+
-    // instead of \d{5,} to avoid path-to-regexp's brace parsing; the precise
-    // \d{5,} check lives in isGone(). Middleware still early-returns for these.
-    "/:slug([A-Z][A-Za-z0-9\\-]*\\-\\d\\d\\d\\d\\d+)",
+    "/s/:path*",
+    "/p/:path*",
+    "/ce/:path*",
+    "/wishlist/:path*",
+    "/account/:path*",
+    "/purchases/:path*",
+    "/feed",
+    "/proizvod/:slug/feed",
+    // Root-level slug ending in 5+ digits. Uses explicit \d\d\d\d\d+ instead of
+    // \d{5,} to avoid path-to-regexp's brace parsing.
+    "/:slug([A-Za-z0-9][A-Za-z0-9\\-]*\\-\\d\\d\\d\\d\\d+)",
   ],
 };
