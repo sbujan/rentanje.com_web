@@ -11,26 +11,28 @@ import { Star, ArrowRight, Zap, Truck, BadgeCent } from "lucide-react";
 
 export const revalidate = 3600;
 
+const HOME_TITLE = "Najam opreme u Zagrebu: kamere, zvučnici, igre | rentanje.com";
+const HOME_DESCRIPTION =
+  "Iznajmite GoPro i DJI kamere, JBL zvučnike, roštilje, šatore i igre za evente u Zagrebu. Više od 50 proizvoda, online rezervacija, preuzimanje ili dostava.";
+
 export const metadata: Metadata = {
   // `absolute` bypasses the layout template so the homepage isn't double-suffixed.
-  title: { absolute: "Najam opreme u Zagrebu — kamere, kamp, event | rentanje.com" },
-  description:
-    "Iznajmite audio, video, event, roštilj, kamp i outdoor opremu u Zagrebu. Brza dostava, povoljne cijene. Pošaljite upit danas!",
+  title: { absolute: HOME_TITLE },
+  description: HOME_DESCRIPTION,
   alternates: { canonical: "https://rentanje.com/" },
   openGraph: {
-    title: "Najam opreme u Zagrebu — kamere, kamp, event | rentanje.com",
-    description:
-      "Iznajmite audio, video, event, roštilj, kamp i outdoor opremu u Zagrebu. Brza dostava, povoljne cijene.",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
     url: "https://rentanje.com/",
     siteName: "rentanje.com",
     type: "website",
     locale: "hr_HR",
-    images: [{ url: "/rentanje-najam-zagreb-iznajmi.jpg", width: 1254, height: 1254, alt: "RENTANJE.COM — Ne kupuj, iznajmi." }],
+    images: [{ url: "/rentanje-najam-zagreb-iznajmi.jpg", width: 1254, height: 1254, alt: "RENTANJE.COM: Ne kupuj, iznajmi." }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Najam opreme u Zagrebu — kamere, kamp, event | rentanje.com",
-    description: "Iznajmite audio, video, event, roštilj, kamp i outdoor opremu u Zagrebu.",
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
     images: ["/rentanje-najam-zagreb-iznajmi.jpg"],
   },
 };

@@ -16,11 +16,11 @@ const openSans = Open_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "rentanje.com — Iznajmljivanje opreme",
+    default: "Iznajmljivanje opreme u Zagrebu | rentanje.com",
     template: "%s | rentanje.com",
   },
   description:
-    "Iznajmite opremu za evente, roštilj, kamp, audio i video — brzo i povoljno. List 360 d.o.o. | rentanje.com",
+    "Iznajmite kamere, zvučnike, roštilje, šatore i opremu za evente u Zagrebu. Online rezervacija, preuzimanje ili dostava.",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://rentanje.com"
   ),
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
         url: "/rentanje-najam-zagreb-iznajmi.jpg",
         width: 1254,
         height: 1254,
-        alt: "RENTANJE.COM — Ne kupuj, iznajmi.",
+        alt: "RENTANJE.COM: Ne kupuj, iznajmi.",
       },
     ],
   },
@@ -41,10 +41,15 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     images: ["/rentanje-najam-zagreb-iznajmi.jpg"],
   },
+  // Google needs a square icon reachable from the homepage. Fixed file names in
+  // public/, not Next's hashed app/icon files, so the URLs never change.
   icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
-    shortcut: "/favicon.svg",
-    apple: "/favicon.svg",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
   },
   verification: {
     google: "A9x73begeWeFmlYNJ0yZpaPPUDQMZPkGcvdyS8M69CY",
