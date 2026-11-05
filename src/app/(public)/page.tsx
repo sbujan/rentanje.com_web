@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { createPublicClient } from "@/lib/supabase/server";
 import { jsonLdSafe } from "@/lib/seo";
+import { SOCIAL_LINKS } from "@/lib/site";
 import type { ProductWithCategory } from "@/types/product";
 import ProductCard from "@/components/public/ProductCard";
 import { CategoryAccordion } from "@/components/ui/interactive-image-accordion";
@@ -40,7 +41,8 @@ export const metadata: Metadata = {
 const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  name: "rentanje.com — List 360 d.o.o.",
+  name: "Rentanje.com",
+  legalName: "List 360 d.o.o.",
   telephone: "+385952044414",
   email: "info@rentanje.com",
   url: "https://rentanje.com",
@@ -53,12 +55,13 @@ const localBusinessSchema = {
   openingHours: "Mo-Su 08:00-20:00",
   priceRange: "€€",
   description: "Iznajmljivanje opreme za evente, roštilj, kamp i audio/video u Hrvatskoj.",
+  sameAs: Object.values(SOCIAL_LINKS),
 };
 
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "rentanje.com",
+  name: "Rentanje.com",
   legalName: "List 360 d.o.o.",
   url: "https://rentanje.com",
   logo: "https://rentanje.com/logo.png",
@@ -70,6 +73,7 @@ const organizationSchema = {
     addressLocality: "Zagreb",
     streetAddress: "Naserov trg 4",
   },
+  sameAs: Object.values(SOCIAL_LINKS),
 };
 
 const whyUs = [

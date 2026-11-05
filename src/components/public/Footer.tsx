@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Phone, Mail } from "lucide-react";
-import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF } from "@/lib/site";
+import { Phone, Mail, Facebook, Instagram } from "lucide-react";
+import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF, SOCIAL_LINKS } from "@/lib/site";
 import { LANDING_PAGES } from "@/lib/landing-pages";
 
 export default function Footer() {
@@ -39,6 +39,26 @@ export default function Footer() {
               >
                 <Mail className="h-4 w-4" />
                 info@rentanje.com
+              </a>
+            </div>
+            <div className="mt-4 flex items-center gap-2">
+              <a
+                href={SOCIAL_LINKS.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Rentanje.com na Facebooku"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/80 transition-colors hover:bg-brand-primary hover:text-white"
+              >
+                <Facebook className="h-4 w-4" />
+              </a>
+              <a
+                href={SOCIAL_LINKS.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Rentanje.com na Instagramu"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/80 transition-colors hover:bg-brand-primary hover:text-white"
+              >
+                <Instagram className="h-4 w-4" />
               </a>
             </div>
           </div>

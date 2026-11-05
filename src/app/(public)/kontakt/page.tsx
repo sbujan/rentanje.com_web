@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from "lucide-react";
 import PageHero from "@/components/public/PageHero";
 import KontaktForm from "./KontaktForm";
-import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF } from "@/lib/site";
+import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF, SOCIAL_LINKS } from "@/lib/site";
 
 // Layout template appends "| rentanje.com" to the bare title.
 const TITLE = "Kontakt";
@@ -93,6 +93,36 @@ export default function KontaktPage() {
                   <p className="font-medium text-brand-text">Svaki dan, 8–20h</p>
                 </div>
               </div>
+
+              <a
+                href={SOCIAL_LINKS.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 hover:text-brand-primary transition-colors group"
+              >
+                <div className="h-9 w-9 rounded-full bg-brand-primary/10 flex items-center justify-center group-hover:bg-brand-primary/20 transition-colors">
+                  <Facebook className="h-4 w-4 text-brand-primary" />
+                </div>
+                <div>
+                  <p className="text-xs text-brand-muted">Facebook</p>
+                  <p className="font-medium text-brand-text">rentanjehr</p>
+                </div>
+              </a>
+
+              <a
+                href={SOCIAL_LINKS.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 hover:text-brand-primary transition-colors group"
+              >
+                <div className="h-9 w-9 rounded-full bg-brand-primary/10 flex items-center justify-center group-hover:bg-brand-primary/20 transition-colors">
+                  <Instagram className="h-4 w-4 text-brand-primary" />
+                </div>
+                <div>
+                  <p className="text-xs text-brand-muted">Instagram</p>
+                  <p className="font-medium text-brand-text">@rentanje_hr</p>
+                </div>
+              </a>
             </div>
 
             <div className="bg-white border border-gray-100 rounded-xl p-5">
