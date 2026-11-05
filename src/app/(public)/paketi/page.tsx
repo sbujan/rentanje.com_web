@@ -10,20 +10,20 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   // Layout template appends "| rentanje.com".
-  title: "Paketi opreme za najam — event, roštilj, kamp",
+  title: "Paketi opreme za najam: event, roštilj, kamp",
   description:
     "Iznajmite gotove pakete opreme za evente, roštilj, kamp i zabavu. Sve u jednom, uz popust. | rentanje.com",
   alternates: { canonical: "https://rentanje.com/paketi" },
   openGraph: {
-    title: "Paketi opreme za najam — event, roštilj, kamp | rentanje.com",
-    description: "Gotove kombinacije opreme za vaš event, roštilj ili kamp izlet — sve u jednom, uz popust.",
+    title: "Paketi opreme za najam: event, roštilj, kamp | rentanje.com",
+    description: "Gotove kombinacije opreme za vaš event, roštilj ili kamp izlet, sve u jednom i uz popust.",
     url: "https://rentanje.com/paketi",
     siteName: "rentanje.com",
     type: "website",
     locale: "hr_HR",
-    images: [{ url: "/rentanje-najam-zagreb-iznajmi.jpg", width: 1254, height: 1254, alt: "RENTANJE.COM — Ne kupuj, iznajmi." }],
+    images: [{ url: "/rentanje-najam-zagreb-iznajmi.jpg", width: 1254, height: 1254, alt: "RENTANJE.COM: ne kupuj, iznajmi." }],
   },
-  twitter: { card: "summary_large_image", title: "Paketi opreme za najam — event, roštilj, kamp | rentanje.com", images: ["/rentanje-najam-zagreb-iznajmi.jpg"] },
+  twitter: { card: "summary_large_image", title: "Paketi opreme za najam: event, roštilj, kamp | rentanje.com", images: ["/rentanje-najam-zagreb-iznajmi.jpg"] },
 };
 
 export default async function PaketiPage() {
@@ -42,7 +42,7 @@ export default async function PaketiPage() {
     <main>
       <PageHero
         title="Paketi za iznajmljivanje"
-        subtitle="Gotove kombinacije opreme za vaš event, roštilj ili kamp izlet — sve u jednom, uz popust."
+        subtitle="Gotove kombinacije opreme za vaš event, roštilj ili kamp izlet, sve u jednom i uz popust."
         breadcrumbs={[{ href: "/", label: "Početna" }, { label: "Paketi" }]}
         color="#FF6B6B"
       />

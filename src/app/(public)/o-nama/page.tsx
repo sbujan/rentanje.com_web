@@ -8,22 +8,22 @@ export const metadata: Metadata = {
   // Layout template appends "| rentanje.com".
   title: "O nama",
   description:
-    "Saznajte više o rentanje.com — Zagreb. Iznajmljujemo audio/video, event, roštilj, kamp i outdoor opremu. List 360 d.o.o.",
+    "Saznajte više o rentanje.com iz Zagreba. Iznajmljujemo audio/video, event, roštilj, kamp i outdoor opremu. List 360 d.o.o.",
   alternates: { canonical: "https://rentanje.com/o-nama" },
   openGraph: {
     title: "O nama | rentanje.com",
-    description: "Saznajte više o rentanje.com — iznajmljivanje opreme iz Zagreba. List 360 d.o.o.",
+    description: "Saznajte više o rentanje.com, iznajmljivanju opreme iz Zagreba. List 360 d.o.o.",
     url: "https://rentanje.com/o-nama",
     siteName: "rentanje.com",
     type: "website",
     locale: "hr_HR",
-    images: [{ url: "/rentanje-najam-zagreb-iznajmi.jpg", width: 1254, height: 1254, alt: "RENTANJE.COM — Ne kupuj, iznajmi." }],
+    images: [{ url: "/rentanje-najam-zagreb-iznajmi.jpg", width: 1254, height: 1254, alt: "RENTANJE.COM: ne kupuj, iznajmi." }],
   },
   twitter: { card: "summary", title: "O nama | rentanje.com", images: ["/rentanje-najam-zagreb-iznajmi.jpg"] },
 };
 
 const values = [
-  { title: "Brz odgovor", desc: "Odgovaramo na svaki upit u roku od 1 radnog dana, dostupni svaki dan 8–20h." },
+  { title: "Brz odgovor", desc: "Odgovaramo na svaki upit u roku od 1 radnog dana, dostupni svaki dan 8-20h." },
   { title: "Čista i testirana oprema", desc: "Svaki proizvod čistimo i testiramo nakon svakog iznajmljivanja." },
   { title: "Bez skrivenih troškova", desc: "Cijena je cijena. Nema naknade za rezervaciju ni iznenađenja." },
   { title: "Lokalno, iz Zagreba", desc: "Dostupni smo za dostavu i preuzimanje u Zagrebu i okolici." },
@@ -34,7 +34,7 @@ export default function ONamaPage() {
     <main>
       <PageHero
         title="O nama"
-        subtitle="rentanje.com je platforma za iznajmljivanje opreme u Zagrebu i okolici — jednostavna ideja, jednostavan servis."
+        subtitle="rentanje.com je platforma za iznajmljivanje opreme u Zagrebu i okolici. Jednostavna ideja, jednostavan servis."
         breadcrumbs={[{ href: "/", label: "Početna" }, { label: "O nama" }]}
         color="#6EE7B7"
       />
@@ -49,7 +49,7 @@ export default function ONamaPage() {
         </p>
         <p>
           Naš cilj je jednostavan: vi se fokusirate na zabavu, mi brinemo za
-          opremu. Donosimo, preuzimamo, a ako nešto ne radi — nazovite nas i
+          opremu. Donosimo, preuzimamo, a ako nešto ne radi, nazovite nas i
           riješit ćemo problem.
         </p>
       </div>

@@ -41,7 +41,7 @@ export function buildAdminInquiryHtml(params: {
       (item) => `
     <tr>
       <td style="padding:10px 12px;color:#111827;font-weight:500">${esc(item.productName)}<br/><span style="color:#6b7280;font-size:12px;font-weight:400">${item.days} dana · kom: ${item.qty}</span></td>
-      <td style="padding:10px 12px;color:#374151;font-size:13px">${formatDate(item.rentalStart)} – ${formatDate(item.rentalEnd)}</td>
+      <td style="padding:10px 12px;color:#374151;font-size:13px">${formatDate(item.rentalStart)} - ${formatDate(item.rentalEnd)}</td>
       <td style="padding:10px 12px;text-align:right;color:#111827;font-weight:500">${formatPrice(item.totalPrice)}</td>
     </tr>`
     )
@@ -50,7 +50,7 @@ export function buildAdminInquiryHtml(params: {
   return `<!DOCTYPE html><html lang="hr"><body style="font-family:sans-serif;background:#f9fafb;margin:0;padding:32px 0">
 <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb">
   <div style="background:#F05554;padding:24px 32px">
-    <p style="margin:0;color:white;font-size:22px;font-weight:700">rentanje.com — Novi upit</p>
+    <p style="margin:0;color:white;font-size:22px;font-weight:700">rentanje.com: novi upit</p>
     <p style="margin:4px 0 0;color:rgba(255,255,255,0.8);font-size:13px">${esc(inquiryNumber)}</p>
   </div>
   <div style="padding:32px">
@@ -85,7 +85,7 @@ export function buildAdminInquiryHtml(params: {
       <a href="${siteUrl}/admin/upiti/${encodeURIComponent(inquiryId)}" style="display:inline-block;background:#F05554;color:white;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px">Otvori upit u adminu</a>
     </div>
   </div>
-  <div style="padding:16px 32px;background:#f9fafb;border-top:1px solid #e5e7eb;font-size:12px;color:#9ca3af;text-align:center">rentanje.com — Automatska obavijest</div>
+  <div style="padding:16px 32px;background:#f9fafb;border-top:1px solid #e5e7eb;font-size:12px;color:#9ca3af;text-align:center">rentanje.com: automatska obavijest</div>
 </div></body></html>`;
 }
 
@@ -114,7 +114,7 @@ export function buildCustomerConfirmationHtml(params: {
       (item) => `
     <tr style="border-top:1px solid #f3f4f6">
       <td style="padding:10px 12px;color:#111827;font-weight:500">${esc(item.productName)}${item.qty > 1 ? ` <span style="color:#6b7280;font-weight:400">· ${item.qty} kom</span>` : ""}</td>
-      <td style="padding:10px 12px;color:#374151;font-size:13px">${formatDate(item.rentalStart)} – ${formatDate(item.rentalEnd)}</td>
+      <td style="padding:10px 12px;color:#374151;font-size:13px">${formatDate(item.rentalStart)} - ${formatDate(item.rentalEnd)}</td>
       <td style="padding:10px 12px;text-align:right;color:#111827">${formatPrice(item.totalPrice)}</td>
     </tr>`
     )
@@ -153,7 +153,7 @@ export function buildCustomerConfirmationHtml(params: {
     </div>
   </div>
   <div style="padding:16px 32px;background:#f9fafb;border-top:1px solid #e5e7eb;font-size:12px;color:#9ca3af;text-align:center">
-    rentanje.com — List 360 d.o.o. · Zagreb, Hrvatska<br/>Automatska poruka — molimo ne odgovarajte.
+    rentanje.com, List 360 d.o.o. · Zagreb, Hrvatska<br/>Automatska poruka, molimo ne odgovarajte.
   </div>
 </div></body></html>`;
 }

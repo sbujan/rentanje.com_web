@@ -21,7 +21,7 @@ const sortOptions = [
   { value: "sort_order", label: "Preporučeno" },
   { value: "price_asc", label: "Cijena rastuće" },
   { value: "price_desc", label: "Cijena padajuće" },
-  { value: "name_asc", label: "Naziv A–Z" },
+  { value: "name_asc", label: "Naziv A-Z" },
 ];
 
 export default function ProductsClient({ products, categories, activeCategory }: Props) {

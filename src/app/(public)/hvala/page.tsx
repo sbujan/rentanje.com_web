@@ -25,7 +25,7 @@ export default function HvalaPage() {
         detaljima rezervacije.
       </p>
       <p className="text-brand-muted text-sm mb-8">
-        Provjeri e-mail — poslan vam je sažetak upita.
+        Provjeri e-mail, poslan vam je sažetak upita.
       </p>
 
       <div className="bg-brand-light rounded-xl px-6 py-5 mb-8 inline-flex items-center gap-3 mx-auto">

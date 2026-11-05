@@ -35,7 +35,7 @@ export default function HomeCTAContact() {
           <h2 className="font-display text-2xl sm:text-3xl font-bold mb-2">
             Trebate opremu? Javite se!
           </h2>
-          <p className="text-white/80">Odgovaramo u roku od 1 radnog dana, dostupni svaki dan 8–20h.</p>
+          <p className="text-white/80">Odgovaramo u roku od 1 radnog dana, dostupni svaki dan 8-20h.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
@@ -149,7 +149,7 @@ export default function HomeCTAContact() {
               </div>
               <div>
                 <p className="text-xs text-white/60">Dostupnost</p>
-                <p className="font-medium text-white">Svaki dan, 8–20h</p>
+                <p className="font-medium text-white">Svaki dan, 8-20h</p>
               </div>
             </div>
 
@@ -171,7 +171,7 @@ export default function HomeCTAContact() {
             allowFullScreen
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            title="Lokacija — Naserov trg 4, Zagreb"
+            title="Lokacija: Naserov trg 4, Zagreb"
           />
         </div>
       </div>

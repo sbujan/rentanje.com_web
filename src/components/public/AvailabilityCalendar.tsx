@@ -183,7 +183,7 @@ export default function AvailabilityCalendar({
       {range?.from && range.to && (
         <div className="text-sm text-brand-muted bg-brand-light rounded-md px-3 py-2">
           <span className="font-semibold text-brand-text">
-            {format(range.from, "d. MMM", { locale: hr })} –{" "}
+            {format(range.from, "d. MMM", { locale: hr })} -{" "}
             {format(range.to, "d. MMM yyyy", { locale: hr })}
           </span>
           <span className="ml-2">

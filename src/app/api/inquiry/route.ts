@@ -421,7 +421,7 @@ export async function POST(req: NextRequest) {
         resend.emails.send({
           from: `rentanje.com <${fromEmail}>`,
           to: adminEmail,
-          subject: `Novi upit ${inquiryNumber} — ${safeSubjectName}`,
+          subject: `Novi upit ${inquiryNumber}: ${safeSubjectName}`,
           html: buildAdminInquiryHtml({
             name, email, phone, delivery_address, note,
             items: cartItems, subtotal, discount: totalDiscount, totalDeposit,
@@ -433,7 +433,7 @@ export async function POST(req: NextRequest) {
         resend.emails.send({
           from: `rentanje.com <${fromEmail}>`,
           to: email,
-          subject: `Vaš upit je zaprimljen — rentanje.com`,
+          subject: `Vaš upit je zaprimljen | rentanje.com`,
           html: buildCustomerConfirmationHtml({
             name, items: cartItems, subtotal, discount: totalDiscount, totalDeposit,
             deliveryType, deliveryFee,

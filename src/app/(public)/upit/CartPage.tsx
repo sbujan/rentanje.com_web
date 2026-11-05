@@ -67,7 +67,7 @@ function CartItemRow({ item, onRemove }: { item: CartItem; onRemove: () => void 
         </Link>
         <div className="text-xs text-brand-muted mt-0.5 space-y-0.5">
           <p>
-            {format(start, "d. MMM", { locale: hr })} – {format(end, "d. MMM yyyy", { locale: hr })}
+            {format(start, "d. MMM", { locale: hr })} - {format(end, "d. MMM yyyy", { locale: hr })}
             {" "}· {item.days} {item.days === 1 ? "dan" : "dana"}
           </p>
           <p>

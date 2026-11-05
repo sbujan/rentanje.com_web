@@ -8,7 +8,7 @@ export const revalidate = 3600;
 
 const DEFAULT_TITLE = "Sva oprema za iznajmljivanje | rentanje.com";
 const DEFAULT_DESCRIPTION =
-  "Pregledajte svu opremu dostupnu za iznajmljivanje — audio, video, event, roštilj, kamp i outdoor. Pošaljite upit danas!";
+  "Pregledajte svu opremu dostupnu za iznajmljivanje: audio, video, event, roštilj, kamp i outdoor. Pošaljite upit danas!";
 
 export const metadata: Metadata = {
   // /oprema?cat=<slug> is permanent-redirected to /najam/<slug> in next.config.mjs,
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     siteName: "rentanje.com",
     type: "website",
     locale: "hr_HR",
-    images: [{ url: "/rentanje-najam-zagreb-iznajmi.jpg", width: 1254, height: 1254, alt: "RENTANJE.COM — Ne kupuj, iznajmi." }],
+    images: [{ url: "/rentanje-najam-zagreb-iznajmi.jpg", width: 1254, height: 1254, alt: "RENTANJE.COM: ne kupuj, iznajmi." }],
   },
   twitter: {
     card: "summary_large_image",
@@ -57,7 +57,7 @@ export default async function OpremaPage() {
     <main>
       <PageHero
         title="Sva oprema za iznajmljivanje"
-        subtitle="Iznajmite opremu za svaku prigodu — evente, roštilj, kamp i još mnogo toga."
+        subtitle="Iznajmite opremu za svaku prigodu: evente, roštilj, kamp i još mnogo toga."
         breadcrumbs={[{ href: "/", label: "Početna" }, { label: "Oprema" }]}
         color="#01D2D6"
       />

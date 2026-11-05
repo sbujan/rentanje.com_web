@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!bundle) return {};
 
-  const title = cleanSeoTitle(bundle.seo_title ?? `${bundle.name} — paket za iznajmljivanje`);
+  const title = cleanSeoTitle(bundle.seo_title ?? `${bundle.name}, paket za iznajmljivanje`);
   const description = bundle.seo_description ?? bundle.description ?? "";
   const canonical = `https://rentanje.com/paketi/${bundle.slug}`;
 

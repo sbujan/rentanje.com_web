@@ -31,7 +31,7 @@ export async function GET() {
 
   const body = `# Rentanje
 
-> Croatian equipment rental — drones, cameras, sound systems, grills, camping gear, event equipment. Pickup in Zagreb or delivery across Zagreb and surroundings.
+> Croatian equipment rental: drones, cameras, sound systems, grills, camping gear, event equipment. Pickup in Zagreb or delivery across Zagreb and surroundings.
 
 ## Browse
 
