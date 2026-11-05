@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { isGone } from "@/lib/gone-urls";
+import { legacyQueryRedirect } from "@/lib/legacy-redirects.mjs";
 
 export async function middleware(request: NextRequest) {
   // Early-return BEFORE creating the Supabase client so no auth/cookie work
@@ -10,6 +11,14 @@ export async function middleware(request: NextRequest) {
       status: 410,
       headers: { "content-type": "text/plain; charset=utf-8" },
     });
+  }
+
+  const legacy = legacyQueryRedirect(request.nextUrl.pathname, request.nextUrl.searchParams);
+  if (legacy) {
+    const url = request.nextUrl.clone();
+    url.pathname = legacy.pathname;
+    legacy.drop.forEach((key) => url.searchParams.delete(key));
+    return NextResponse.redirect(url, 308);
   }
 
   let supabaseResponse = NextResponse.next({ request });
@@ -84,5 +93,13 @@ export const config = {
     // Root-level slug ending in 5+ digits. Uses explicit \d\d\d\d\d+ instead of
     // \d{5,} to avoid path-to-regexp's brace parsing.
     "/:slug([A-Za-z0-9][A-Za-z0-9\\-]*\\-\\d\\d\\d\\d\\d+)",
+    // Legacy query URLs, handled by legacyQueryRedirect(). The `has` condition
+    // keeps the homepage and catalogue out of the middleware otherwise.
+    { source: "/", has: [{ type: "query", key: "product" }] },
+    { source: "/oprema", has: [{ type: "query", key: "product" }] },
+    { source: "/oprema", has: [{ type: "query", key: "cat" }] },
+    // Explicit pattern: a bare :slug combined with `has` compiles to a regexp that
+    // never matches a slug.
+    { source: "/najam/:slug([a-zA-Z0-9\\-]+)", has: [{ type: "query", key: "product" }] },
   ],
 };

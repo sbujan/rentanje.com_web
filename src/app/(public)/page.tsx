@@ -153,8 +153,11 @@ export default async function HomePage() {
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto text-center py-10">
           <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 leading-tight">
-            Iznajmi, uživaj, vrati.
+            Najam opreme u Zagrebu
           </h1>
+          <p className="font-display text-xl sm:text-2xl font-semibold mb-2">
+            Iznajmi, uživaj, vrati.
+          </p>
           <p className="text-base sm:text-lg text-white/80 max-w-2xl mx-auto">
             Oprema za evente, roštilj, kamp i zabavu. Dostava u Zagreb i okolicu.
           </p>

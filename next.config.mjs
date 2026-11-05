@@ -1,54 +1,18 @@
-// Old WooCommerce product slug → new destination. Single source of truth for
-// every legacy product URL shape (see productRedirects below). Destinations
-// verified against the live production DB (2026-10-30). Active products map to
-// /najam/:slug so the old URL's equity lands on the product, not a listing;
-// removed ones fall back to their category or /paketi. A product deactivated
-// later is still safe: /najam/[inactive-slug] 308s to its category.
-const PRODUCT_REDIRECTS = [
-  ["gopro-hero-10", "/najam/gopro-hero-10-black-kamera-najam"],
-  ["plinska-pec-za-pizzu-ooni-16", "/najam/ooni-koda-16-plinska-pec-pizza-najam"],
-  ["dji-mavic-mini-2-fly-more", "/najam/dji-mini-2-dron-fly-more-najam"],
-  ["jbl-charge-3-prijenosni-zvucnik", "/najam/jbl-charge-3-bluetooth-zvucnik-najam"],
-  ["ledomat", "/najam/ledomat-aparat-za-led-najam"],
-  ["kotao-od-lijevanog-zeljeza-10-l-sa-stalkom", "/najam/kotao-lijevani-zeljezo-10l-stalak-najam"],
-  ["kotao-od-lijevanog-zeljeza-10-l-sa-stalkom-2", "/najam/kotao-lijevani-zeljezo-10l-stalak-najam"],
-  ["baklja-za-rostilj", "/najam/rostilj-kuhanje"],
-  ["peka-sac", "/najam/peka-tradicionalna-najam"],
-  ["razanj-s-motorom", "/najam/razanj-s-motorom-najam"],
-  ["tocionik-za-pivo-6l", "/najam/tocionik-za-pivu-5l-najam"],
-  ["firepit-bonfire-2-0", "/najam/solo-stove-bonfire-firepit-najam"],
-  ["velika-jenga", "/najam/velika-jenga-giant-jenga-igra-najam"],
-  ["cornhole", "/najam/cornhole-igra-najam"],
-  ["projektor-sa-platnom", "/najam/projektor-s-platnom-najam"],
-  ["paviljon-sator-3x3m", "/najam/paviljon-sator-3x3m-najam"],
-  ["prenosivi-stol-i-2-klupe-za-8-osoba", "/najam/prijenosni-ratan-stol-klupe-8-osoba-najam"],
-  ["beerpong-stol", "/najam/beer-pong-stol-case-najam"],
-  ["blumfeldt-dark-wave-infrared-grijalica", "/najam/blumfeldt-dark-wave-infracrvena-grijalica-najam"],
-  ["jbl-partybox-310", "/najam/jbl-partybox-stage-320-prijenosni-party-zvucnik-s-kotacima"],
-  ["kulinarski-dozivljaj", "/paketi"],
-  ["druzenje-na-otvorenom", "/paketi"],
-  ["pizza-party-ooni-pizza-oven", "/paketi"],
-  ["sportski-spektakl", "/paketi"],
-  ["sator-za-kampiranje-najam", "/najam/sator-za-kampiranje-za-4-osobe-madraci-pumpa-najam"],
-  ["jbl-bezicni-mikrofoni", "/najam/jbl-bezicni-mikrofoni-par-najam"],
-  ["dji-neo-dron", "/najam/dji-neo-motion-fly-more-combo-najam"],
-  ["stalak-za-kolace", "/najam/oprema-za-evente"],
-  ["fujifilm-instax-mini-evo", "/najam/fujifilm-instax-mini-evo-najam"],
-];
+import { PRODUCT_REDIRECTS } from "./src/lib/legacy-redirects.mjs";
 
 // Expand each mapping into every legacy URL shape that still appears in GSC:
 //   /proizvod/:slug(/)   — Croatian WP path (both slash variants)
 //   /product/:slug(/)    — English WP path
-//   /?product=:slug      — WP query permalink format
+// The /?product=:slug form lives in the middleware, because redirects here would
+// carry the query string onto the destination (see src/lib/legacy-redirects.mjs).
 // Next matches redirects in array order, so these specific entries must be
-// registered before the /product/* and /?product= catch-alls.
+// registered before the /product/* catch-all.
 function productRedirects() {
   return PRODUCT_REDIRECTS.flatMap(([old, destination]) => [
     { source: `/proizvod/${old}/`, destination, permanent: true },
     { source: `/proizvod/${old}`, destination, permanent: true },
     { source: `/product/${old}/`, destination, permanent: true },
     { source: `/product/${old}`, destination, permanent: true },
-    { source: "/", has: [{ type: "query", key: "product", value: old }], destination, permanent: true },
   ]);
 }
 
@@ -111,16 +75,6 @@ const nextConfig = {
         permanent: true,
       },
 
-      // Category canonical migration: /oprema?cat=<slug> → /najam/<slug>
-      // Captures the cat query string into :slug. Fires before the page function,
-      // so it bypasses ISR caching that would otherwise eat in-page redirects.
-      {
-        source: "/oprema",
-        has: [{ type: "query", key: "cat", value: "(?<slug>.+)" }],
-        destination: "/najam/:slug",
-        permanent: true,
-      },
-
       // Pages
       { source: "/basket/",      destination: "/upit",     permanent: true },
       { source: "/checkout/",    destination: "/upit",     permanent: true },
@@ -156,7 +110,7 @@ const nextConfig = {
       { source: "/rent-list",                                       destination: "/oprema",                                                           permanent: true },
       { source: "/rent-grid",                                       destination: "/oprema",                                                           permanent: true },
 
-      // Products — every legacy shape (/proizvod/, /product/, /?product=) for
+      // Products — every legacy path shape (/proizvod/, /product/) for
       // each mapping in PRODUCT_REDIRECTS, generated so slash/no-slash and both
       // path languages stay in sync. Verified against the live production DB.
       ...productRedirects(),
@@ -164,7 +118,6 @@ const nextConfig = {
       // Catch-alls for any legacy product URL not explicitly mapped above.
       // MUST come after productRedirects() — Next matches in order, first wins.
       { source: "/product/:slug*", destination: "/oprema", permanent: true },
-      { source: "/", has: [{ type: "query", key: "product" }], destination: "/oprema", permanent: true },
     ];
   },
 };

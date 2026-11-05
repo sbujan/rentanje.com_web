@@ -97,6 +97,22 @@ await redirect("/home", "/");
 await redirect("/product/nepostojeci-slug-xyz", "/oprema");   // catch-all
 await redirect("/?product=nepostojeci-slug-xyz", "/oprema");  // catch-all
 
+console.log("\n== Legacy query URLs end clean ==");
+for (const [from, dest] of [
+  ["/?product=jbl-partybox-310", "/najam/jbl-partybox-stage-320-prijenosni-party-zvucnik-s-kotacima"],
+  ["/najam/jbl-partybox-stage-320-prijenosni-party-zvucnik-s-kotacima?product=jbl-partybox-310", "/najam/jbl-partybox-stage-320-prijenosni-party-zvucnik-s-kotacima"],
+  ["/?product=nepostojeci-slug-xyz", "/oprema"],
+  ["/oprema?product=gopro-hero-13", "/oprema"],
+  ["/oprema?cat=rostilj-kuhanje", "/najam/rostilj-kuhanje"],
+]) {
+  try {
+    const res = await fetch(BASE + from, { redirect: "manual", headers: { "user-agent": "rentanje-seo-verify" } });
+    const loc = res.headers.get("location") ?? "";
+    if (res.status === 308 && new URL(loc, BASE).pathname === dest && !new URL(loc, BASE).search) ok(`${from} → ${dest}`);
+    else no(`${from} → ${res.status} ${loc}`);
+  } catch (e) { no(`${from} → error ${e.message}`); }
+}
+
 console.log("\n== 410 Gone (spam) ==");
 await gone("/shop/brands/ricardo?id=40107");
 await gone("/Troy-Bilt-Tiller-Parts-Troybilt-Tiller-Parts-946-04626-Forward-1048298");
