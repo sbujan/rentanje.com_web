@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Phone, ShoppingCart, Info, Minus, Plus } from "lucide-react";
 import { useCartStore } from "@/lib/cart";
 import { calcRentalPrice } from "@/lib/pricing";
-import { toYmd } from "@/lib/utils";
+import { formatPrice, toYmd } from "@/lib/utils";
 import { expandRentalDates, maxAvailableUnits, type AvailabilityRecord } from "@/lib/availability";
 import { trackAddToCart, trackAvailabilityChecked, trackPhoneClick } from "@/lib/gtag";
 import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF } from "@/lib/site";
@@ -243,7 +243,14 @@ export default function AddToCartCard({ product, availability }: Props) {
 
       {/* Trust badges */}
       <div className="space-y-1.5 pt-1 border-t border-gray-100">
-        {["✓ Preuzimanje u Zagrebu", "✓ Dostava 10 € (Zagreb)", "✓ Odgovor u roku 1 radnog dana"].map((t) => (
+        {[
+          "✓ Preuzimanje u Zagrebu",
+          product.delivery_available &&
+            (product.delivery_fee > 0
+              ? `✓ Dostava ${formatPrice(product.delivery_fee)} (Zagreb i okolica)`
+              : "✓ Besplatna dostava (Zagreb i okolica)"),
+          "✓ Odgovor u roku 1 radnog dana",
+        ].filter((t): t is string => Boolean(t)).map((t) => (
           <p key={t} className="text-xs text-brand-muted">{t}</p>
         ))}
       </div>
