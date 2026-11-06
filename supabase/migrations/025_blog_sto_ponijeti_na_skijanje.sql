@@ -34,7 +34,7 @@ VALUES (
 
 <p>Najzanimljiviji dio je selfie štap, jer ga kamera sama izbriše sa snimke. Izgleda kao da vas netko prati dronom, a vi samo držite štap u ruci. Ako skijate u društvu, to su snimke koje će ljudi pogledati do kraja.</p>
 
-<p>Treba računati i na par stvari. Snimke su velike, pa vam treba veća memorijska kartica i malo vremena za uređivanje. Leće su izbočene, pa kameru treba čuvati od pada na led. Hladnoća sama po sebi nije problem, jer kamera prema proizvođaču radi do -20 °C, ali baterija u najvišoj kvaliteti traje oko 80 minuta, a na hladnoći i manje. Ako ne volite petljati po aplikacijama, uzmite GoPro.</p>
+<p>Treba računati i na par stvari. Snimke su velike, pa vam treba veća memorijska kartica i malo vremena za uređivanje. Leće su izbočene, pa kameru treba čuvati od pada na led. Hladnoća sama po sebi nije problem, jer kamera prema proizvođaču radi do -20 °C, ali baterija u najvišoj kvaliteti traje oko 80 minuta, a na hladnoći i manje. Zato uz X5 kod nas dobivate dvije baterije. Ako ne volite petljati po aplikacijama, uzmite GoPro.</p>
 
 <p>Pogledajte <a href="/najam/insta360-x5-360-kamera-najam">najam Insta360 X5 kamere</a>.</p>
 
@@ -67,7 +67,7 @@ VALUES (
   <li><strong>Na selfie štap.</strong> Ovo je način za Insta360 X5. Štap zauzima jednu ruku, zato ostavite više mjesta oko sebe i ne snimajte tako kad je staza puna.</li>
 </ul>
 
-<p>Uz GoPro kod nas dobivate montažne prste koji odgovaraju svim GoPro dodacima. Imamo i nosač za kacigu, a memorijsku karticu, rezervnu bateriju i stativ možete dobiti kao dodatnu opremu. Samo to napišite u napomeni upita. Ako vam treba nosač za prsa ili za X5 selfie štap i kartica, napišite i to pa ćemo vam javiti što imamo.</p>
+<p>Uz GoPro kod nas dobivate montažne prste koji odgovaraju svim GoPro dodacima. Nosač za kacigu, memorijsku karticu, rezervnu bateriju i stativ možete dobiti kao dodatnu opremu, samo to napišite u napomeni upita. Uz Insta360 X5 u kutiji dobivate selfie štap i dvije baterije. Ako vam treba nosač za prsa, napišite i to pa ćemo vam javiti imamo li ga.</p>
 
 <h2>Kako snimati na hladnoći</h2>
 
@@ -174,8 +174,8 @@ VALUES (
   $faq$[
     {"question": "Koja je dobra kamera za skijanje?", "answer": "Mala akcijska kamera koja podnosi hladnoću i snijeg, drži sliku mirnom i može se pričvrstiti na kacigu ili prsa. GoPro Hero 13 je dobar izbor za snimanje vožnje iz svog kuta, a Insta360 X5 ako želite u kadru i sebe i društvo."},
     {"question": "Je li za skijanje bolji GoPro ili Insta360?", "answer": "Ovisi o tome što želite snimiti. GoPro je jednostavniji i snimka je odmah gotova. Insta360 X5 snima sve oko sebe pa kadar birate kasnije u aplikaciji, ali treba više memorije i malo vremena za uređivanje."},
-    {"question": "Kako pričvrstiti kameru na skijašku kacigu?", "answer": "Najčešće nosačem koji se lijepi na kacigu ili trakom koja ide oko nje. Prije lijepljenja pogledajte upute za svoju kacigu, a kameru osigurajte tankom uzicom. Ako GoPro uzimate u najam, imamo i nosač za kacigu, samo ga napišite u napomeni upita."},
-    {"question": "Koliko traje baterija kamere na hladnoći?", "answer": "Kraće nego na toplom. Na toplom GoPro Hero 13 u 5.3K snima oko sat i pol, a Insta360 X5 u 8K oko 80 minuta. Snimajte kratke isječke, a rezervnu bateriju držite u unutarnjem džepu jakne."},
+    {"question": "Kako pričvrstiti kameru na skijašku kacigu?", "answer": "Najčešće nosačem koji se lijepi na kacigu ili trakom koja ide oko nje. Prije lijepljenja pogledajte upute za svoju kacigu, a kameru osigurajte tankom uzicom. Ako GoPro uzimate u najam, nosač za kacigu možete dobiti kao dodatnu opremu, samo ga napišite u napomeni upita."},
+    {"question": "Koliko traje baterija kamere na hladnoći?", "answer": "Kraće nego na toplom. Na toplom GoPro Hero 13 u 5.3K snima oko sat i pol, a Insta360 X5 u 8K oko 80 minuta. Snimajte kratke isječke, a rezervnu bateriju držite u unutarnjem džepu jakne. Uz Insta360 X5 kod nas dobivate dvije baterije."},
     {"question": "Mogu li iznajmiti kameru za cijeli tjedan skijanja?", "answer": "Možete. Kamere iznajmljujemo na dan, na 3 i na 7 dana, a što je najam dulji, dan je jeftiniji. Preuzimanje je na Naserovom trgu 4 u Zagrebu, a moguća je i dostava u Zagrebu i okolici."},
     {"question": "Što ne smijem zaboraviti ponijeti na skijanje?", "answer": "Kacigu, naočale, vodootporne rukavice, kremu za sunce, dokumente i putno osiguranje. Europska kartica zdravstvenog osiguranja ne pokriva spašavanje na skijalištu, zato to provjerite prije puta."},
     {"question": "Što obući za skijanje?", "answer": "Slojeve: termo rublje od merino vune ili sintetike, flis te skijašku jaknu i hlače koje ne propuštaju vodu. Pamuk je loš izbor, jer kad se oznojite ostaje mokar i hladi."},
