@@ -96,10 +96,13 @@ export default function ProductPage({ product, availability, tags, relatedProduc
     { label: "Dostava", value: deliverySpecValue(product.delivery_available, product.delivery_fee) },
   ].filter(Boolean) as { label: string; value: string }[];
 
-  // FAQ answers may quote the price as {cijena}; fill it with the live rate.
+  // FAQ answers and the description may quote prices as {cijena}, {cijena3}
+  // and {cijena7}; fill them with the live prices.
   const rate = effectiveDailyRate(product);
-  const faq = normalizeFaq(product.faq).map((f) => ({ ...f, answer: fillPrice(f.answer, rate) }));
-  const descriptionHtml = descriptionToHtml(product.description);
+  const faq = normalizeFaq(product.faq).map((f) => ({ ...f, answer: fillPrice(f.answer, rate, product) }));
+  const descriptionHtml = descriptionToHtml(
+    product.description ? fillPrice(product.description, rate, product) : product.description
+  );
 
   return (
     <>

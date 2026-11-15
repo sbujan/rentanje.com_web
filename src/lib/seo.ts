@@ -26,16 +26,36 @@ export function cleanSeoTitle(t: string): string {
 }
 
 /**
- * Token that SEO copy (product seo_title / seo_description, brand-hub copy)
- * may contain instead of a hard-coded number. It is replaced with the live
+ * Token that SEO copy (product seo_title / seo_description / description /
+ * FAQ answers, brand-hub copy) may contain instead of a hard-coded number. It is replaced with the live
  * daily rate at render time, so a price change in admin can never leave a
  * stale "od 20 €/dan" in the SERP.
  */
 export const PRICE_PLACEHOLDER = "{cijena}";
+/** Price for a 3-day rental, e.g. "70 € za 3 dana". */
+export const PRICE_3DAYS_PLACEHOLDER = "{cijena3}";
+/** Price for a 7-day rental. */
+export const PRICE_7DAYS_PLACEHOLDER = "{cijena7}";
 
-/** Replace every PRICE_PLACEHOLDER in `text` with the given daily rate. */
-export function fillPrice(text: string, dailyRate: number): string {
-  return text.split(PRICE_PLACEHOLDER).join(String(dailyRate));
+export interface PriceTiers {
+  price_per_3days?: number | null;
+  price_per_7days?: number | null;
+}
+
+/**
+ * Replace the price placeholders in `text`: {cijena} with the daily rate,
+ * {cijena3} and {cijena7} with the 3-day and 7-day prices. A missing tier
+ * falls back to the daily rate times the days, so a placeholder never
+ * reaches the page as literal text.
+ */
+export function fillPrice(text: string, dailyRate: number, tiers?: PriceTiers): string {
+  return text
+    .split(PRICE_PLACEHOLDER)
+    .join(String(dailyRate))
+    .split(PRICE_3DAYS_PLACEHOLDER)
+    .join(String(tiers?.price_per_3days ?? dailyRate * 3))
+    .split(PRICE_7DAYS_PLACEHOLDER)
+    .join(String(tiers?.price_per_7days ?? dailyRate * 7));
 }
 
 /**
@@ -47,7 +67,8 @@ export function fillPrice(text: string, dailyRate: number): string {
 export function productTitleField(
   seoTitle: string | null | undefined,
   name: string,
-  dailyRate: number
+  dailyRate: number,
+  tiers?: PriceTiers
 ): string {
-  return cleanSeoTitle(fillPrice(seoTitle ?? `Najam ${name} od ${dailyRate} €/dan`, dailyRate));
+  return cleanSeoTitle(fillPrice(seoTitle ?? `Najam ${name} od ${dailyRate} €/dan`, dailyRate, tiers));
 }

@@ -78,6 +78,19 @@ describe("price placeholder", () => {
     expect(fillPrice("Najam bez cijene", 7)).toBe("Najam bez cijene");
   });
 
+  it("fills {cijena3} and {cijena7} with the 3-day and 7-day prices", () => {
+    const tiers = { price_per_3days: 70, price_per_7days: 100 };
+    expect(fillPrice("{cijena} € dan, {cijena3} € za 3 dana, {cijena7} € za 7 dana", 40, tiers))
+      .toBe("40 € dan, 70 € za 3 dana, 100 € za 7 dana");
+    expect(productTitleField("Najam zvučnika, {cijena3} € za 3 dana", "Zvučnik", 7, { price_per_3days: 20 }))
+      .toBe("Najam zvučnika, 20 € za 3 dana");
+  });
+
+  it("never leaves a tier placeholder as literal text when the tier is missing", () => {
+    expect(fillPrice("{cijena3} i {cijena7}", 10)).toBe("30 i 70");
+    expect(fillPrice("{cijena3} i {cijena7}", 10, { price_per_3days: null, price_per_7days: 50 })).toBe("30 i 50");
+  });
+
   it("still strips a brand suffix after filling", () => {
     expect(productTitleField("Najam peke od {cijena} €/dan | rentanje.com", "Peka", 7))
       .toBe("Najam peke od 7 €/dan");

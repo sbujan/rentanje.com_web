@@ -26,6 +26,12 @@ describe("LANDING_PAGES", () => {
     }
   });
 
+  it("takes the quoted price from a product shown on the hub", () => {
+    for (const l of LANDING_PAGES) {
+      if (l.priceProductId) expect(l.productIds, l.slug).toContain(l.priceProductId);
+    }
+  });
+
   it("points every hub at a known parent category", () => {
     for (const l of LANDING_PAGES) expect(FALLBACK_CATEGORY_SLUGS).toContain(l.parentCategorySlug);
   });

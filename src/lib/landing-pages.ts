@@ -12,7 +12,7 @@
  * move this into a `landing_pages` table (migration first).
  *
  * Copy rules: no em or en dashes (owner rule), {cijena} is replaced with the
- * lowest live daily rate of `brandProductIds`, and `bodyHtml` must not rely on
+ * lowest live daily rate of `brandProductIds` (or of `priceProductId`), and `bodyHtml` must not rely on
  * Tailwind classes (src/lib is outside the Tailwind content glob; style comes
  * from the wrapper in LandingPage.tsx). bodyHtml goes through sanitizeHtml.
  */
@@ -38,6 +38,12 @@ export interface LandingPageConfig {
    * hub on their product page. Must be a subset of productIds.
    */
   brandProductIds: string[];
+  /**
+   * When set, {cijena} is this product's daily rate instead of the lowest
+   * rate of brandProductIds. Use it when the cheapest product is not the one
+   * people search for. Must be one of productIds.
+   */
+  priceProductId?: string;
   /** Parent in the breadcrumb; the category page links back to the hub. */
   parentCategorySlug: string;
   /** Anchor text used for links to the hub (footer, category chips). */
@@ -154,13 +160,16 @@ export const LANDING_PAGES: LandingPageConfig[] = [
   {
     slug: "jbl-zvucnici",
     h1: "Najam JBL zvučnika u Zagrebu",
-    seoTitle: "Najam JBL zvučnika u Zagrebu od {cijena} €/dan",
+    seoTitle: "Najam JBL zvučnika i mikrofona u Zagrebu",
     seoDescription:
-      "Iznajmite JBL PartyBox Stage 320 od 240 W ili JBL Charge 3 u Zagrebu. Bežični mikrofoni za karaoke, stalci i dostava po Zagrebu i okolici.",
+      "Najam JBL zvučnika u Zagrebu: PartyBox Stage 320 od {cijena} €/dan, prijenosni Charge 3 i bežični mikrofoni za karaoke. Usporedite modele i rezervirajte online.",
     intro:
       "JBL PartyBox Stage 320 za zabave, JBL Charge 3 za izlete i JBL bežični mikrofoni za karaoke. Usporedite modele i rezervirajte online.",
     productIds: [JBL_PARTYBOX, JBL_CHARGE_3, JBL_MICS, SPEAKER_STAND],
     brandProductIds: [JBL_PARTYBOX, JBL_CHARGE_3, JBL_MICS],
+    // Charge 3 is cheaper per day but rents for 3 days minimum; people who
+    // search for a JBL rental mostly want the PartyBox, so quote its price.
+    priceProductId: JBL_PARTYBOX,
     parentCategorySlug: "audio-video-oprema",
     navLabel: "Najam JBL zvučnika",
     productLinkLabel: "Svi JBL zvučnici",
@@ -180,7 +189,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
 </tbody>
 </table>
 <h3>Koji odabrati</h3>
-<p>Za rođendan, vjenčanje, momačku ili zabavu u dvorištu uzmite <a href="/najam/jbl-partybox-stage-320-prijenosni-party-zvucnik-s-kotacima">JBL PartyBox Stage 320</a>. Za plažu, kampiranje i manje društvo dovoljan je <a href="/najam/jbl-charge-3-bluetooth-zvucnik-najam">JBL Charge 3</a>, koji usput puni i mobitel.</p>
+<p>Za rođendan, vjenčanje, momačku ili zabavu u dvorištu pogledajte <a href="/najam/jbl-partybox-stage-320-prijenosni-party-zvucnik-s-kotacima">najam zvučnika JBL PartyBox Stage 320</a>. Za plažu, kampiranje i manje društvo dovoljan je <a href="/najam/jbl-charge-3-bluetooth-zvucnik-najam">JBL Charge 3</a>, koji usput puni i mobitel.</p>
 <h2>Karaoke i govori</h2>
 <p><a href="/najam/jbl-bezicni-mikrofoni-par-najam">JBL bežični mikrofoni</a> rade plug and play s JBL PartyBox zvučnicima: prijemnik utaknete u zvučnik i mikrofoni rade. Domet je do 30 metara, a baterija traje oko 20 sati. S JBL Charge 3 mikrofoni ne rade bez posebnog prijemnika, pa za karaoke odaberite PartyBox.</p>
 <h2>Stalak i veći prostor</h2>
@@ -191,7 +200,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
       {
         question: "Koliko košta najam JBL zvučnika?",
         answer:
-          "Najam JBL zvučnika u Zagrebu kreće od {cijena} eura dnevno. Najam na više dana povoljniji je po danu, a točnu cijenu za odabrane datume vidite u kalendaru na stranici zvučnika.",
+          "JBL PartyBox Stage 320 iznajmljuje se od {cijena} eura dnevno, a najam na više dana povoljniji je po danu. JBL Charge 3 i JBL bežični mikrofoni iznajmljuju se na najmanje 3 dana. Točnu cijenu za odabrane datume vidite u kalendaru na stranici proizvoda.",
       },
       {
         question: "Koji JBL zvučnik odabrati za zabavu?",

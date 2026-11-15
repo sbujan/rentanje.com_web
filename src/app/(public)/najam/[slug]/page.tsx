@@ -74,7 +74,12 @@ async function loadLanding(landing: LandingPageConfig) {
   const brandRates = products
     .filter((p) => landing.brandProductIds.includes(p.id))
     .map((p) => effectiveDailyRate(p));
-  const rate = brandRates.length > 0 ? Math.min(...brandRates) : 0;
+  const priceProduct = landing.priceProductId ? byId.get(landing.priceProductId) : undefined;
+  const rate = priceProduct
+    ? effectiveDailyRate(priceProduct)
+    : brandRates.length > 0
+      ? Math.min(...brandRates)
+      : 0;
   return { products, parent: parent ?? null, rate };
 }
 
@@ -167,12 +172,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // the brand; cleanSeoTitle strips it from any DB seo_title that still does.
     // DB copy may use {cijena} so a price change never leaves a stale number.
     const rate = effectiveDailyRate(product);
-    const title = productTitleField(product.seo_title, product.name, rate);
+    const title = productTitleField(product.seo_title, product.name, rate, product);
     const description = fillPrice(
       product.seo_description ??
         product.short_desc ??
         `Iznajmite ${product.name} u Zagrebu od ${rate} €/dan. Dostava na području Zagreba i okolice, brza rezervacija online. Odgovor u roku od 1 radnog dana.`,
-      rate
+      rate,
+      product
     );
     const canonical = `${BASE}/najam/${product.slug}`;
     const ogImages = product.hero_image_url
