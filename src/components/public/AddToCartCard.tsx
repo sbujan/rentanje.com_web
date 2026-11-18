@@ -5,14 +5,16 @@ import { useRouter } from "next/navigation";
 import { Phone, ShoppingCart, Info, Minus, Plus } from "lucide-react";
 import { useCartStore } from "@/lib/cart";
 import { calcRentalPrice } from "@/lib/pricing";
+import { anchorRentalPrice, getAnchorPrice, type AnchorPriceFields } from "@/lib/anchor-price";
 import { formatPrice, toYmd } from "@/lib/utils";
 import { expandRentalDates, maxAvailableUnits, type AvailabilityRecord } from "@/lib/availability";
 import { trackAddToCart, trackAvailabilityChecked, trackPhoneClick } from "@/lib/gtag";
 import { SITE_PHONE as PHONE, SITE_PHONE_HREF as PHONE_HREF } from "@/lib/site";
 import AvailabilityCalendar from "./AvailabilityCalendar";
+import AnchorPriceNote from "./AnchorPriceNote";
 
 interface Props {
-  product: {
+  product: AnchorPriceFields & {
     id: string;
     name: string;
     slug: string;
@@ -57,6 +59,18 @@ export default function AddToCartCard({ product, availability }: Props) {
   // Block-based pricing: stack 7-day, 3-day, 1-day blocks, auto-upgrade if cheaper
   const { price: unitPrice, upgraded } = calcRentalPrice(days, product);
 
+  // Anchor price ("Cijena na 10.09.2026"): the stored price on the reference
+  // date, run through the same block pricing. Null when none is stored.
+  const anchor = getAnchorPrice(product);
+  const anchorTierPrice = (tierDays: number) =>
+    !anchor
+      ? null
+      : tierDays === 1
+        ? anchor.tiers.price_per_day
+        : tierDays === 3
+          ? anchor.tiers.price_per_3days
+          : anchor.tiers.price_per_7days;
+
   // Max units bookable for the selected range: the smallest free count across
   // every day in the range (calendar already blocks fully-booked days, so this
   // is >= 1 once a valid range is picked). Falls back to total stock otherwise.
@@ -69,6 +83,7 @@ export default function AddToCartCard({ product, availability }: Props) {
   const qtyClamped = Math.min(qty, maxQty);
   const unitDeposit = product.requires_deposit ? (product.deposit_amount ?? 0) : 0;
   const totalPrice = unitPrice * qtyClamped;
+  const anchorTotal = anchor && days > 0 ? anchorRentalPrice(anchor, days) * qtyClamped : null;
 
   function handleAddToCart() {
     if (!rentalStart || !rentalEnd || days <= 0) return;
@@ -89,6 +104,7 @@ export default function AddToCartCard({ product, availability }: Props) {
       qty: qtyClamped,
       deliveryAvailable: product.delivery_available,
       deliveryFee: product.delivery_fee,
+      ...(anchor && anchorTotal != null ? { anchorPrice: anchorTotal, anchorDate: anchor.date } : {}),
     });
 
     trackAddToCart({
@@ -132,6 +148,7 @@ export default function AddToCartCard({ product, availability }: Props) {
                   {savingsLabel(tier.tierDays, tier.price)}
                 </span>
               )}
+              <AnchorPriceNote date={anchor?.date} amount={anchorTierPrice(tier.tierDays)} />
             </div>
           </div>
         ))}
@@ -196,6 +213,7 @@ export default function AddToCartCard({ product, availability }: Props) {
               {totalPrice.toFixed(0)} €
             </span>
           </div>
+          <AnchorPriceNote date={anchor?.date} amount={anchorTotal} className="text-right" />
           {upgraded && (
             <p className="text-xs text-green-600 font-semibold mt-1">
               Automatski primijenjena povoljnija cijena paketa!

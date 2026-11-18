@@ -27,6 +27,10 @@ export interface CartItem {
   // it from the DB and /api/inquiry recomputes it, so a stale value is harmless.
   deliveryAvailable?: boolean;
   deliveryFee?: number;
+  // Anchor price ("Cijena na 10.09.2026") for this line: the same rental at
+  // the stored anchor prices, times qty. Absent when the product has none.
+  anchorPrice?: number;
+  anchorDate?: string; // "YYYY-MM-DD"
 }
 
 /** Runtime validator mirroring the CartItem interface, for JSONB boundaries. */
@@ -49,6 +53,8 @@ export const cartItemSchema = z.object({
   bundleDiscountAmount: z.number().optional(),
   deliveryAvailable: z.boolean().optional(),
   deliveryFee: z.number().min(0).optional(),
+  anchorPrice: z.number().min(0).optional(),
+  anchorDate: z.string().optional(),
 });
 
 /**

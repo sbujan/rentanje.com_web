@@ -6,6 +6,8 @@ import { ChevronRight, Package } from "lucide-react";
 import { createPublicClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { calcRentalPrice, applyBundleDiscount } from "@/lib/pricing";
+import { anchorRentalPrice, getAnchorPrice, sumAnchorPrices, type AnchorPriceFields } from "@/lib/anchor-price";
+import AnchorPriceNote from "@/components/public/AnchorPriceNote";
 import { cleanSeoTitle } from "@/lib/seo";
 import BundleAddToCart from "./BundleAddToCart";
 
@@ -93,7 +95,9 @@ export default async function BundlePage({ params }: Props) {
 
   const { data: bundleProductRows, error: bundleProductsErr } = await supabase
     .from("bundle_products")
-    .select("qty, product:products(id, name, slug, hero_image_url, price_per_day, price_per_3days, price_per_7days, min_rental_days, requires_deposit, deposit_amount, delivery_available, delivery_fee, stock_qty)")
+    // "*" rather than a column list: a database that does not have the
+    // anchor_* columns yet still answers, and the anchor lines just stay hidden.
+    .select("qty, product:products(*)")
     .eq("bundle_id", bundle.id);
 
   if (bundleProductsErr) {
@@ -103,7 +107,7 @@ export default async function BundlePage({ params }: Props) {
 
   type BundleProductRow = {
     qty: number;
-    product: {
+    product: AnchorPriceFields & {
       id: string;
       name: string;
       slug: string;
@@ -153,6 +157,17 @@ export default async function BundlePage({ params }: Props) {
     bundle.discount_value
   );
 
+  // Anchor price of the same 7-day bundle: only when every product has one
+  // for the same date. The bundle discount applies to it the same way.
+  const anchorOf = (row: (typeof bundleProducts)[number]) => {
+    const anchor = getAnchorPrice(row.product);
+    return anchor ? { date: anchor.date, amount: anchorRentalPrice(anchor, referenceDays) * row.qty } : null;
+  };
+  const referenceAnchor = sumAnchorPrices(bundleProducts.map(anchorOf));
+  const referenceAnchorTotal = referenceAnchor
+    ? applyBundleDiscount(referenceAnchor.amount, bundle.discount_type, bundle.discount_value).total
+    : null;
+
   return (
     <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
       <nav className="flex items-center gap-1 text-sm text-brand-muted mb-6 flex-wrap">
@@ -200,6 +215,7 @@ export default async function BundlePage({ params }: Props) {
             <div className="space-y-3">
               {bundleProducts.map((row) => {
                 const { price } = calcRentalPrice(referenceDays, row.product);
+                const rowAnchor = anchorOf(row);
                 return (
                   <Link
                     key={row.product.id}
@@ -226,6 +242,7 @@ export default async function BundlePage({ params }: Props) {
                       <p className="text-xs text-brand-muted mt-0.5">
                         Količina: {row.qty} · 7 dana cca {(price * row.qty).toFixed(0)} €
                       </p>
+                      <AnchorPriceNote date={rowAnchor?.date} amount={rowAnchor?.amount} />
                     </div>
                     <ChevronRight className="h-4 w-4 text-gray-300 flex-shrink-0" />
                   </Link>
@@ -249,6 +266,7 @@ export default async function BundlePage({ params }: Props) {
                 <p className="font-display font-bold text-brand-primary text-3xl">
                   {referenceTotal.toFixed(0)} €
                 </p>
+                <AnchorPriceNote date={referenceAnchor?.date} amount={referenceAnchorTotal} />
               </div>
               {referenceDiscount > 0 && (
                 <span className="text-sm text-green-600 font-semibold">
@@ -278,6 +296,10 @@ export default async function BundlePage({ params }: Props) {
               price_per_day: row.product.price_per_day,
               price_per_3days: row.product.price_per_3days,
               price_per_7days: row.product.price_per_7days,
+              anchor_price_per_day: row.product.anchor_price_per_day,
+              anchor_price_per_3days: row.product.anchor_price_per_3days,
+              anchor_price_per_7days: row.product.anchor_price_per_7days,
+              anchor_price_date: row.product.anchor_price_date,
               min_rental_days: row.product.min_rental_days,
               requires_deposit: row.product.requires_deposit,
               deposit_amount: row.product.deposit_amount,

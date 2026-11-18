@@ -111,6 +111,10 @@ export interface Database {
           price_per_day: number | null;
           price_per_3days: number | null;
           price_per_7days: number;
+          anchor_price_per_day: number | null;
+          anchor_price_per_3days: number | null;
+          anchor_price_per_7days: number | null;
+          anchor_price_date: string | null;
           min_rental_days: 1 | 3 | 7;
           requires_deposit: boolean;
           deposit_amount: number | null;
@@ -148,6 +152,10 @@ export interface Database {
           price_per_day?: number | null;
           price_per_3days?: number | null;
           price_per_7days: number;
+          anchor_price_per_day?: number | null;
+          anchor_price_per_3days?: number | null;
+          anchor_price_per_7days?: number | null;
+          anchor_price_date?: string | null;
           min_rental_days?: 1 | 3 | 7;
           requires_deposit?: boolean;
           deposit_amount?: number | null;
@@ -180,6 +188,10 @@ export interface Database {
           price_per_day?: number | null;
           price_per_3days?: number | null;
           price_per_7days?: number;
+          anchor_price_per_day?: number | null;
+          anchor_price_per_3days?: number | null;
+          anchor_price_per_7days?: number | null;
+          anchor_price_date?: string | null;
           min_rental_days?: 1 | 3 | 7;
           requires_deposit?: boolean;
           deposit_amount?: number | null;

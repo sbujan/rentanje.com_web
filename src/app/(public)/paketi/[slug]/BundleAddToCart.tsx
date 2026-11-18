@@ -9,12 +9,14 @@ import { ShoppingCart, Phone } from "lucide-react";
 import "react-day-picker/dist/style.css";
 import { useCartStore, type CartItem } from "@/lib/cart";
 import { calcRentalPrice, applyBundleDiscount } from "@/lib/pricing";
+import { anchorRentalPrice, getAnchorPrice, sumAnchorPrices, type AnchorPriceFields } from "@/lib/anchor-price";
+import AnchorPriceNote from "@/components/public/AnchorPriceNote";
 import type { AvailabilityRecord } from "@/lib/availability";
 import { SITE_PHONE, SITE_PHONE_HREF } from "@/lib/site";
 import { toYmd } from "@/lib/utils";
 import { gtagEvent, trackBundleViewed, trackPhoneClick } from "@/lib/gtag";
 
-interface BundleProduct {
+interface BundleProduct extends AnchorPriceFields {
   id: string;
   name: string;
   slug: string;
@@ -123,6 +125,16 @@ export default function BundleAddToCart({ bundle, products, availability }: Prop
     bundle.discount_value
   );
 
+  // Anchor price of the same rental, per product line and for the bundle.
+  const anchorLine = (p: BundleProduct) => {
+    const anchor = getAnchorPrice(p);
+    return anchor && days > 0 ? { date: anchor.date, amount: anchorRentalPrice(anchor, days) * p.qty } : null;
+  };
+  const anchorSubtotal = sumAnchorPrices(products.map(anchorLine));
+  const anchorTotal = anchorSubtotal
+    ? applyBundleDiscount(anchorSubtotal.amount, bundle.discount_type, bundle.discount_value).total
+    : null;
+
   const canAdd = !!range?.from && !!range?.to && days >= minRentalDays && products.length > 0;
 
   function handleAdd() {
@@ -133,6 +145,7 @@ export default function BundleAddToCart({ bundle, products, availability }: Prop
 
     const items: CartItem[] = products.map((p) => {
       const { price } = calcRentalPrice(days, p);
+      const lineAnchor = anchorLine(p);
       return {
         productId: p.id,
         productName: p.name,
@@ -152,6 +165,7 @@ export default function BundleAddToCart({ bundle, products, availability }: Prop
         bundleDiscountAmount: 0,
         deliveryAvailable: p.delivery_available,
         deliveryFee: p.delivery_fee,
+        ...(lineAnchor ? { anchorPrice: lineAnchor.amount, anchorDate: lineAnchor.date } : {}),
       };
     });
 
@@ -237,6 +251,7 @@ export default function BundleAddToCart({ bundle, products, availability }: Prop
             <span className="font-bold text-brand-text">Ukupno</span>
             <span className="font-price font-bold text-brand-primary text-lg">{total.toFixed(0)} €</span>
           </div>
+          <AnchorPriceNote date={anchorSubtotal?.date} amount={anchorTotal} className="text-right" />
         </div>
       )}
 

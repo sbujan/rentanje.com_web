@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { fillPrice, jsonLdSafe } from "@/lib/seo";
+import { anchorDailyRate, getAnchorPrice } from "@/lib/anchor-price";
+import AnchorPriceNote from "@/components/public/AnchorPriceNote";
 import { effectiveDailyRate } from "@/lib/pricing";
 import { deliverySpecValue } from "@/lib/delivery";
 import { ChevronRight } from "lucide-react";
@@ -99,6 +101,7 @@ export default function ProductPage({ product, availability, tags, relatedProduc
   // FAQ answers and the description may quote prices as {cijena}, {cijena3}
   // and {cijena7}; fill them with the live prices.
   const rate = effectiveDailyRate(product);
+  const anchor = getAnchorPrice(product);
   const faq = normalizeFaq(product.faq).map((f) => ({ ...f, answer: fillPrice(f.answer, rate, product) }));
   const descriptionHtml = descriptionToHtml(
     product.description ? fillPrice(product.description, rate, product) : product.description
@@ -197,6 +200,7 @@ export default function ProductPage({ product, availability, tags, relatedProduc
                     od {effectiveDailyRate(product)} €
                   </span>
                   <span className="text-xs text-brand-muted">/dan</span>
+                  {anchor && <AnchorPriceNote date={anchor.date} amount={anchorDailyRate(anchor)} unit="/dan" />}
                 </div>
                 <a
                   href="#rezervacija"
@@ -264,6 +268,10 @@ export default function ProductPage({ product, availability, tags, relatedProduc
                 price_per_day: product.price_per_day,
                 price_per_3days: product.price_per_3days,
                 price_per_7days: product.price_per_7days,
+                anchor_price_per_day: product.anchor_price_per_day,
+                anchor_price_per_3days: product.anchor_price_per_3days,
+                anchor_price_per_7days: product.anchor_price_per_7days,
+                anchor_price_date: product.anchor_price_date,
                 min_rental_days: product.min_rental_days,
                 requires_deposit: product.requires_deposit,
                 deposit_amount: product.deposit_amount,
@@ -298,6 +306,7 @@ export default function ProductPage({ product, availability, tags, relatedProduc
             od {effectiveDailyRate(product)} €
           </span>
           <span className="text-xs text-brand-muted">/dan</span>
+                  {anchor && <AnchorPriceNote date={anchor.date} amount={anchorDailyRate(anchor)} unit="/dan" />}
         </div>
         <a
           href="#rezervacija"
