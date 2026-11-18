@@ -97,7 +97,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
     productLinkLabel: "Sve GoPro kamere",
     heroImage: "/GoPro-paket-iznajmljivanje.png",
     brandName: "GoPro",
-    brandLogo: "/brands/gopro.svg",
+    brandLogo: "/brands/gopro.png",
     showcaseProductId: GOPRO_13,
     bodyHtml: `<h2>GoPro Hero 13 ili GoPro Hero 10?</h2>
 <p>Obje kamere snimaju 5.3K video pri 60 fps i vodootporne su do 10 metara bez kućišta. Razlika je u stabilizaciji, bateriji, usporenim snimkama i lećama.</p>
@@ -263,7 +263,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
     productLinkLabel: "Sva DJI oprema",
     heroImage: "/najam-dji-neo.jpg",
     brandName: "DJI",
-    brandLogo: "/brands/dji.svg",
+    brandLogo: "/brands/dji.png",
     showcaseProductId: DJI_MINI_2,
     bodyHtml: `<h2>Koji DJI model odabrati?</h2>
 <p>U ponudi imamo dvije DJI kamere, dva drona i prijenosnu stanicu za napajanje. Svi se iznajmljuju već od jednog dana.</p>

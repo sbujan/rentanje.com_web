@@ -11,6 +11,7 @@ import HomeBrandBoxes, { type HomeBrand } from "@/components/public/HomeBrandBox
 import HomeCTAContact from "@/components/public/HomeCTAContact";
 import { getLandingPage } from "@/lib/landing-pages";
 import { extraProductIdsForCategory, withExtraProducts } from "@/lib/category-extras";
+import { pickShowcaseProducts } from "@/lib/category-showcase";
 import { Star, ArrowRight, Zap, Truck, BadgeCent } from "lucide-react";
 
 export const revalidate = 3600;
@@ -160,6 +161,12 @@ export default async function HomePage() {
     name: g.category.name,
     color: g.category.color,
     productCount: g.products.length,
+    // Real product photos instead of an icon. Chosen from the category's own
+    // products, so GoPro (an extra under audio-video) does not front two boxes.
+    images: pickShowcaseProducts(
+      g.category.slug,
+      g.products.filter((p) => p.category_id === g.category.id)
+    ).map((p) => ({ src: p.hero_image_url as string, alt: p.hero_image_alt?.trim() || `${p.name}, najam u Zagrebu` })),
   }));
 
   const brands: HomeBrand[] = HOME_BRAND_SLUGS.flatMap((slug) => {
