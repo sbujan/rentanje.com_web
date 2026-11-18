@@ -257,6 +257,26 @@ export default async function HomePage() {
         </section>
       )}
 
+      {/* WHY US */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-6">
+        <h2 className="font-display text-2xl sm:text-3xl font-bold text-brand-text mb-10 text-center">
+          Zašto rentanje.com?
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {whyUs.map((item) => (
+            <div key={item.title} className="bg-white rounded-lg shadow-card p-8 text-center flex flex-col items-center gap-4">
+              <div className="h-16 w-16 rounded-2xl bg-brand-light flex items-center justify-center">
+                {item.icon}
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-brand-text mb-2 text-lg">{item.title}</h3>
+                <p className="text-brand-muted text-sm leading-relaxed">{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* BRANDS */}
       <HomeBrandBoxes brands={brands} />
 
@@ -300,26 +320,6 @@ export default async function HomePage() {
           </div>
         </section>
       )}
-
-      {/* WHY US */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <h2 className="font-display text-2xl sm:text-3xl font-bold text-brand-text mb-10 text-center">
-          Zašto rentanje.com?
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {whyUs.map((item) => (
-            <div key={item.title} className="bg-white rounded-lg shadow-card p-8 text-center flex flex-col items-center gap-4">
-              <div className="h-16 w-16 rounded-2xl bg-brand-light flex items-center justify-center">
-                {item.icon}
-              </div>
-              <div>
-                <h3 className="font-display font-bold text-brand-text mb-2 text-lg">{item.title}</h3>
-                <p className="text-brand-muted text-sm leading-relaxed">{item.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* TESTIMONIALS */}
       {testimonials && testimonials.length > 0 && (
