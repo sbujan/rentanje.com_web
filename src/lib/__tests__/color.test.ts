@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { contrastRatio, readableTextColor } from "@/lib/color";
+import { contrastRatio, mixWithWhite, readableTextColor } from "@/lib/color";
 
 // The category colours in the database on 2026-11-18.
 const CATEGORY_COLORS = ["#5B8DEF", "#01D2D6", "#F59E0B", "#EC4899", "#FF6B6B", "#FF8E6C", "#6EE7B7", "#FFD166", "#BCA7F0"];
@@ -21,5 +21,22 @@ describe("readableTextColor", () => {
   it("does not crash on something that is not a hex colour", () => {
     expect(contrastRatio("tomato", "#FFFFFF")).toBe(1);
     expect(readableTextColor("tomato")).toBe("#1A1A2E");
+  });
+});
+
+describe("mixWithWhite", () => {
+  it("fades a colour towards white", () => {
+    expect(mixWithWhite("#000000", 1)).toBe("#000000");
+    expect(mixWithWhite("#000000", 0)).toBe("#FFFFFF");
+    expect(mixWithWhite("#FF0000", 0.5)).toBe("#FF8080");
+    expect(mixWithWhite("tomato", 0.5)).toBe("tomato");
+  });
+
+  it("gives soft category strips that dark text reads well on", () => {
+    for (const c of CATEGORY_COLORS) {
+      const soft = mixWithWhite(c, 0.3);
+      expect(readableTextColor(soft), c).toBe("#1A1A2E");
+      expect(contrastRatio(soft, "#1A1A2E"), c).toBeGreaterThanOrEqual(7);
+    }
   });
 });

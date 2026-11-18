@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { readableTextColor } from "@/lib/color";
+import { mixWithWhite, readableTextColor } from "@/lib/color";
 
 export interface HomeCategoryImage {
   src: string;
@@ -28,6 +28,12 @@ const CATEGORY_HINT: Record<string, string> = {
   "kamp-outdoor": "Šatori, hladnjak, SUP, firepit",
   "alati-ciscenje": "Kärcher za dubinsko čišćenje",
 };
+
+/**
+ * How much of the category colour the label strip carries (0 = white,
+ * 1 = full colour). The full colour was too loud next to the photos.
+ */
+const STRIP_TINT = 0.3;
 
 function productCountLabel(n: number): string {
   return n === 1 ? "1 proizvod" : `${n} proizvoda`;
@@ -82,63 +88,36 @@ export default function HomeCategoryBoxes({ categories }: { categories: HomeCate
       <p className="text-brand-muted text-center mb-8">Odaberite kategoriju i pronađite opremu koja vam treba.</p>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-        {categories.map((c, index) => {
+        {categories.map((c) => {
           const hint = CATEGORY_HINT[c.slug];
           const color = c.color ?? "#01D2D6";
-          // TEMPORARY, for the owner to compare on staging: the first row
-          // colours the label strip (A), the rest tint the photos (B).
-          // Keep one and delete the other before this goes to production.
-          const variant: "strip" | "tint" = index < 4 ? "strip" : "tint";
-          const stripText = readableTextColor(color);
+          // Label strip: a soft tint of the category colour under a thin line
+          // of the full colour. The text colour follows the tint for contrast.
+          const stripBg = mixWithWhite(color, STRIP_TINT);
+          const stripText = readableTextColor(stripBg);
           return (
             <Link
               key={c.slug}
               href={`/najam/${c.slug}`}
               className="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white transition-all duration-200 hover:-translate-y-1 hover:border-transparent hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-primary"
             >
-              <div className="relative aspect-[4/3]">
+              <div className="aspect-[4/3]">
                 <CategoryPhotos images={c.images} />
-                {variant === "tint" && (
-                  // Light wash of the category colour over the photos; multiply
-                  // keeps the products sharp and it lifts on hover.
-                  <span
-                    className="pointer-events-none absolute inset-0 opacity-30 mix-blend-multiply transition-opacity duration-300 group-hover:opacity-10"
-                    style={{ backgroundColor: color }}
-                    aria-hidden="true"
-                  />
-                )}
               </div>
-              {variant === "strip" ? (
-                <div
-                  className="flex flex-1 items-start justify-between gap-2 px-3 py-3 sm:px-4"
-                  style={{ backgroundColor: color, color: stripText }}
-                >
-                  <span>
-                    <span className="block font-display font-bold leading-snug">{c.name}</span>
-                    {hint && <span className="mt-1 hidden text-sm leading-snug opacity-80 sm:block">{hint}</span>}
-                    <span className="mt-1 block text-xs opacity-80">{productCountLabel(c.productCount)}</span>
-                  </span>
-                  <ArrowRight
-                    className="mt-1 hidden h-4 w-4 shrink-0 opacity-80 transition-transform group-hover:translate-x-1 sm:block"
-                    aria-hidden="true"
-                  />
-                </div>
-              ) : (
-                <div className="flex flex-1 items-start justify-between gap-2 border-t border-gray-100 px-3 py-3 sm:px-4">
-                  <span>
-                    <span className="flex items-center gap-2 font-display font-bold leading-snug text-brand-text transition-colors group-hover:text-brand-primary">
-                      <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: color }} aria-hidden="true" />
-                      {c.name}
-                    </span>
-                    {hint && <span className="mt-1 hidden text-sm leading-snug text-brand-muted sm:block">{hint}</span>}
-                    <span className="mt-1 block text-xs text-brand-muted">{productCountLabel(c.productCount)}</span>
-                  </span>
-                  <ArrowRight
-                    className="mt-1 hidden h-4 w-4 shrink-0 text-brand-muted transition-colors group-hover:text-brand-primary sm:block"
-                    aria-hidden="true"
-                  />
-                </div>
-              )}
+              <div
+                className="flex flex-1 items-start justify-between gap-2 border-t-[3px] px-3 py-3 sm:px-4"
+                style={{ backgroundColor: stripBg, color: stripText, borderTopColor: color }}
+              >
+                <span>
+                  <span className="block font-display font-bold leading-snug">{c.name}</span>
+                  {hint && <span className="mt-1 hidden text-sm leading-snug opacity-75 sm:block">{hint}</span>}
+                  <span className="mt-1 block text-xs opacity-75">{productCountLabel(c.productCount)}</span>
+                </span>
+                <ArrowRight
+                  className="mt-1 hidden h-4 w-4 shrink-0 opacity-75 transition-transform group-hover:translate-x-1 sm:block"
+                  aria-hidden="true"
+                />
+              </div>
             </Link>
           );
         })}

@@ -32,3 +32,15 @@ export function contrastRatio(a: string, b: string): number {
 export function readableTextColor(background: string): string {
   return contrastRatio(background, DARK_TEXT) >= contrastRatio(background, LIGHT_TEXT) ? DARK_TEXT : LIGHT_TEXT;
 }
+
+/**
+ * The colour as it looks at `amount` opacity on a white background (0 = white,
+ * 1 = the colour itself), as a solid hex. Used for soft, pastel backgrounds.
+ * Returns the input unchanged if it is not a hex colour.
+ */
+export function mixWithWhite(hex: string, amount: number): string {
+  const rgb = parseHex(hex);
+  if (!rgb) return hex;
+  const a = Math.min(1, Math.max(0, amount));
+  return "#" + rgb.map((v) => Math.round(255 - (255 - v) * a).toString(16).padStart(2, "0")).join("").toUpperCase();
+}
