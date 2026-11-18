@@ -52,6 +52,12 @@ export interface LandingPageConfig {
   productLinkLabel: string;
   /** Public path, used for the hero and og:image. */
   heroImage: string;
+  /** Brand name as people type it, for the homepage brand boxes. */
+  brandName: string;
+  /** Public path of the brand logo shown in the homepage brand box. */
+  brandLogo: string;
+  /** Product whose photo the homepage brand box reveals. Must be one of productIds. */
+  showcaseProductId: string;
   bodyHtml: string;
   /** Answers may contain {cijena}. */
   faq: LandingFaq[];
@@ -70,6 +76,7 @@ const DJI_POCKET_3 = "176566e9-c50c-43d7-891c-ed1779b591ad"; // dji-osmo-pocket-
 const DJI_MINI_2 = "34eae4aa-b521-4b8c-a701-7d825219c01f"; // dji-mini-2-dron-fly-more-najam
 const DJI_NEO = "f188072d-4881-4396-88b6-a9927602921d"; // dji-neo-motion-fly-more-combo-najam
 const DJI_POWER_1000 = "5cb9619b-bca7-4037-b2f5-f3e15cb55555"; // dji-power-1000-mini-stanica-napajanje-powerbank-najam
+const KARCHER_PUZZI = "bb36f85a-4f87-4981-9074-ae9ba57e4ce8"; // karcher-puzzi-mokro-suhi-usisavac-najam
 
 const DELIVERY_ANSWER =
   "Da. Dostavljamo na području Zagreba i okolice, a cijena dostave navedena je uz svaki proizvod. Izvan Zagreba cijena dostave je na upit. Opremu možete i osobno preuzeti u Zagrebu.";
@@ -89,6 +96,9 @@ export const LANDING_PAGES: LandingPageConfig[] = [
     navLabel: "Najam GoPro kamera",
     productLinkLabel: "Sve GoPro kamere",
     heroImage: "/GoPro-paket-iznajmljivanje.png",
+    brandName: "GoPro",
+    brandLogo: "/brands/gopro.png",
+    showcaseProductId: GOPRO_13,
     bodyHtml: `<h2>GoPro Hero 13 ili GoPro Hero 10?</h2>
 <p>Obje kamere snimaju 5.3K video pri 60 fps i vodootporne su do 10 metara bez kućišta. Razlika je u stabilizaciji, bateriji, usporenim snimkama i lećama.</p>
 <table>
@@ -174,6 +184,9 @@ export const LANDING_PAGES: LandingPageConfig[] = [
     navLabel: "Najam JBL zvučnika",
     productLinkLabel: "Svi JBL zvučnici",
     heroImage: "/Partybox.jpg",
+    brandName: "JBL",
+    brandLogo: "/brands/jbl.svg",
+    showcaseProductId: JBL_PARTYBOX,
     bodyHtml: `<h2>JBL PartyBox Stage 320 ili JBL Charge 3?</h2>
 <p>PartyBox je pravi party zvučnik za dvorište ili salu, a Charge 3 mali prijenosni zvučnik za plažu, piknik i manja druženja.</p>
 <table>
@@ -249,6 +262,9 @@ export const LANDING_PAGES: LandingPageConfig[] = [
     navLabel: "Najam DJI",
     productLinkLabel: "Sva DJI oprema",
     heroImage: "/najam-dji-neo.jpg",
+    brandName: "DJI",
+    brandLogo: "/brands/dji.png",
+    showcaseProductId: DJI_MINI_2,
     bodyHtml: `<h2>Koji DJI model odabrati?</h2>
 <p>U ponudi imamo dvije DJI kamere, dva drona i prijenosnu stanicu za napajanje. Svi se iznajmljuju već od jednog dana.</p>
 <table>
@@ -304,6 +320,106 @@ export const LANDING_PAGES: LandingPageConfig[] = [
         question: "Koliki je minimalni najam DJI opreme?",
         answer:
           "Svi DJI modeli iznajmljuju se već od jednog dana. Za vikend ili putovanje isplativiji je najam na 3 ili 7 dana.",
+      },
+      { question: "Mogu li dobiti dostavu?", answer: DELIVERY_ANSWER },
+    ],
+  },
+  {
+    // Owns "najam Kärcher" / "najam Karcher", the way the GoPro and JBL hubs
+    // own their brand terms; the Puzzi product page targets "najam dubinskog
+    // usisavača" instead (migration 033), so the two do not compete. More
+    // Kärcher products are planned: add them to productIds. Until then this
+    // page must not repeat the single product page, hence the how-to content.
+    slug: "karcher",
+    h1: "Najam Kärcher u Zagrebu",
+    seoTitle: "Najam Kärcher (Karcher) u Zagrebu od {cijena} €/dan",
+    seoDescription:
+      "Najam Kärcher stroja za dubinsko pranje u Zagrebu od {cijena} €/dan. Kako isplanirati dan, koje mrlje izlaze i isplati li se najam, kupnja ili usluga čišćenja.",
+    intro:
+      "Kärcher stroj za dubinsko pranje kauča, tepiha, madraca i auta. Ovdje je sve što treba znati prije najma: koliko vremena treba, kojim redom prati i što stroj ne može.",
+    productIds: [KARCHER_PUZZI],
+    brandProductIds: [KARCHER_PUZZI],
+    parentCategorySlug: "alati-ciscenje",
+    navLabel: "Najam Kärcher",
+    productLinkLabel: "Najam Kärcher u Zagrebu",
+    heroImage: "/kercher%20puzzi.jpg",
+    brandName: "Kärcher",
+    brandLogo: "/brands/karcher.svg",
+    showcaseProductId: KARCHER_PUZZI,
+    bodyHtml: `<h2>Koji Kärcher možete iznajmiti</h2>
+<p>U ponudi imamo jedan Kärcher stroj: <a href="/najam/karcher-puzzi-mokro-suhi-usisavac-najam">Kärcher Puzzi 10/1</a>, ekstraktor za dubinsko pranje tekstila. Cijene po danima, slobodne termine i što dobivate uz stroj pogledajte na njegovoj stranici. Visokotlačne perače nemamo. Mnogi ga traže i kao Karcher, bez preglasa, a riječ je o istom proizvođaču i istom stroju.</p>
+<h2>Najam, kupnja ili usluga čišćenja?</h2>
+<table>
+<thead><tr><th></th><th>Najam Kärcher stroja</th><th>Kupnja stroja</th><th>Usluga čišćenja</th></tr></thead>
+<tbody>
+<tr><td>Trošak</td><td>Cijena najma po danu</td><td>Novi Puzzi 10/1 košta oko 500 eura</td><td>Po komadu namještaja ili kvadratu tepiha</td></tr>
+<tr><td>Koliko operete</td><td>Sve što stignete do večeri</td><td>Koliko želite</td><td>Samo ono što platite</td></tr>
+<tr><td>Kome odgovara</td><td>Kućanstvu koje pere jednom ili dvaput godišnje</td><td>Apartmanima, uredima, vrtićima i onima koji čiste profesionalno</td><td>Vunenim i perzijskim tepisima, svili i skupom namještaju</td></tr>
+</tbody>
+</table>
+<h2>Kako isplanirati dan s Kärcherom</h2>
+<p>Stroj se najčešće uzima na jedan dan, pa je redoslijed važan: sve se mora stići osušiti.</p>
+<ol>
+<li><strong>Ujutro madraci.</strong> Njima treba najviše vremena prije nego navečer vratite posteljinu.</li>
+<li><strong>Zatim kauč i fotelje.</strong> Trosjed je gotov za oko sat vremena.</li>
+<li><strong>Nakon toga tepisi.</strong> Po njima se ionako ne hoda dok su vlažni, pa se suše dok radite ostalo.</li>
+<li><strong>Auto na kraju.</strong> Sjedala, obloge i gepek gotovi su za sat do sat i pol, a suše se dok auto stoji s odškrinutim prozorima.</li>
+</ol>
+<p>Cijelo vrijeme držite prozore otvorene. Uz protok zraka tekstil je suh za dva do četiri sata po komadu.</p>
+<h2>Pet grešaka koje ljudi najčešće naprave</h2>
+<ul>
+<li><strong>Previše sredstva.</strong> Višak ostane u tkanini i brže veže novu prljavštinu.</li>
+<li><strong>Prebrzo povlačenje nastavka.</strong> Usisu treba vremena da izvuče vlagu, zato radite polako.</li>
+<li><strong>Preskakanje običnog usisavanja.</strong> Mrvice i dlake prvo idu van na suho.</li>
+<li><strong>Pranje kasno navečer.</strong> Tekstilu treba zrak, pa perite ujutro i zračite tijekom dana.</li>
+<li><strong>Pranje bez probe.</strong> Tkaninu prvo isprobajte na skrivenom dijelu, a na etiketi potražite oznaku W ili WS.</li>
+</ul>
+<h2>Koje mrlje izlaze, a koje ne</h2>
+<p>Svježe i organske mrlje od hrane, pića, blata i znoja izlaze odlično. Kava i vino izlaze dobro ako nisu stari godinama, a masnoća uz pravilno doziranje sredstva. Izbjeljivač i trajni marker promijene boju tkanine i to nijedan stroj ne vraća. Jače mrlje natopite otopinom pet minuta prije usisavanja.</p>
+<h2>Vodiči</h2>
+<p>Više pročitajte u vodičima <a href="/blog/karcher-puzzi-10-1-kako-radi">kako radi Kärcher Puzzi 10/1</a> i <a href="/blog/dubinsko-ciscenje-kauca-tepiha-auta">dubinsko čišćenje kauča, tepiha i auta</a>.</p>
+<h2>Kako do stroja</h2>
+<p>Odaberite datume u kalendaru na stranici stroja, dodajte ga u košaricu i pošaljite upit. Odgovaramo u roku od jednog radnog dana. Stroj preuzimate na Naserovom trgu 4 u Zagrebu ili ga dostavljamo na adresu u Zagrebu i okolici. Ostalu opremu pogledajte u kategoriji <a href="/najam/alati-ciscenje">alati i oprema za čišćenje</a>.</p>`,
+    faq: [
+      {
+        question: "Koliko košta najam Kärcher stroja?",
+        answer:
+          "Najam Kärcher Puzzi 10/1 u Zagrebu kreće od {cijena} eura dnevno, a najam na više dana povoljniji je po danu. Točnu cijenu za odabrane datume vidite u kalendaru na stranici stroja.",
+      },
+      {
+        question: "Iznajmljujete li Kärcher visokotlačni perač?",
+        answer:
+          "Ne. U ponudi imamo jedan Kärcher stroj, Puzzi 10/1 za dubinsko pranje kauča, tepiha, madraca i autosjedala. Visokotlačne perače ne iznajmljujemo.",
+      },
+      {
+        question: "Piše li se Kärcher ili Karcher?",
+        answer:
+          "Ispravno je Kärcher, s preglasom, jer je to njemački proizvođač. U pretrazi se često piše i Karcher, a riječ je o istom stroju.",
+      },
+      {
+        question: "Na koliko dana uzeti Kärcher?",
+        answer:
+          "Većini je dovoljan jedan dan: ujutro madraci, zatim kauč i tepisi, a auto na kraju. Ako želite raditi bez žurbe ili perete cijeli stan, uzmite ga na tri dana.",
+      },
+      {
+        question: "Koliko traje pranje auta Kärcher strojem?",
+        answer:
+          "Sat do sat i pol za sjedala, tekstilne obloge i gepek. Nakon pranja ostavite auto s odškrinutim prozorima nekoliko sati da se sjedala osuše.",
+      },
+      {
+        question: "Koje mrlje Kärcher Puzzi ne može ukloniti?",
+        answer:
+          "Izbjeljivač i trajni marker promijene boju tkanine, pa to nijedan stroj ne vraća. Stare mrlje od urina mogu ostaviti trag i nakon pranja, iako miris u pravilu nestane.",
+      },
+      {
+        question: "Koja je najčešća greška kod dubinskog pranja?",
+        answer:
+          "Previše sredstva za čišćenje. Višak ostane u tkanini i brže veže novu prljavštinu, pa se namještaj brže ponovno zaprlja. Pri preuzimanju objasnimo doziranje.",
+      },
+      {
+        question: "Mogu li oprati vuneni ili perzijski tepih?",
+        answer:
+          "Ne ovim strojem. Vuna se skuplja, a boje mogu pustiti, pa takve tepihe odnesite u specijaliziranu praonicu.",
       },
       { question: "Mogu li dobiti dostavu?", answer: DELIVERY_ANSWER },
     ],

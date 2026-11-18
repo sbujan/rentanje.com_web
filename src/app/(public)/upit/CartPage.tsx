@@ -15,6 +15,8 @@ import { resolveDelivery, DELIVERY_AREA_NOTE } from "@/lib/delivery";
 import { nameSchema, phoneSchema } from "@/lib/contact-fields";
 import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/utils";
+import { sumAnchorPrices } from "@/lib/anchor-price";
+import AnchorPriceNote from "@/components/public/AnchorPriceNote";
 import {
   gtagEvent,
   trackBeginCheckout,
@@ -73,6 +75,7 @@ function CartItemRow({ item, onRemove }: { item: CartItem; onRemove: () => void 
           <p>
             {item.qty > 1 ? `${item.qty} kom · ` : ""}Cijena: {formatPrice(item.totalPrice)}
           </p>
+          <AnchorPriceNote date={item.anchorDate} amount={item.anchorPrice} />
           {item.depositAmount > 0 && (
             <p className="text-amber-600">Depozit: {formatPrice(item.depositAmount)}</p>
           )}
@@ -190,6 +193,11 @@ export default function CartPage() {
 
   const subtotal = items.reduce((sum, i) => sum + i.totalPrice, 0);
   const bundleDiscountTotal = bundleEntries.reduce((sum, [, g]) => sum + g.discount, 0);
+  // Anchor counterpart of the rental subtotal (before discounts, deposit and
+  // delivery): shown only when every line carries one for the same date.
+  const anchorSubtotal = sumAnchorPrices(
+    items.map((i) => (i.anchorDate && i.anchorPrice != null ? { date: i.anchorDate, amount: i.anchorPrice } : null))
+  );
   const totalDeposit = items.reduce((sum, i) => sum + i.depositAmount, 0);
   const deliveryFee = wantsDelivery && deliveryQuote.available ? deliveryQuote.fee : 0;
   const promoDiscount = promoCode ? discount : 0;
@@ -559,6 +567,7 @@ export default function CartPage() {
                             <span className="text-amber-600"> · depozit {formatPrice(item.depositAmount)}</span>
                           )}
                         </p>
+                        <AnchorPriceNote date={item.anchorDate} amount={item.anchorPrice} />
                       </div>
                     ))}
                   </div>
@@ -576,6 +585,7 @@ export default function CartPage() {
                 <span className="text-brand-muted">Iznajmljivanje</span>
                 <span className="font-medium text-brand-text">{formatPrice(subtotal)}</span>
               </div>
+              <AnchorPriceNote date={anchorSubtotal?.date} amount={anchorSubtotal?.amount} className="text-right -mt-1" />
               {bundleDiscountTotal > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-green-600">Paket popust</span>

@@ -3,6 +3,8 @@ import Image from "next/image";
 import { CalendarCheck } from "lucide-react";
 import type { ProductWithCategory } from "@/types/product";
 import { effectiveDailyRate } from "@/lib/pricing";
+import { anchorDailyRate, getAnchorPrice } from "@/lib/anchor-price";
+import AnchorPriceNote from "./AnchorPriceNote";
 
 type Product = ProductWithCategory;
 
@@ -16,6 +18,7 @@ function AvailabilityDot({ isAvailable }: { isAvailable: boolean }) {
 
 export default function ProductCard({ product }: { product: Product }) {
   const lowestPrice = effectiveDailyRate(product);
+  const anchor = getAnchorPrice(product);
   const categoryColor = product.categories?.color ?? "#6B7280";
 
   return (
@@ -62,6 +65,7 @@ export default function ProductCard({ product }: { product: Product }) {
               od {lowestPrice} €
             </span>
             <span className="text-xs text-brand-muted">/dan</span>
+            {anchor && <AnchorPriceNote date={anchor.date} amount={anchorDailyRate(anchor)} unit="/dan" />}
           </div>
 
           <div className="flex items-center gap-1.5">

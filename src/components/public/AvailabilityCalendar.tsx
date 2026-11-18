@@ -10,8 +10,17 @@ import type { AvailabilityRecord } from "@/lib/availability";
 interface Props {
   stockQty: number;
   availability: AvailabilityRecord[];
-  minRentalDays: 1 | 3 | 7;
+  /**
+   * Fires on every change: (start, null, 0) after the first click,
+   * (start, end, days) once the range is complete, (null, null, 0) when cleared.
+   */
   onRangeChange?: (start: Date | null, end: Date | null, days: number) => void;
+  /**
+   * A picked range that contains a booked day is rejected: the message says
+   * which day, null clears it. The parent shows it next to the booking button,
+   * which stays on screen, while this calendar may be scrolled away.
+   */
+  onError?: (message: string | null) => void;
 }
 
 function getStatus(date: Date, availability: AvailabilityRecord[], stockQty: number) {
@@ -25,14 +34,8 @@ function getStatus(date: Date, availability: AvailabilityRecord[], stockQty: num
   return "available";
 }
 
-export default function AvailabilityCalendar({
-  stockQty,
-  availability,
-  minRentalDays,
-  onRangeChange,
-}: Props) {
+export default function AvailabilityCalendar({ stockQty, availability, onRangeChange, onError }: Props) {
   const [range, setRange] = useState<DateRange | undefined>();
-  const [error, setError] = useState<string | null>(null);
   // startOfDay: calendar days are midnight-local, so a plain `new Date()`
   // (with time-of-day) makes `date >= today` false for *today* — today's
   // bookings would never block.
@@ -54,15 +57,15 @@ export default function AvailabilityCalendar({
     if (r?.from && r?.to) {
       const blocked = eachDayOfInterval({ start: r.from, end: r.to }).find(isUnavailable);
       if (blocked) {
-        setError(
-          `Odabrani period uključuje nedostupan datum (${format(blocked, "d. MMM yyyy", { locale: hr })}). Molimo odaberite drugi raspon.`
-        );
         setRange(undefined);
         onRangeChange?.(null, null, 0);
+        onError?.(
+          `Odabrani period uključuje nedostupan datum (${format(blocked, "d. MMM yyyy", { locale: hr })}). Odaberite drugi raspon.`
+        );
         return;
       }
     }
-    setError(null);
+    onError?.(null);
     setRange(r);
     if (r?.from && r?.to) {
       const days = differenceInCalendarDays(r.to, r.from) + 1;
@@ -103,15 +106,8 @@ export default function AvailabilityCalendar({
     },
   };
 
-  const days =
-    range?.from && range?.to
-      ? differenceInCalendarDays(range.to, range.from) + 1
-      : 0;
-
   return (
-    <div className="space-y-3">
-      <div className="text-sm font-semibold text-brand-text">Dostupnost</div>
-
+    <div className="space-y-2">
       <div className="rounded-md border border-gray-100 overflow-hidden bg-white">
         <DayPicker
           mode="range"
@@ -125,7 +121,7 @@ export default function AvailabilityCalendar({
           styles={{
             caption: { fontFamily: "var(--font-syne)", fontWeight: 700 },
           }}
-          className="!m-0 p-3"
+          className="booking-calendar !m-0 p-3"
         />
       </div>
 
@@ -141,63 +137,6 @@ export default function AvailabilityCalendar({
           <span className="h-3 w-3 rounded-full bg-red-400" /> Nedostupno
         </span>
       </div>
-
-      {error && (
-        <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-md px-3 py-2">
-          {error}
-        </p>
-      )}
-
-      {/* Selection guidance. A range needs two clicks and users who want a
-          single day often stop after the first one, so the half-selected
-          state gets an explicit "click again" prompt (aria-live so screen
-          readers hear it too). */}
-      {!range?.from && !error && (
-        <p className="text-xs text-brand-muted">
-          Kliknite datum početka, a zatim datum kraja najma. Za najam od jednog
-          dana kliknite isti datum dva puta.
-        </p>
-      )}
-
-      {range?.from && !range.to && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
-        >
-          <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500 text-xs font-bold text-white">
-            2
-          </span>
-          <div>
-            <div>
-              Početak: <strong>{format(range.from, "d. MMM yyyy", { locale: hr })}</strong>
-            </div>
-            <div className="mt-0.5 text-xs text-amber-800">
-              Kliknite još jednom na datum kraja najma. Za jedan dan kliknite
-              ponovno isti datum.
-            </div>
-          </div>
-        </div>
-      )}
-
-      {range?.from && range.to && (
-        <div className="text-sm text-brand-muted bg-brand-light rounded-md px-3 py-2">
-          <span className="font-semibold text-brand-text">
-            {format(range.from, "d. MMM", { locale: hr })} -{" "}
-            {format(range.to, "d. MMM yyyy", { locale: hr })}
-          </span>
-          <span className="ml-2">
-            ({days} {days === 1 ? "dan" : "dana"})
-          </span>
-        </div>
-      )}
-
-      {minRentalDays > 1 && (
-        <p className="text-xs text-brand-muted">
-          Minimalni period iznajmljivanja je{" "}
-          <strong>{minRentalDays} dana</strong>.
-        </p>
-      )}
     </div>
   );
 }

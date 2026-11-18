@@ -44,9 +44,13 @@ export default function CookieBanner() {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6 pointer-events-none">
-      <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-xl shadow-lg p-5 sm:p-6 pointer-events-auto">
-        <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+    // Must never sit on top of a booking button. From lg up it keeps to the
+    // left, clear of the booking card in the right column; on a phone it is
+    // lifted above the fixed booking bar when a page has one (see
+    // .cookie-banner in globals.css).
+    <div className="cookie-banner fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6 pointer-events-none">
+      <div className="max-w-4xl mx-auto lg:mx-0 lg:max-w-xl bg-white border border-gray-200 rounded-xl shadow-lg p-5 sm:p-6 pointer-events-auto">
+        <div className="flex flex-col sm:flex-row lg:flex-col gap-4 sm:items-center lg:items-stretch">
           <div className="flex-1">
             <h2 className="font-display font-bold text-brand-text text-base mb-1">
               Ova web stranica koristi kolačiće
