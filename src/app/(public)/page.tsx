@@ -10,6 +10,7 @@ import HomeCategoryBoxes, { type HomeCategory } from "@/components/public/HomeCa
 import HomeBrandBoxes, { type HomeBrand } from "@/components/public/HomeBrandBoxes";
 import HomeCTAContact from "@/components/public/HomeCTAContact";
 import { getLandingPage } from "@/lib/landing-pages";
+import { extraProductIdsForCategory, withExtraProducts } from "@/lib/category-extras";
 import { Star, ArrowRight, Zap, Truck, BadgeCent } from "lucide-react";
 
 export const revalidate = 3600;
@@ -101,6 +102,12 @@ const HOME_BRAND_SLUGS = ["gopro-kamere", "jbl-zvucnici", "karcher", "dji"];
 
 const FEATURED_LIMIT = 8;
 
+// Product rows: on a phone one row that scrolls sideways (57 full-width cards
+// stacked would make the page endless), a regular grid from the sm breakpoint.
+const PRODUCT_ROW =
+  "flex gap-4 overflow-x-auto snap-x snap-mandatory -mx-4 px-4 pb-6 pt-2 sm:mx-0 sm:px-0 sm:pb-0 sm:pt-0 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible lg:grid-cols-4";
+const PRODUCT_ROW_ITEM = "w-[78%] max-w-[300px] shrink-0 snap-start sm:w-auto sm:max-w-none [&>*]:h-full";
+
 export default async function HomePage() {
   const supabase = createPublicClient();
 
@@ -132,10 +139,21 @@ export default async function HomePage() {
   const products = (productRows ?? []) as unknown as ProductWithCategory[];
   const featured = products.filter((p) => p.is_featured).slice(0, FEATURED_LIMIT);
 
+  const productById = new Map(products.map((p) => [p.id, p]));
+
   // Every category that has something to rent, in admin order, with its
-  // products: feeds both the category boxes and the full list below.
+  // products: feeds both the category boxes and the full list below. Same
+  // contents as the category page, so the counts agree: a category's own
+  // products plus the ones it shows from elsewhere (GoPro under audio-video).
   const groups = (categoryRows ?? [])
-    .map((c) => ({ category: c, products: products.filter((p) => p.category_id === c.id) }))
+    .map((c) => {
+      const extraIds = extraProductIdsForCategory(c.slug);
+      const extras = extraIds.map((id) => productById.get(id)).filter((p): p is ProductWithCategory => Boolean(p));
+      return {
+        category: c,
+        products: withExtraProducts(products.filter((p) => p.category_id === c.id), extras, extraIds),
+      };
+    })
     .filter((g) => g.products.length > 0);
   const homeCategories: HomeCategory[] = groups.map((g) => ({
     slug: g.category.slug,
@@ -144,7 +162,6 @@ export default async function HomePage() {
     productCount: g.products.length,
   }));
 
-  const productById = new Map(products.map((p) => [p.id, p]));
   const brands: HomeBrand[] = HOME_BRAND_SLUGS.flatMap((slug) => {
     const hub = getLandingPage(slug);
     if (!hub) return [];
@@ -222,9 +239,11 @@ export default async function HomePage() {
                 Sve <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className={PRODUCT_ROW}>
               {featured.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <div key={p.id} className={PRODUCT_ROW_ITEM}>
+                  <ProductCard product={p} />
+                </div>
               ))}
             </div>
           </div>
@@ -243,6 +262,7 @@ export default async function HomePage() {
             </h2>
             <p className="text-brand-muted text-center mb-10">
               {products.length} proizvoda, poredano po kategorijama.
+              <span className="sm:hidden"> Povucite red ulijevo za više.</span>
             </p>
             <div className="space-y-12">
               {groups.map((g) => (
@@ -260,9 +280,11 @@ export default async function HomePage() {
                       Kategorija <ArrowRight className="h-4 w-4" />
                     </Link>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                  <div className={PRODUCT_ROW}>
                     {g.products.map((p) => (
-                      <ProductCard key={p.id} product={p} />
+                      <div key={p.id} className={PRODUCT_ROW_ITEM}>
+                        <ProductCard product={p} />
+                      </div>
                     ))}
                   </div>
                 </div>

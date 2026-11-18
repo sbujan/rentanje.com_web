@@ -325,92 +325,99 @@ export const LANDING_PAGES: LandingPageConfig[] = [
     ],
   },
   {
+    // One Kärcher product, so this page must not repeat its product page:
+    // the product page sells the machine (specs, what is included, calendar),
+    // this one is the brand entry point and the how-to (plan, mistakes, stains).
     slug: "karcher",
-    h1: "Najam Kärcher usisavača u Zagrebu",
+    h1: "Najam Kärcher u Zagrebu",
     seoTitle: "Najam Kärcher u Zagrebu od {cijena} €/dan",
     seoDescription:
-      "Najam Kärcher (Karcher) Puzzi 10/1 u Zagrebu od {cijena} €/dan. Stroj za dubinsko pranje kauča, tepiha, madraca i auta, tekstil je suh za 2 do 4 sata.",
+      "Najam Kärcher (Karcher) stroja za dubinsko pranje u Zagrebu od {cijena} €/dan. Kako isplanirati dan, koje mrlje izlaze i isplati li se najam, kupnja ili usluga.",
     intro:
-      "Kärcher Puzzi 10/1 za dubinsko pranje kauča, tepiha, madraca i auta. Odaberite datume, rezervirajte online i operite sve sami u jednom danu.",
+      "Kärcher stroj za dubinsko pranje kauča, tepiha, madraca i auta. Ovdje je sve što treba znati prije najma: koliko vremena treba, kojim redom prati i što stroj ne može.",
     productIds: [KARCHER_PUZZI],
     brandProductIds: [KARCHER_PUZZI],
     parentCategorySlug: "alati-ciscenje",
     navLabel: "Najam Kärcher",
-    productLinkLabel: "Najam Kärcher u Zagrebu",
+    productLinkLabel: "Najam Kärcher: vodič i savjeti",
     heroImage: "/kercher%20puzzi.jpg",
     brandName: "Kärcher",
     brandLogo: "/brands/karcher.svg",
     showcaseProductId: KARCHER_PUZZI,
-    bodyHtml: `<h2>Koji Kärcher iznajmljujemo</h2>
-<p>Iznajmljujemo <a href="/najam/karcher-puzzi-mokro-suhi-usisavac-najam">Kärcher Puzzi 10/1</a>, profesionalni usisavač za dubinsko čišćenje i isti tip stroja koji koriste firme za čišćenje. Pod pritiskom uštrca otopinu vode i sredstva duboko u tkaninu, a zatim je usiše natrag zajedno s prljavštinom koju obični usisavač ne može dohvatiti. Mnogi ga traže i kao Karcher, bez preglasa, a riječ je o istom stroju.</p>
-<h2>Što možete oprati</h2>
-<ul>
-<li>Kauče, fotelje i tapecirane stolice</li>
-<li>Tepihe i zidne tepisone koje ne možete odnijeti u praonicu</li>
-<li>Autosjedala i unutrašnjost auta, ono što saloni naplaćuju kao kemijsko čišćenje auta</li>
-<li>Madrace i dječje autosjedalice</li>
-</ul>
-<p>Vuneni i perzijski tepisi ne peru se ovim strojem. Prije pranja provjerite etiketu i isprobajte stroj na skrivenom dijelu tkanine.</p>
+    bodyHtml: `<h2>Koji Kärcher možete iznajmiti</h2>
+<p>U ponudi imamo jedan Kärcher stroj: <a href="/najam/karcher-puzzi-mokro-suhi-usisavac-najam">Kärcher Puzzi 10/1</a>, ekstraktor za dubinsko pranje tekstila. Cijene po danima, slobodne termine i što dobivate uz stroj pogledajte na njegovoj stranici. Visokotlačne perače nemamo. Mnogi ga traže i kao Karcher, bez preglasa, a riječ je o istom proizvođaču i istom stroju.</p>
 <h2>Najam, kupnja ili usluga čišćenja?</h2>
 <table>
 <thead><tr><th></th><th>Najam Kärcher stroja</th><th>Kupnja stroja</th><th>Usluga čišćenja</th></tr></thead>
 <tbody>
-<tr><td>Trošak</td><td>Cijena najma po danu</td><td>Novi Puzzi 10/1 košta oko 500 eura</td><td>Obično po komadu namještaja ili kvadratu tepiha</td></tr>
-<tr><td>Koliko operete</td><td>Sve što stignete u vrijeme najma</td><td>Koliko želite</td><td>Samo ono što platite</td></tr>
-<tr><td>Kada se isplati</td><td>Čišćenje jednom ili dvaput godišnje</td><td>Čišćenje svaki mjesec ili za posao</td><td>Kad ne želite raditi sami</td></tr>
+<tr><td>Trošak</td><td>Cijena najma po danu</td><td>Novi Puzzi 10/1 košta oko 500 eura</td><td>Po komadu namještaja ili kvadratu tepiha</td></tr>
+<tr><td>Koliko operete</td><td>Sve što stignete do večeri</td><td>Koliko želite</td><td>Samo ono što platite</td></tr>
+<tr><td>Kome odgovara</td><td>Kućanstvu koje pere jednom ili dvaput godišnje</td><td>Apartmanima, uredima, vrtićima i onima koji čiste profesionalno</td><td>Vunenim i perzijskim tepisima, svili i skupom namještaju</td></tr>
 </tbody>
 </table>
-<h2>Što dobivate u najmu</h2>
+<h2>Kako isplanirati dan s Kärcherom</h2>
+<p>Stroj se najčešće uzima na jedan dan, pa je redoslijed važan: sve se mora stići osušiti.</p>
+<ol>
+<li><strong>Ujutro madraci.</strong> Njima treba najviše vremena prije nego navečer vratite posteljinu.</li>
+<li><strong>Zatim kauč i fotelje.</strong> Trosjed je gotov za oko sat vremena.</li>
+<li><strong>Nakon toga tepisi.</strong> Po njima se ionako ne hoda dok su vlažni, pa se suše dok radite ostalo.</li>
+<li><strong>Auto na kraju.</strong> Sjedala, obloge i gepek gotovi su za sat do sat i pol, a suše se dok auto stoji s odškrinutim prozorima.</li>
+</ol>
+<p>Cijelo vrijeme držite prozore otvorene. Uz protok zraka tekstil je suh za dva do četiri sata po komadu.</p>
+<h2>Pet grešaka koje ljudi najčešće naprave</h2>
 <ul>
-<li>Kärcher Puzzi 10/1 sa spremnikom za svježu vodu od 10 litara</li>
-<li>Nastavak za velike površine i manji nastavak za namještaj i uske dijelove</li>
-<li>Upute za korištenje, a osnovno rukovanje nauči se u par minuta</li>
+<li><strong>Previše sredstva.</strong> Višak ostane u tkanini i brže veže novu prljavštinu.</li>
+<li><strong>Prebrzo povlačenje nastavka.</strong> Usisu treba vremena da izvuče vlagu, zato radite polako.</li>
+<li><strong>Preskakanje običnog usisavanja.</strong> Mrvice i dlake prvo idu van na suho.</li>
+<li><strong>Pranje kasno navečer.</strong> Tekstilu treba zrak, pa perite ujutro i zračite tijekom dana.</li>
+<li><strong>Pranje bez probe.</strong> Tkaninu prvo isprobajte na skrivenom dijelu, a na etiketi potražite oznaku W ili WS.</li>
 </ul>
-<p>Preporučujemo originalno Kärcher sredstvo za čišćenje, koje možete zatražiti kod najma. Pri preuzimanju objasnimo doziranje i što je uključeno.</p>
-<h2>Vodiči prije prvog pranja</h2>
-<p>Detaljno smo opisali <a href="/blog/karcher-puzzi-10-1-kako-radi">kako radi Kärcher Puzzi 10/1</a> i <a href="/blog/dubinsko-ciscenje-kauca-tepiha-auta">kako dubinski očistiti kauč, tepih i auto</a>, s redoslijedom rada i mrljama koje izlaze, a koje ne.</p>
-<h2>Kako funkcionira najam Kärcher stroja</h2>
-<p>Odaberite datume u kalendaru na stranici stroja, dodajte ga u košaricu i pošaljite upit. Odgovaramo u roku od jednog radnog dana. Stroj preuzimate osobno na Naserovom trgu 4 u Zagrebu ili ga dostavljamo na adresu u Zagrebu i okolici. Kod preuzimanja se ostavlja polog koji se vraća kad stroj vratite u ispravnom stanju. Ostalu opremu pogledajte u kategoriji <a href="/najam/alati-ciscenje">alati i oprema za čišćenje</a>.</p>`,
+<h2>Koje mrlje izlaze, a koje ne</h2>
+<p>Svježe i organske mrlje od hrane, pića, blata i znoja izlaze odlično. Kava i vino izlaze dobro ako nisu stari godinama, a masnoća uz pravilno doziranje sredstva. Izbjeljivač i trajni marker promijene boju tkanine i to nijedan stroj ne vraća. Jače mrlje natopite otopinom pet minuta prije usisavanja.</p>
+<h2>Vodiči</h2>
+<p>Više pročitajte u vodičima <a href="/blog/karcher-puzzi-10-1-kako-radi">kako radi Kärcher Puzzi 10/1</a> i <a href="/blog/dubinsko-ciscenje-kauca-tepiha-auta">dubinsko čišćenje kauča, tepiha i auta</a>.</p>
+<h2>Kako do stroja</h2>
+<p>Odaberite datume u kalendaru na stranici stroja, dodajte ga u košaricu i pošaljite upit. Odgovaramo u roku od jednog radnog dana. Stroj preuzimate na Naserovom trgu 4 u Zagrebu ili ga dostavljamo na adresu u Zagrebu i okolici. Ostalu opremu pogledajte u kategoriji <a href="/najam/alati-ciscenje">alati i oprema za čišćenje</a>.</p>`,
     faq: [
       {
         question: "Koliko košta najam Kärcher stroja?",
         answer:
-          "Najam Kärcher Puzzi 10/1 u Zagrebu kreće od {cijena} eura dnevno. Najam na 3 ili 7 dana povoljniji je po danu, a točnu cijenu za odabrane datume vidite u kalendaru na stranici stroja.",
+          "Najam Kärcher Puzzi 10/1 u Zagrebu kreće od {cijena} eura dnevno, a najam na više dana povoljniji je po danu. Točnu cijenu za odabrane datume vidite u kalendaru na stranici stroja.",
       },
       {
-        question: "Koji Kärcher model iznajmljujete?",
+        question: "Iznajmljujete li Kärcher visokotlačni perač?",
         answer:
-          "Kärcher Puzzi 10/1, profesionalni usisavač za dubinsko čišćenje sa spremnikom za svježu vodu od 10 litara. To je isti tip stroja koji koriste firme za čišćenje.",
+          "Ne. U ponudi imamo jedan Kärcher stroj, Puzzi 10/1 za dubinsko pranje kauča, tepiha, madraca i autosjedala. Visokotlačne perače ne iznajmljujemo.",
       },
       {
-        question: "Što mogu očistiti Kärcher Puzzi strojem?",
+        question: "Piše li se Kärcher ili Karcher?",
         answer:
-          "Kauče, fotelje, tapecirane stolice, tepihe, zidne tepisone, madrace, autosjedala i dječje autosjedalice. Vuneni i perzijski tepisi ne peru se ovim strojem, a osjetljive tkanine prvo isprobajte na skrivenom dijelu.",
+          "Ispravno je Kärcher, s preglasom, jer je to njemački proizvođač. U pretrazi se često piše i Karcher, a riječ je o istom stroju.",
       },
       {
-        question: "Je li Kärcher Puzzi stroj za kemijsko čišćenje?",
+        question: "Na koliko dana uzeti Kärcher?",
         answer:
-          "Da, to je ono što se obično zove kemijsko čišćenje kauča ili auta. Stručno se zove ekstrakcijsko dubinsko pranje: stroj uštrca otopinu vode i sredstva u tkaninu, a zatim je zajedno s prljavštinom usiše natrag.",
+          "Većini je dovoljan jedan dan: ujutro madraci, zatim kauč i tepisi, a auto na kraju. Ako želite raditi bez žurbe ili perete cijeli stan, uzmite ga na tri dana.",
       },
       {
-        question: "Koliko se tekstil suši nakon pranja?",
+        question: "Koliko traje pranje auta Kärcher strojem?",
         answer:
-          "Obično 2 do 4 sata uz dobru ventilaciju. Puzzi izvlači većinu vlage, pa je sušenje puno brže nego kod ručnog pranja.",
+          "Sat do sat i pol za sjedala, tekstilne obloge i gepek. Nakon pranja ostavite auto s odškrinutim prozorima nekoliko sati da se sjedala osuše.",
       },
       {
-        question: "Je li Kärcher Puzzi težak za korištenje?",
+        question: "Koje mrlje Kärcher Puzzi ne može ukloniti?",
         answer:
-          "Ne. Uz najam dobivate upute, a osnovno rukovanje nauči se u par minuta. Površinu prvo usišite običnim usisavačem, a zatim radite polako, u ravnim potezima.",
+          "Izbjeljivač i trajni marker promijene boju tkanine, pa to nijedan stroj ne vraća. Stare mrlje od urina mogu ostaviti trag i nakon pranja, iako miris u pravilu nestane.",
       },
       {
-        question: "Trebam li kupiti sredstvo za čišćenje?",
+        question: "Koja je najčešća greška kod dubinskog pranja?",
         answer:
-          "Preporučujemo originalno Kärcher sredstvo, koje možete zatražiti kod najma. Pri preuzimanju objasnimo doziranje i što je uključeno.",
+          "Previše sredstva za čišćenje. Višak ostane u tkanini i brže veže novu prljavštinu, pa se namještaj brže ponovno zaprlja. Pri preuzimanju objasnimo doziranje.",
       },
       {
-        question: "Treba li polog za najam Kärcher stroja?",
+        question: "Mogu li oprati vuneni ili perzijski tepih?",
         answer:
-          "Da. Polog se vraća u cijelosti nakon povrata stroja u ispravnom stanju. Iznos je naveden na stranici stroja, uz cijenu najma.",
+          "Ne ovim strojem. Vuna se skuplja, a boje mogu pustiti, pa takve tepihe odnesite u specijaliziranu praonicu.",
       },
       { question: "Mogu li dobiti dostavu?", answer: DELIVERY_ANSWER },
     ],

@@ -5,12 +5,18 @@
 -- the anchor must keep the old number. A product listed after the reference
 -- date takes the price and the date of its first listing.
 --
--- Seed, done once here:
---   products created up to 10.09.2026  -> current prices, dated 10.09.2026
---   products created after 10.09.2026  -> current prices, dated the day they were created
--- Both rest on the owner's statement that prices have not changed since then.
--- Products that are not active get no anchor yet: the trigger below stamps it
--- the first time they go live.
+-- Seed, done once here: products that were on the site well before the
+-- reference date (created before 01.09.2026) get their current prices, dated
+-- 10.09.2026. This rests on the owner's statement that prices have not
+-- changed since then.
+--
+-- NOT seeded: the 8 products added as drafts on 07.09.2026 and 12.10.2026.
+-- Their creation date is not their listing date, so their anchor date has to
+-- come from the owner. Until it is set they show no anchor line. Add it here
+-- (UPDATE ... WHERE slug = ...) before this migration reaches main.
+--
+-- Products that are not active get no anchor either: the trigger below stamps
+-- it the moment they go live.
 
 ALTER TABLE products
   ADD COLUMN IF NOT EXISTS anchor_price_per_day   numeric(10,2),
@@ -25,20 +31,23 @@ UPDATE products SET
   anchor_price_per_day   = price_per_day,
   anchor_price_per_3days = price_per_3days,
   anchor_price_per_7days = price_per_7days,
-  anchor_price_date      = CASE
-    WHEN created_at < TIMESTAMPTZ '2026-09-11 00:00:00+02' THEN DATE '2026-09-10'
-    ELSE (created_at AT TIME ZONE 'Europe/Zagreb')::date
-  END
+  anchor_price_date      = DATE '2026-09-10'
 WHERE is_active
-  AND anchor_price_date IS NULL;
+  AND anchor_price_date IS NULL
+  AND created_at < TIMESTAMPTZ '2026-09-01 00:00:00+02';
 
--- First listing of a product: remember the price it went live with.
+-- First listing of a product: remember the price it went live with. Fires
+-- only when a product becomes active (new active row, or inactive -> active),
+-- never on an ordinary edit, so a later price change cannot become the anchor
+-- and an active product waiting for its date is not stamped with today's.
 CREATE OR REPLACE FUNCTION public.products_set_anchor_price()
 RETURNS trigger
 LANGUAGE plpgsql
 AS $fn$
 BEGIN
-  IF NEW.is_active AND NEW.anchor_price_date IS NULL THEN
+  IF NEW.is_active
+     AND NEW.anchor_price_date IS NULL
+     AND (TG_OP = 'INSERT' OR NOT COALESCE(OLD.is_active, false)) THEN
     NEW.anchor_price_per_day   := NEW.price_per_day;
     NEW.anchor_price_per_3days := NEW.price_per_3days;
     NEW.anchor_price_per_7days := NEW.price_per_7days;
