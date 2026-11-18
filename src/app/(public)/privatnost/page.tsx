@@ -3,6 +3,8 @@ import PageHero from "@/components/public/PageHero";
 
 export const metadata: Metadata = {
   title: "Politika privatnosti",
+  // Kept out of the index on purpose; the canonical only states the one true URL.
+  alternates: { canonical: "https://rentanje.com/privatnost" },
   robots: { index: false },
 };
 

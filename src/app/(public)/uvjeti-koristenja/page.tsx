@@ -4,6 +4,8 @@ import { SITE_PHONE, SITE_PHONE_HREF } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Uvjeti korištenja",
+  // Kept out of the index on purpose; the canonical only states the one true URL.
+  alternates: { canonical: "https://rentanje.com/uvjeti-koristenja" },
   robots: { index: false },
 };
 
