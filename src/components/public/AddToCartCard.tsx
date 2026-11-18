@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { hr } from "date-fns/locale";
@@ -69,6 +69,15 @@ export default function AddToCartCard({ product, availability }: Props) {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [calendarError, setCalendarError] = useState<string | null>(null);
+
+  // Tell the page a fixed booking bar is on screen (phones), so the cookie
+  // banner can sit above it instead of covering the button.
+  useEffect(() => {
+    document.body.dataset.bookingBar = "1";
+    return () => {
+      delete document.body.dataset.bookingBar;
+    };
+  }, []);
 
   const tiers = [
     { label: "1 dan", tierDays: 1, price: product.price_per_day, show: product.min_rental_days <= 1 },

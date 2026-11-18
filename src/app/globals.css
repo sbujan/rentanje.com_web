@@ -86,3 +86,12 @@ h1, h2, h3, h4, h5, h6 {
     max-height: calc(100dvh - 6rem);
   }
 }
+
+/* Cookie banner vs. the fixed booking bar on phones (product pages): lift the
+   banner above the bar so a first-time visitor can still reach the button.
+   The bar is up to about 100px tall with the anchor price line wrapped. */
+@media (max-width: 1023.98px) {
+  body[data-booking-bar] .cookie-banner {
+    bottom: 6.25rem;
+  }
+}
