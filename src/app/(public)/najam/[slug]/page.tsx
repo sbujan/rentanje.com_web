@@ -3,6 +3,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { createPublicClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { cleanSeoTitle, fillPrice, productTitleField } from "@/lib/seo";
+import { extraProductIdsForCategory, withExtraProducts } from "@/lib/category-extras";
 import { effectiveDailyRate } from "@/lib/pricing";
 import { getCategoryImageUrl } from "@/lib/category-images";
 import { pickNeighbors } from "@/lib/related";
@@ -245,10 +246,24 @@ export default async function NajamSlugPage({ params }: Props) {
       throw new Error("Failed to load category products");
     }
 
+    // Products from another primary category that also belong here (e.g. GoPro
+    // under audio-video). Supplementary: log and carry on without them.
+    const extraIds = extraProductIdsForCategory(category.slug);
+    let extras: ProductWithCategory[] = [];
+    if (extraIds.length > 0) {
+      const { data, error: extrasErr } = await supabase
+        .from("products")
+        .select(PRODUCT_WITH_CATEGORY)
+        .in("id", extraIds)
+        .eq("is_active", true);
+      if (extrasErr) console.error("Category extra products query failed:", extrasErr);
+      extras = (data ?? []) as unknown as ProductWithCategory[];
+    }
+
     return (
       <CategoryPage
         category={category}
-        products={(products ?? []) as unknown as ProductWithCategory[]}
+        products={withExtraProducts((products ?? []) as unknown as ProductWithCategory[], extras, extraIds)}
         landings={landingPagesForCategory(category.slug)}
       />
     );

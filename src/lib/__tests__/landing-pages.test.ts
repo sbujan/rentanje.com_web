@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   FALLBACK_CATEGORY_SLUGS,
@@ -70,6 +72,22 @@ describe("LANDING_PAGES", () => {
     }
     expect(dji.seoTitle.startsWith("Najam DJI")).toBe(true);
     expect(dji.seoDescription).toContain("iznajmljivanje DJI");
+  });
+
+  it("gives every hub a homepage brand box: logo file and a showcase product it lists", () => {
+    for (const l of LANDING_PAGES) {
+      expect(l.brandName.trim(), l.slug).not.toBe("");
+      expect(existsSync(join(process.cwd(), "public", l.brandLogo)), l.brandLogo).toBe(true);
+      expect(l.productIds, l.slug).toContain(l.showcaseProductId);
+    }
+  });
+
+  it("targets 'najam Kärcher' on the Kärcher hub and mentions the Karcher spelling", () => {
+    const karcher = getLandingPage("karcher")!;
+    expect(karcher.seoTitle.startsWith("Najam Kärcher")).toBe(true);
+    expect(karcher.seoDescription).toContain("Karcher");
+    expect(karcher.bodyHtml).toContain("Karcher");
+    expect(landingPagesForCategory("alati-ciscenje").map((l) => l.slug)).toEqual(["karcher"]);
   });
 
   it("has a complete FAQ", () => {

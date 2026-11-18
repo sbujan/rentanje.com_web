@@ -6,8 +6,10 @@ import { jsonLdSafe } from "@/lib/seo";
 import { SOCIAL_LINKS } from "@/lib/site";
 import type { ProductWithCategory } from "@/types/product";
 import ProductCard from "@/components/public/ProductCard";
-import { CategoryAccordion } from "@/components/ui/interactive-image-accordion";
+import HomeCategoryBoxes, { type HomeCategory } from "@/components/public/HomeCategoryBoxes";
+import HomeBrandBoxes, { type HomeBrand } from "@/components/public/HomeBrandBoxes";
 import HomeCTAContact from "@/components/public/HomeCTAContact";
+import { getLandingPage } from "@/lib/landing-pages";
 import { Star, ArrowRight, Zap, Truck, BadgeCent } from "lucide-react";
 
 export const revalidate = 3600;
@@ -94,20 +96,26 @@ const whyUs = [
   },
 ];
 
+/** Brand boxes, in the order they appear on the homepage. */
+const HOME_BRAND_SLUGS = ["gopro-kamere", "jbl-zvucnici", "karcher", "dji"];
+
+const FEATURED_LIMIT = 8;
+
 export default async function HomePage() {
   const supabase = createPublicClient();
 
   const [
-    { data: featured, error: featuredErr },
+    { data: productRows, error: productsErr },
+    { data: categoryRows, error: categoriesErr },
     { data: testimonials, error: testimonialsErr },
   ] = await Promise.all([
     supabase
       .from("products")
       .select("*, categories(name, color, slug)")
       .eq("is_active", true)
-      .eq("is_featured", true)
       .order("sort_order")
-      .limit(8),
+      .order("slug"),
+    supabase.from("categories").select("id, name, slug, color, sort_order").order("sort_order"),
     supabase
       .from("testimonials")
       .select("*")
@@ -117,9 +125,41 @@ export default async function HomePage() {
   ]);
 
   // Homepage degrades gracefully (sections hide if empty), but log failures.
-  if (featuredErr || testimonialsErr) {
-    console.error("Homepage data query failed:", featuredErr || testimonialsErr);
+  if (productsErr || categoriesErr || testimonialsErr) {
+    console.error("Homepage data query failed:", productsErr || categoriesErr || testimonialsErr);
   }
+
+  const products = (productRows ?? []) as unknown as ProductWithCategory[];
+  const featured = products.filter((p) => p.is_featured).slice(0, FEATURED_LIMIT);
+
+  // Every category that has something to rent, in admin order, with its
+  // products: feeds both the category boxes and the full list below.
+  const groups = (categoryRows ?? [])
+    .map((c) => ({ category: c, products: products.filter((p) => p.category_id === c.id) }))
+    .filter((g) => g.products.length > 0);
+  const homeCategories: HomeCategory[] = groups.map((g) => ({
+    slug: g.category.slug,
+    name: g.category.name,
+    color: g.category.color,
+    productCount: g.products.length,
+  }));
+
+  const productById = new Map(products.map((p) => [p.id, p]));
+  const brands: HomeBrand[] = HOME_BRAND_SLUGS.flatMap((slug) => {
+    const hub = getLandingPage(slug);
+    if (!hub) return [];
+    const showcase = productById.get(hub.showcaseProductId);
+    return [
+      {
+        slug: hub.slug,
+        name: hub.brandName,
+        label: hub.navLabel,
+        logo: hub.brandLogo,
+        productImage: showcase?.hero_image_url ?? null,
+        productName: showcase?.name ?? null,
+      },
+    ];
+  });
 
   return (
     <>
@@ -164,16 +204,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* WHAT CAN YOU RENT — Image Accordion */}
-      <CategoryAccordion />
+      {/* CATEGORIES */}
+      <HomeCategoryBoxes categories={homeCategories} />
 
       {/* FEATURED PRODUCTS */}
-      {featured && featured.length > 0 && (
+      {featured.length > 0 && (
         <section className="bg-[#F0F4FF] py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-between mb-8">
               <h2 className="font-display text-2xl sm:text-3xl font-bold text-brand-text">
-                Popularna oprema
+                Istaknuti proizvodi
               </h2>
               <Link
                 href="/oprema"
@@ -183,8 +223,49 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {(featured as unknown as ProductWithCategory[]).map((p) => (
+              {featured.map((p) => (
                 <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* BRANDS */}
+      <HomeBrandBoxes brands={brands} />
+
+      {/* ALL PRODUCTS, grouped by category */}
+      {groups.length > 0 && (
+        <section className="bg-[#F0F4FF] py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <h2 className="font-display text-2xl sm:text-3xl font-bold text-brand-text mb-2 text-center">
+              Sva oprema za najam
+            </h2>
+            <p className="text-brand-muted text-center mb-10">
+              {products.length} proizvoda, poredano po kategorijama.
+            </p>
+            <div className="space-y-12">
+              {groups.map((g) => (
+                <div key={g.category.slug}>
+                  <div className="flex items-center justify-between mb-5">
+                    <h3 className="font-display text-xl sm:text-2xl font-bold text-brand-text">
+                      <Link href={`/najam/${g.category.slug}`} className="hover:text-brand-primary transition-colors">
+                        {g.category.name}
+                      </Link>
+                    </h3>
+                    <Link
+                      href={`/najam/${g.category.slug}`}
+                      className="flex items-center gap-1 text-sm font-semibold text-brand-primary hover:text-brand-dark shrink-0"
+                    >
+                      Kategorija <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    {g.products.map((p) => (
+                      <ProductCard key={p.id} product={p} />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </div>
