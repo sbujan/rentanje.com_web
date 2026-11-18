@@ -190,19 +190,21 @@ export default function BundleAddToCart({ bundle, products, availability }: Prop
     setTimeout(() => router.push("/upit"), 600);
   }
 
-  return (
-    <div className="bg-white rounded-xl shadow-card p-5 space-y-5 border border-gray-100">
-      <a
-        href={SITE_PHONE_HREF}
-        onClick={trackPhoneClick}
-        className="flex items-center gap-2 text-brand-primary font-bold hover:text-brand-dark transition-colors"
-      >
-        <Phone className="h-5 w-5" />
-        {SITE_PHONE}
-      </a>
+  const rangeLabel =
+    range?.from && range?.to
+      ? `${format(range.from, "d. MMM", { locale: hr })} - ${format(range.to, "d. MMM yyyy", { locale: hr })}`
+      : "";
+  const startOnly = Boolean(range?.from && !range?.to);
+  const tooShort = days > 0 && days < minRentalDays;
 
-      <div>
-        <p className="text-sm font-semibold text-brand-text mb-2">Odaberite datume najma</p>
+  // Same layout rule as the product booking card (AddToCartCard): on desktop
+  // the card is sticky and capped at the viewport height, the calendar
+  // scrolls inside it and the footer with the total and the button is pinned,
+  // so the button never ends up below the fold on a laptop.
+  return (
+    <div className="bg-white rounded-xl shadow-card border border-gray-100 flex flex-col lg:max-h-[calc(100dvh-6rem)]">
+      <div className="p-4 sm:p-5 lg:p-4 space-y-3 lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
+        <p className="text-sm font-semibold text-brand-text">Odaberite datume najma</p>
         <div className="rounded-md border border-gray-100 overflow-hidden">
           <DayPicker
             mode="range"
@@ -220,55 +222,74 @@ export default function BundleAddToCart({ bundle, products, availability }: Prop
             }}
             locale={hr}
             numberOfMonths={1}
-            className="!m-0 p-3"
+            className="booking-calendar !m-0 p-3"
           />
         </div>
-        {error && (
-          <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-md px-3 py-2 mt-2">
-            {error}
-          </p>
-        )}
-        {minRentalDays > 1 && (
-          <p className="text-xs text-brand-muted mt-2">
-            Minimalni period: <strong>{minRentalDays} dana</strong>.
-          </p>
-        )}
+        <a
+          href={SITE_PHONE_HREF}
+          onClick={trackPhoneClick}
+          className="inline-flex items-center gap-2 text-sm text-brand-primary font-bold hover:text-brand-dark transition-colors"
+        >
+          <Phone className="h-4 w-4" />
+          {SITE_PHONE}
+        </a>
       </div>
 
-      {days > 0 && (
-        <div className="bg-brand-light rounded-md px-3 py-3 text-sm space-y-1">
-          <div className="flex justify-between">
-            <span className="text-brand-muted">Iznajmljivanje ({days} {days === 1 ? "dan" : "dana"})</span>
-            <span className="font-semibold text-brand-text">{subtotal.toFixed(0)} €</span>
-          </div>
-          {discount > 0 && (
-            <div className="flex justify-between text-green-600">
-              <span>Paket popust</span>
-              <span className="font-semibold">- {discount.toFixed(0)} €</span>
+      <div className="border-t border-gray-100 p-4 sm:px-5 lg:px-4 space-y-2.5 rounded-b-xl bg-white">
+        <div role="status" aria-live="polite">
+          {error ? (
+            <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-md px-3 py-2">{error}</p>
+          ) : startOnly && range?.from ? (
+            <p className="text-sm text-amber-900 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+              Početak: <strong>{format(range.from, "d. MMM yyyy", { locale: hr })}</strong>. Kliknite još datum kraja
+              najma.
+            </p>
+          ) : tooShort ? (
+            <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-md px-3 py-2">
+              Minimalni period je {minRentalDays} dana. Odabrali ste {days}. Odaberite dulji raspon.
+            </p>
+          ) : days > 0 ? (
+            <div className="text-sm space-y-1">
+              <div className="flex justify-between gap-3">
+                <span className="text-brand-muted">
+                  {rangeLabel} ({days} {days === 1 ? "dan" : "dana"})
+                </span>
+                <span className="font-semibold text-brand-text">{subtotal.toFixed(0)} €</span>
+              </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>Paket popust</span>
+                  <span className="font-semibold">- {discount.toFixed(0)} €</span>
+                </div>
+              )}
+              <div className="flex justify-between pt-1.5 border-t border-gray-200/60">
+                <span className="font-bold text-brand-text">Ukupno</span>
+                <span className="font-price font-bold text-brand-primary text-lg">{total.toFixed(0)} €</span>
+              </div>
+              <AnchorPriceNote date={anchorSubtotal?.date} amount={anchorTotal} className="text-right" />
             </div>
+          ) : (
+            <p className="text-xs text-brand-muted">
+              Kliknite datum početka, a zatim datum kraja najma.
+              {minRentalDays > 1 && (
+                <>
+                  {" "}
+                  Minimalni period je <strong>{minRentalDays} dana</strong>.
+                </>
+              )}
+            </p>
           )}
-          <div className="flex justify-between pt-2 border-t border-gray-200/60">
-            <span className="font-bold text-brand-text">Ukupno</span>
-            <span className="font-price font-bold text-brand-primary text-lg">{total.toFixed(0)} €</span>
-          </div>
-          <AnchorPriceNote date={anchorSubtotal?.date} amount={anchorTotal} className="text-right" />
         </div>
-      )}
 
-      <button
-        onClick={handleAdd}
-        disabled={!canAdd || added}
-        className="w-full flex items-center justify-center gap-2 bg-brand-primary text-white font-bold py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-brand-dark transition-colors active:scale-95"
-      >
-        <ShoppingCart className="h-5 w-5" />
-        {added ? "Dodano! ✓" : "Dodaj paket u košaricu"}
-      </button>
-
-      {!canAdd && days > 0 && days < minRentalDays && (
-        <p className="text-xs text-red-500 text-center">
-          Minimalni period je {minRentalDays} dana. Odabrali ste {days}.
-        </p>
-      )}
+        <button
+          onClick={handleAdd}
+          disabled={!canAdd || added}
+          className="w-full flex items-center justify-center gap-2 bg-brand-primary text-white font-bold py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-brand-dark transition-colors active:scale-95"
+        >
+          <ShoppingCart className="h-5 w-5" />
+          {added ? "Dodano! ✓" : "Dodaj paket u košaricu"}
+        </button>
+      </div>
     </div>
   );
 }

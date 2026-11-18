@@ -299,22 +299,8 @@ export default function ProductPage({ product, availability, tags, relatedProduc
         )}
       </main>
 
-      {/* Mobile sticky booking bar */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center justify-between gap-3">
-        <div>
-          <span className="font-price font-bold text-brand-primary text-lg">
-            od {effectiveDailyRate(product)} €
-          </span>
-          <span className="text-xs text-brand-muted">/dan</span>
-                  {anchor && <AnchorPriceNote date={anchor.date} amount={anchorDailyRate(anchor)} unit="/dan" />}
-        </div>
-        <a
-          href="#rezervacija"
-          className="shrink-0 bg-brand-primary text-white font-bold px-6 py-2.5 rounded-lg hover:bg-brand-dark transition-colors"
-        >
-          Rezerviraj
-        </a>
-      </div>
+      {/* The mobile booking bar lives in AddToCartCard: it has to follow the
+          selected dates, which only that client component knows. */}
     </>
   );
 }

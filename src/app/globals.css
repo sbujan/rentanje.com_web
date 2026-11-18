@@ -60,3 +60,18 @@ h1, h2, h3, h4, h5, h6 {
     0 20px 40px -10px var(--glow, #6B7280),
     0 6px 12px rgba(0, 0, 0, 0.08);
 }
+
+/* Booking calendar (react-day-picker). The library sets its size variables on
+   .rdp itself, so they are overridden on the same element. From the lg
+   breakpoint the booking card is sticky and has to fit a 13" laptop screen
+   together with the price and the button, hence the smaller cells. */
+.rdp.booking-calendar .rdp-months {
+  justify-content: center;
+}
+@media (min-width: 1024px) {
+  .rdp.booking-calendar {
+    --rdp-cell-size: 33px;
+    --rdp-caption-font-size: 16px;
+    padding: 0.5rem;
+  }
+}

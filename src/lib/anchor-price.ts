@@ -59,6 +59,15 @@ export function anchorPriceText(date: string, amount: number, unit = ""): string
 }
 
 /**
+ * One line for the price tiers shown side by side, each amount named so it
+ * cannot be mistaken: "Cijena na 10.09.2026: 1 dan 40 €, 3 dana 70 €".
+ */
+export function anchorTiersText(date: string, tiers: { label: string; amount: number }[]): string {
+  const parts = tiers.map((t) => `${t.label} ${formatPrice(t.amount)}`).join(", ");
+  return `${ANCHOR_PRICE_LABEL} ${formatAnchorDate(date)}: ${parts}`;
+}
+
+/**
  * One anchor line for several prices added together (a bundle, the cart).
  * Only when every part has an anchor and all refer to the same date;
  * otherwise there is no single true "price on date" to show.

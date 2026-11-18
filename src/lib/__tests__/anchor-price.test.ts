@@ -3,6 +3,7 @@ import {
   anchorDailyRate,
   anchorPriceText,
   anchorRentalPrice,
+  anchorTiersText,
   formatAnchorDate,
   getAnchorPrice,
   sumAnchorPrices,
@@ -65,6 +66,17 @@ describe("text", () => {
     expect(anchorPriceText("2026-09-10", 30, "/dan").replace(NBSP, " ")).toBe("Cijena na 10.09.2026: 30 €/dan");
     expect(anchorPriceText("2026-09-10", 70).replace(NBSP, " ")).toBe("Cijena na 10.09.2026: 70 €");
     expect(anchorPriceText("2026-09-10", 30)).not.toMatch(/[—–]/);
+  });
+});
+
+describe("anchorTiersText", () => {
+  it("names every tier in one line", () => {
+    const text = anchorTiersText("2026-09-10", [
+      { label: "1 dan", amount: 40 },
+      { label: "3 dana", amount: 70 },
+      { label: "7 dana", amount: 100 },
+    ]).replace(NBSP, " ");
+    expect(text).toBe("Cijena na 10.09.2026: 1 dan 40 €, 3 dana 70 €, 7 dana 100 €");
   });
 });
 
