@@ -327,7 +327,7 @@ export const LANDING_PAGES: LandingPageConfig[] = [
   {
     // Owns "najam Kärcher" / "najam Karcher", the way the GoPro and JBL hubs
     // own their brand terms; the Puzzi product page targets "najam dubinskog
-    // usisavača" instead (migration 032), so the two do not compete. More
+    // usisavača" instead (migration 033), so the two do not compete. More
     // Kärcher products are planned: add them to productIds. Until then this
     // page must not repeat the single product page, hence the how-to content.
     slug: "karcher",

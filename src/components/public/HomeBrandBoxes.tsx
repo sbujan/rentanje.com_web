@@ -23,7 +23,8 @@ export default function HomeBrandBoxes({ brands }: { brands: HomeBrand[] }) {
   if (brands.length === 0) return null;
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+    <section className="bg-[#F0F4FF] py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
       <h2 className="font-display text-2xl sm:text-3xl font-bold text-brand-text mb-2 text-center">
         Najam po brendu
       </h2>
@@ -67,6 +68,7 @@ export default function HomeBrandBoxes({ brands }: { brands: HomeBrand[] }) {
             </div>
           </Link>
         ))}
+      </div>
       </div>
     </section>
   );

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { mixWithWhite, readableTextColor } from "@/lib/color";
+import { mixWithWhite, readableTextColor, safeHexColor } from "@/lib/color";
 
 export interface HomeCategoryImage {
   src: string;
@@ -90,7 +90,7 @@ export default function HomeCategoryBoxes({ categories }: { categories: HomeCate
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
         {categories.map((c) => {
           const hint = CATEGORY_HINT[c.slug];
-          const color = c.color ?? "#01D2D6";
+          const color = safeHexColor(c.color, "#01D2D6");
           // Label strip: a soft tint of the category colour under a thin line
           // of the full colour. The text colour follows the tint for contrast.
           const stripBg = mixWithWhite(color, STRIP_TINT);

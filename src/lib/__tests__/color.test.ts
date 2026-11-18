@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { contrastRatio, mixWithWhite, readableTextColor } from "@/lib/color";
+import { contrastRatio, mixWithWhite, readableTextColor, safeHexColor } from "@/lib/color";
 
 // The category colours in the database on 2026-11-18.
 const CATEGORY_COLORS = ["#5B8DEF", "#01D2D6", "#F59E0B", "#EC4899", "#FF6B6B", "#FF8E6C", "#6EE7B7", "#FFD166", "#BCA7F0"];
@@ -38,5 +38,14 @@ describe("mixWithWhite", () => {
       expect(readableTextColor(soft), c).toBe("#1A1A2E");
       expect(contrastRatio(soft, "#1A1A2E"), c).toBeGreaterThanOrEqual(7);
     }
+  });
+});
+
+describe("safeHexColor", () => {
+  it("passes hex colours and replaces anything else", () => {
+    expect(safeHexColor("#5B8DEF", "#000000")).toBe("#5B8DEF");
+    expect(safeHexColor(" #fd6 ", "#000000")).toBe("#fd6");
+    expect(safeHexColor(null, "#000000")).toBe("#000000");
+    expect(safeHexColor("red; background-image: url(https://example.test/x)", "#000000")).toBe("#000000");
   });
 });

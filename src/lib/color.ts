@@ -44,3 +44,8 @@ export function mixWithWhite(hex: string, amount: number): string {
   const a = Math.min(1, Math.max(0, amount));
   return "#" + rgb.map((v) => Math.round(255 - (255 - v) * a).toString(16).padStart(2, "0")).join("").toUpperCase();
 }
+
+/** The colour if it is a plain hex colour, otherwise the fallback. For values that end up in a style attribute. */
+export function safeHexColor(value: string | null | undefined, fallback: string): string {
+  return value && parseHex(value) ? value.trim() : fallback;
+}

@@ -202,7 +202,7 @@ export default function BundleAddToCart({ bundle, products, availability }: Prop
   // scrolls inside it and the footer with the total and the button is pinned,
   // so the button never ends up below the fold on a laptop.
   return (
-    <div className="bg-white rounded-xl shadow-card border border-gray-100 flex flex-col lg:max-h-[calc(100dvh-6rem)]">
+    <div className="booking-card bg-white rounded-xl shadow-card border border-gray-100 flex flex-col">
       <div className="p-4 sm:p-5 lg:p-4 space-y-3 lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
         <p className="text-sm font-semibold text-brand-text">Odaberite datume najma</p>
         <div className="rounded-md border border-gray-100 overflow-hidden">

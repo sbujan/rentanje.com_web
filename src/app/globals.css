@@ -75,3 +75,14 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0.5rem;
   }
 }
+
+/* Booking cards are sticky from the lg breakpoint and must fit the screen so
+   their pinned footer (total + button) stays visible. 100vh first as the
+   fallback for browsers without dynamic viewport units. 6rem = the sticky
+   offset under the navbar (5rem) plus a 1rem gap at the bottom. */
+@media (min-width: 1024px) {
+  .booking-card {
+    max-height: calc(100vh - 6rem);
+    max-height: calc(100dvh - 6rem);
+  }
+}
