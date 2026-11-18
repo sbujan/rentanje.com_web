@@ -11,9 +11,9 @@
 -- changed since then.
 --
 -- NOT seeded: the 8 products added as drafts on 07.09.2026 and 12.10.2026.
--- Their creation date is not their listing date, so their anchor date has to
--- come from the owner. Until it is set they show no anchor line. Add it here
--- (UPDATE ... WHERE slug = ...) before this migration reaches main.
+-- Their creation date is not their listing date (their photos were uploaded
+-- on 26.10 and 30.10), so the anchor date has to come from the owner. Until a
+-- later migration sets it they show no anchor line.
 --
 -- Products that are not active get no anchor either: the trigger below stamps
 -- it the moment they go live.
