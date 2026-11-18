@@ -325,21 +325,23 @@ export const LANDING_PAGES: LandingPageConfig[] = [
     ],
   },
   {
-    // One Kärcher product, so this page must not repeat its product page:
-    // the product page sells the machine (specs, what is included, calendar),
-    // this one is the brand entry point and the how-to (plan, mistakes, stains).
+    // Owns "najam Kärcher" / "najam Karcher", the way the GoPro and JBL hubs
+    // own their brand terms; the Puzzi product page targets "najam dubinskog
+    // usisavača" instead (migration 032), so the two do not compete. More
+    // Kärcher products are planned: add them to productIds. Until then this
+    // page must not repeat the single product page, hence the how-to content.
     slug: "karcher",
     h1: "Najam Kärcher u Zagrebu",
-    seoTitle: "Najam Kärcher u Zagrebu od {cijena} €/dan",
+    seoTitle: "Najam Kärcher (Karcher) u Zagrebu od {cijena} €/dan",
     seoDescription:
-      "Najam Kärcher (Karcher) stroja za dubinsko pranje u Zagrebu od {cijena} €/dan. Kako isplanirati dan, koje mrlje izlaze i isplati li se najam, kupnja ili usluga.",
+      "Najam Kärcher stroja za dubinsko pranje u Zagrebu od {cijena} €/dan. Kako isplanirati dan, koje mrlje izlaze i isplati li se najam, kupnja ili usluga čišćenja.",
     intro:
       "Kärcher stroj za dubinsko pranje kauča, tepiha, madraca i auta. Ovdje je sve što treba znati prije najma: koliko vremena treba, kojim redom prati i što stroj ne može.",
     productIds: [KARCHER_PUZZI],
     brandProductIds: [KARCHER_PUZZI],
     parentCategorySlug: "alati-ciscenje",
     navLabel: "Najam Kärcher",
-    productLinkLabel: "Najam Kärcher: vodič i savjeti",
+    productLinkLabel: "Najam Kärcher u Zagrebu",
     heroImage: "/kercher%20puzzi.jpg",
     brandName: "Kärcher",
     brandLogo: "/brands/karcher.svg",

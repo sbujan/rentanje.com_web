@@ -85,7 +85,8 @@ describe("LANDING_PAGES", () => {
   it("targets 'najam Kärcher' on the Kärcher hub and mentions the Karcher spelling", () => {
     const karcher = getLandingPage("karcher")!;
     expect(karcher.seoTitle.startsWith("Najam Kärcher")).toBe(true);
-    expect(karcher.seoDescription).toContain("Karcher");
+    expect(karcher.seoTitle).toContain("Karcher");
+    expect(karcher.h1.startsWith("Najam Kärcher")).toBe(true);
     expect(karcher.bodyHtml).toContain("Karcher");
     expect(landingPagesForCategory("alati-ciscenje").map((l) => l.slug)).toEqual(["karcher"]);
   });
